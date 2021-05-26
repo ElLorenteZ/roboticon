@@ -26,6 +26,5 @@ class CompetitionTest {
         assertEquals(ID, competition.getId());
         assertEquals(NAME, competition.getName());
         assertEquals(DESCRIPTION, competition.getDescription());
-
     }
 }

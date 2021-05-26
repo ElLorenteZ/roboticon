@@ -2,6 +2,8 @@ package io.lorentez.roboticon.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,7 @@ class UniversityTest {
     public static final String COUNTRY = "Nulland";
 
     @Test
-    void builder() {
+    void builderEmptyCollection() {
         //given
 
         //when
@@ -44,5 +46,38 @@ class UniversityTest {
 
         assertNotNull(university.getTeams());
         assertThat(university.getTeams()).hasSize(0);
+    }
+
+    @Test
+    void builderAndPopulateCollections() {
+        //given
+        Team team1 = Team.builder().id(1L).build();
+        Team team2 = Team.builder().id(2L).build();
+
+        //when
+        University university = University.builder()
+                .id(ID)
+                .name(NAME)
+                .addressLine1(ADDRESS_LINE1)
+                .addressLine2(ADDRESS_LINE2)
+                .zipCode(ZIPCODE)
+                .city(CITY)
+                .province(PROVINCE)
+                .country(COUNTRY)
+                .build();
+        university.getTeams().addAll(Set.of(team1, team2));
+
+        //then
+        assertEquals(ID, university.getId());
+        assertEquals(NAME, university.getName());
+        assertEquals(ADDRESS_LINE1, university.getAddressLine1());
+        assertEquals(ADDRESS_LINE2, university.getAddressLine2());
+        assertEquals(ZIPCODE, university.getZipCode());
+        assertEquals(CITY, university.getCity());
+        assertEquals(PROVINCE, university.getProvince());
+        assertEquals(COUNTRY, university.getCountry());
+
+        assertNotNull(university.getTeams());
+        assertThat(university.getTeams()).hasSize(2);
     }
 }
