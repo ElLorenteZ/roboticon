@@ -3,7 +3,8 @@ package io.lorentez.roboticon.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.lang.annotation.Target;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -17,6 +18,9 @@ public class Competition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(max = 200)
     private String name;
     private String description;
 

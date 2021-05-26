@@ -1,9 +1,11 @@
 package io.lorentez.roboticon.model;
 
 import lombok.*;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +22,15 @@ public class Tournament {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @Size(max = 200)
     private String name;
+
+    @NotNull
     private LocalDate dateStart;
+
+    @NotNull
     private LocalDate dateEnd;
 
     @Builder.Default

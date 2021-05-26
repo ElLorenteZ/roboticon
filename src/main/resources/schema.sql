@@ -1,6 +1,6 @@
 CREATE TABLE University(
                            id BIGSERIAL NOT NULL PRIMARY KEY,
-                           name VARCHAR(150) NOT NULL,
+                           name VARCHAR(300) NOT NULL,
                            address_line1 VARCHAR(200) NOT NULL,
                            address_line2 VARCHAR(200) NOT NULL,
                            zipcode VARCHAR(10) NOT NULL,
