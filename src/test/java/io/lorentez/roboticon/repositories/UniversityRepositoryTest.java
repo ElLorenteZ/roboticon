@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,7 @@ class UniversityRepositoryTest {
         //given
 
         //when
-        List<University> universities = repository.findByNameContainingIgnoreCase("politechnika");
+        List<University> universities = repository.findAllByNameContainingIgnoreCase("politechnika");
 
         //then
         assertNotNull(universities);
@@ -51,5 +52,29 @@ class UniversityRepositoryTest {
         //then
         assertNotNull(universities);
         assertThat(universities).isNotEmpty();
+    }
+
+    @Test
+    void findByCountryNoResults() {
+        //given
+
+        //when
+        List<University> universities = repository.findByCountryIgnoreCase("isengard");
+
+        //then
+        assertNotNull(universities);
+        assertThat(universities).isEmpty();
+    }
+
+    @Test
+    void findByNameContainingIgnoreCase() {
+        //given
+        String name = "górniczo-hutnicza";
+
+        //when
+        Optional<University> universityOptional = repository.findByNameContainingIgnoreCase(name);
+
+        //given
+        assertThat(universityOptional).isPresent();
     }
 }
