@@ -44,4 +44,9 @@ public class Team {
     @Builder.Default
     @OneToMany(mappedBy = "team")
     private Set<UserTeam> userTeams = new HashSet<>();
+
+    @PrePersist
+    private void setTimeCreated(){
+        this.timeCreated = LocalDateTime.now();
+    }
 }
