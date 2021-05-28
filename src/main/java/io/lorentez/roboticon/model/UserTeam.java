@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.model;
 
+import io.lorentez.roboticon.model.validators.TimeEndAfterTimeStart;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "UserTeam")
+@TimeEndAfterTimeStart
 public class UserTeam {
 
     @Id

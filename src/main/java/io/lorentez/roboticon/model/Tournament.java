@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.model;
 
+import io.lorentez.roboticon.model.validators.DateEndNotBeforeDateStart;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "Tournament")
+@DateEndNotBeforeDateStart
 public class Tournament {
 
     @Id
