@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class University {
     @Column(name = "address_line1")
     private String addressLine1;
 
-    @NotBlank
+    @NotNull
     @Size(max = 200)
     @Column(name = "address_line2")
     private String addressLine2;
