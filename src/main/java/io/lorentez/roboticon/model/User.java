@@ -28,6 +28,10 @@ public class User {
     @Size(max = 200)
     private String surname;
 
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private UserType type;
+
     @Email
     @NotBlank
     @Size(max = 200)
