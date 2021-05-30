@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.model;
 
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -41,6 +42,7 @@ public class Team {
     @ManyToMany(mappedBy = "teams")
     private Set<Robot> robots = new HashSet<>();
 
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @Builder.Default
     @OneToMany(mappedBy = "team")
     private Set<UserTeam> userTeams = new HashSet<>();

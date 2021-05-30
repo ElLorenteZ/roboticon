@@ -42,7 +42,6 @@ CREATE TABLE User(
                      name VARCHAR (100),
                      surname VARCHAR (200),
                      email VARCHAR (200) NOT NULL,
-                     type VARCHAR (50) NOT NULL,
                      account_non_expired BOOLEAN NOT NULL,
                      credentials_non_expired BOOLEAN NOT NULL,
                      account_non_locked BOOLEAN NOT NULL

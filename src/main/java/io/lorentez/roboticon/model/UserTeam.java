@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "UserTeam")
 @TimeEndAfterTimeStart
+@Entity
+@Table(name = "userteam")
 public class UserTeam {
 
     @Id

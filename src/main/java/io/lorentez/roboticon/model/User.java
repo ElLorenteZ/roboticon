@@ -28,10 +28,6 @@ public class User {
     @Size(max = 200)
     private String surname;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private UserType type;
-
     @Email
     @NotBlank
     @Size(max = 200)
@@ -47,7 +43,7 @@ public class User {
     private Boolean accountNonLocked = Boolean.TRUE;
 
     @Builder.Default
-    @OneToMany
+    @OneToMany(mappedBy = "team")
     private Set<UserTeam> userTeams = new HashSet<>();
 
     @Builder.Default

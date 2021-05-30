@@ -1,3 +1,10 @@
+/*
+    Here are information which will be used in all profiles of application.
+    Information with mock data to display some teams, robots etc. are parsed
+    through io.lorentez.roboticon.bootstrap.DataLoaderBootstrap.
+*/
+
+
 INSERT INTO University (name, address_line1, address_line2, zipcode, province, city, country)
 VALUES ('Akademia Górniczo-Hutnicza im. Stanisława Staszica',
         'al. Adama Mickiewicza 30', '', '30-059', 'małopolskie', 'Kraków', 'Polska');
