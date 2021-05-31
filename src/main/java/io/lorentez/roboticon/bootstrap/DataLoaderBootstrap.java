@@ -1,9 +1,7 @@
 package io.lorentez.roboticon.bootstrap;
 
 import io.lorentez.roboticon.model.*;
-import io.lorentez.roboticon.repositories.TeamRepository;
-import io.lorentez.roboticon.repositories.UniversityRepository;
-import io.lorentez.roboticon.repositories.UserRepository;
+import io.lorentez.roboticon.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -11,6 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Optional;
 
 /*
@@ -25,19 +24,27 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
     private final UniversityRepository universityRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final CompetitionTypeRepository competitionTypeRepository;
+    private final RobotRepository robotRepository;
 
     public DataLoaderBootstrap(UniversityRepository universityRepository,
                                TeamRepository teamRepository,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               CompetitionTypeRepository competitionTypeRepository,
+                               RobotRepository robotRepository) {
         this.universityRepository = universityRepository;
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.competitionTypeRepository = competitionTypeRepository;
+        this.robotRepository = robotRepository;
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        log.info("Loading mock data on application startup..");
         loadStartupUserAndTeamData();
-        //loadRobots();
+        loadRobotsAndCompetitionTypes();
+        log.info("Loading mock data finished..");
         //loadCompetitions();
     }
 
@@ -617,5 +624,361 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         team.getUserTeams().add(userTeam3);
 
     }
+
+    private void loadRobotsAndCompetitionTypes() {
+        CompetitionType lineFollowerType = CompetitionType.builder()
+                .type("Line Follower".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        lineFollowerType = competitionTypeRepository.save(lineFollowerType);
+
+        CompetitionType sumoCompetitionType = CompetitionType.builder()
+                .type("Sumo".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        sumoCompetitionType = competitionTypeRepository.save(sumoCompetitionType);
+
+        CompetitionType micromouseCompetitionType = CompetitionType.builder()
+                .type("Micromouse".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        micromouseCompetitionType = competitionTypeRepository.save(micromouseCompetitionType);
+
+        CompetitionType roboSprintType = CompetitionType.builder()
+                .type("Robo Sprint".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        roboSprintType = competitionTypeRepository.save(roboSprintType);
+
+        CompetitionType freestyleType = CompetitionType.builder()
+                .type("Freestyle".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        freestyleType = competitionTypeRepository.save(freestyleType);
+
+        CompetitionType raceType = CompetitionType.builder()
+                .type("Robo Race".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        raceType = competitionTypeRepository.save(raceType);
+
+        CompetitionType puckCollectType = CompetitionType.builder()
+                .type("Puck Collect".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        puckCollectType = competitionTypeRepository.save(puckCollectType);
+
+        Optional<Team> nephthysTeamOptional = teamRepository.findByNameWithRobotTeams("Nephthys".toLowerCase(Locale.ROOT));
+        Optional<Team> chronosTeamOptional = teamRepository.findByNameWithRobotTeams("Chronos".toLowerCase(Locale.ROOT));
+        Optional<Team> marshalTeamOptional = teamRepository.findByNameWithRobotTeams("Marshal".toLowerCase(Locale.ROOT));
+        Optional<Team> berserkerTeamOptional = teamRepository.findByNameWithRobotTeams("Berserker".toLowerCase(Locale.ROOT));
+        Optional<Team> trailblazerTeamOptional = teamRepository.findByNameWithRobotTeams("Trailblazer".toLowerCase(Locale.ROOT));
+        Optional<Team> kantoTeamOptional = teamRepository.findByNameWithRobotTeams("Kanto".toLowerCase(Locale.ROOT));
+        Optional<Team> thaumanovaTeamOptional = teamRepository.findByNameWithRobotTeams("Thaumanova".toLowerCase(Locale.ROOT));
+        Optional<Team> sunquaTeamOptional = teamRepository.findByNameWithRobotTeams("Sunqua".toLowerCase(Locale.ROOT));
+        Optional<Team> knrTeamOptional = teamRepository.findByNameWithRobotTeams("Koło Naukowe Robotyków".toLowerCase(Locale.ROOT));
+        Optional<Team> knsikTeamOptional = teamRepository.findByNameWithRobotTeams("Koło Naukowe Sensoryki".toLowerCase(Locale.ROOT));
+        Optional<Team> sunriseTeamOptional = teamRepository.findByNameWithRobotTeams("Sunrise".toLowerCase(Locale.ROOT));
+        Optional<Team> valhalaTeamOptional = teamRepository.findByNameWithRobotTeams("Valhala".toLowerCase(Locale.ROOT));
+        Optional<Team> shashlykTeamOptional = teamRepository.findByNameWithRobotTeams("Sha-Shlyk".toLowerCase(Locale.ROOT));
+        Optional<Team> goquoTeamOptional = teamRepository.findByNameWithRobotTeams("GoQuo".toLowerCase(Locale.ROOT));
+
+        //LINE FOLLOWER
+        Robot robot1 = Robot.builder()
+                .name("L1n3r")
+                .build();
+
+        Robot robot2 = Robot.builder()
+                .name("Niuchacz")
+                .build();
+
+        Robot robot3 = Robot.builder()
+                .name("Gorky")
+                .build();
+
+        Robot robot4 = Robot.builder()
+                .name("Valter")
+                .build();
+
+        Robot robot5 = Robot.builder()
+                .name("Aberiusz")
+                .build();
+
+        //SUMO
+        Robot robot6 = Robot.builder()
+                .name("Dzik")
+                .build();
+
+        Robot robot7 = Robot.builder()
+                .name("Kubik")
+                .build();
+
+        Robot robot8 = Robot.builder()
+                .name("Scrappy")
+                .build();
+
+        Robot robot9 = Robot.builder()
+                .name("Omtron")
+                .build();
+
+        Robot robot10 = Robot.builder()
+                .name("Ezroid")
+                .build();
+
+        //MICROMOUSE
+        Robot robot11 = Robot.builder()
+                .name("Dustie")
+                .build();
+
+        Robot robot12 = Robot.builder()
+                .name("Alpha")
+                .build();
+
+        Robot robot13 = Robot.builder()
+                .name("Azerty")
+                .build();
+
+        Robot robot14 = Robot.builder()
+                .name("Esupx")
+                .build();
+
+        Robot robot15 = Robot.builder()
+                .name("Abonator")
+                .build();
+
+        //PUCK COLLECT
+        Robot robot16 = Robot.builder()
+                .name("Garbage Disposal Bot")
+                .build();
+
+        Robot robot17 = Robot.builder()
+                .name("Eha")
+                .build();
+
+        Robot robot18 = Robot.builder()
+                .name("Shrimp")
+                .build();
+
+        Robot robot19 = Robot.builder()
+                .name("Talus")
+                .build();
+
+        Robot robot20 = Robot.builder()
+                .name("Sterling")
+                .build();
+
+        //ROBO SPRINT
+        Robot robot21 = Robot.builder()
+                .name("Ulofroid")
+                .build();
+
+        Robot robot22 = Robot.builder()
+                .name("01010010")
+                .build();
+
+        Robot robot23 = Robot.builder()
+                .name("Mr Quickfoot")
+                .build();
+
+        Robot robot24 = Robot.builder()
+                .name("(F)Robo Baggins")
+                .build();
+
+        Robot robot25 = Robot.builder()
+                .name("Sp33d0")
+                .build();
+
+        //FREESTYLE
+        Robot robot26 = Robot.builder()
+                .name("TaZ")
+                .build();
+
+        Robot robot27 = Robot.builder()
+                .name("Bucky")
+                .build();
+
+        Robot robot28 = Robot.builder()
+                .name("Charr Lee")
+                .build();
+
+        Robot robot29 = Robot.builder()
+                .name("B33p")
+                .build();
+
+        Robot robot30 = Robot.builder()
+                .name("Nax")
+                .build();
+
+        //ROBO RACE
+        Robot robot31 = Robot.builder()
+                .name("Inferius")
+                .build();
+
+        Robot robot32 = Robot.builder()
+                .name("Ingot")
+                .build();
+
+        Robot robot33 = Robot.builder()
+                .name("Wheely Mk1")
+                .build();
+
+        Robot robot34 = Robot.builder()
+                .name("Garbi D")
+                .build();
+
+        Robot robot35 = Robot.builder()
+                .name("Zeer")
+                .build();
+
+        if (nephthysTeamOptional.isPresent()){
+            Team nephthysTeam = nephthysTeamOptional.get();
+            addMockRobots(nephthysTeam, robot1, robot15, robot29);
+        }
+        else{
+            log.warn("Couldn\'t find \'Nephthys\' team in database..");
+        }
+        if (chronosTeamOptional.isPresent()){
+            Team chronosTeam = chronosTeamOptional.get();
+            addMockRobots(chronosTeam, robot2, robot16, robot30);
+
+        }
+        else {
+            log.warn("Couldn't find \'Chronos\' team in database..");
+        }
+
+        if(marshalTeamOptional.isPresent()){
+            Team marshalTeam = marshalTeamOptional.get();
+            addMockRobots(marshalTeam, robot3, robot17, robot31);
+        }
+        else{
+            log.warn("Couldn't find \'Marshal\' team in database..");
+        }
+
+        if (berserkerTeamOptional.isPresent()){
+            Team berserkerTeam = berserkerTeamOptional.get();
+            addMockRobots(berserkerTeam, robot4, robot18, robot32);
+        }
+        else {
+            log.warn("Couldn't find \'Berserker\' team in database..");
+        }
+
+        if(trailblazerTeamOptional.isPresent()){
+            Team trailblazerTeam = trailblazerTeamOptional.get();
+            addMockRobots(trailblazerTeam, robot5, robot19, robot33);
+        }
+        else{
+            log.warn("Couldn't find \'Trailblazer\' team in database..");
+        }
+
+        if(kantoTeamOptional.isPresent()){
+            Team kantoTeam = kantoTeamOptional.get();
+            addMockRobots(kantoTeam, robot6, robot20, robot34);
+        }
+        else{
+            log.warn("Couldn't find \'Kanto\' team in database..");
+        }
+
+        if(thaumanovaTeamOptional.isPresent()){
+            Team thaumanovaTeam = thaumanovaTeamOptional.get();
+            addMockRobots(thaumanovaTeam, robot7, robot21, robot35);
+        }
+        else{
+            log.warn("Couldn't find \'Thaumanova\' team in database..");
+        }
+
+        if(sunquaTeamOptional.isPresent()){
+            Team sunquaTeam = sunquaTeamOptional.get();
+            addMockRobots(sunquaTeam, robot8, robot22);
+        }
+        else{
+            log.warn("Couldn't find \'Sunqua\' team in database..");
+        }
+
+        if(knrTeamOptional.isPresent()){
+            Team knrTeam = knrTeamOptional.get();
+            addMockRobots(knrTeam, robot9, robot23);
+        }
+        else{
+            log.warn("Couldn't find \'Koło Naukowe Robotyków\' team in database..");
+        }
+
+        if(knsikTeamOptional.isPresent()){
+            Team knsikTeam = knsikTeamOptional.get();
+            addMockRobots(knsikTeam, robot10, robot24);
+        }
+        else{
+            log.warn("Couldn't find \'Koło Naukowe Sensoryki\' team in database..");
+        }
+
+        if (sunriseTeamOptional.isPresent()){
+            Team sunriseTeam = sunriseTeamOptional.get();
+            addMockRobots(sunriseTeam, robot11, robot25);
+        }
+        else {
+            log.warn("Couldn't find \'Sunrise\' team in database..");
+        }
+
+        if (valhalaTeamOptional.isPresent()){
+            Team valhalaTeam = valhalaTeamOptional.get();
+            addMockRobots(valhalaTeam, robot12, robot26);
+        }
+        else {
+            log.warn("Couldn't find \'Valhala\' team in database..");
+        }
+
+        if (shashlykTeamOptional.isPresent()){
+            Team shashlykTeam = shashlykTeamOptional.get();
+            addMockRobots(shashlykTeam, robot13, robot27);
+        }
+        else {
+            log.warn("Couldn't find \'Sha-Shlyk\' team in database..");
+        }
+
+        if (goquoTeamOptional.isPresent()){
+            Team goquoTeam = goquoTeamOptional.get();
+            addMockRobots(goquoTeam, robot14, robot28);
+        }
+        else {
+            log.warn("Couldn't find \'GoQuo\' team in database..");
+        }
+
+
+    }
+    private void addMockRobots(Team team, Robot robot1, Robot robot2) {
+        addMockRobots(team, robot1, robot2, null);
+    }
+
+    private void addMockRobots(Team team, Robot robot1, Robot robot2, Robot robot3) {
+        if(robot1 != null){
+            robot1 = robotRepository.save(robot1);
+            RobotTeam robotTeam1 = RobotTeam.builder()
+                    .robot(robot1)
+                    .team(team)
+                    .build();
+            team.getRobotTeams().add(robotTeam1);
+        }
+
+        if(robot2 != null) {
+            robot2 = robotRepository.save(robot2);
+            RobotTeam robotTeam2 = RobotTeam.builder()
+                    .robot(robot2)
+                    .team(team)
+                    .build();
+            team.getRobotTeams().add(robotTeam2);
+        }
+
+        if (robot3 != null){
+            robot3 = robotRepository.save(robot3);
+            RobotTeam robotTeam3 = RobotTeam.builder()
+                    .robot(robot3)
+                    .team(team)
+                    .build();
+
+            team.getRobotTeams().add(robotTeam3);
+        }
+
+        team = teamRepository.save(team);
+    }
+
 
 }

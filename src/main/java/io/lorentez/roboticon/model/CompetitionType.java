@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "CompetitionType")
+@Table(name = "competitiontype")
 public class CompetitionType {
 
     @Id

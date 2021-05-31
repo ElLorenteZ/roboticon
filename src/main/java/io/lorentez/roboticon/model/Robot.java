@@ -37,11 +37,12 @@ public class Robot {
     private Set<Registration> registrations = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany
-    @JoinTable(
-            name = "RobotTeam",
-            joinColumns = {@JoinColumn(name = "robot_id")},
-            inverseJoinColumns = {@JoinColumn(name = "team_id")}
-    )
-    private Set<Team> teams = new HashSet<>();
+    @OneToMany(mappedBy = "robot")
+    private Set<RobotTeam> robotTeams = new HashSet<>();
+
+    @PrePersist
+    private void setTimeAddedTimestamp(){
+        this.timeAdded = LocalDateTime.now();
+    }
+
 }

@@ -31,8 +31,8 @@ class RobotTest {
         assertEquals(TIME_ADDED, robot.getTimeAdded());
         assertNotNull(robot.getRegistrations());
         assertThat(robot.getRegistrations()).hasSize(0);
-        assertNotNull(robot.getTeams());
-        assertThat(robot.getTeams()).hasSize(0);
+        assertNotNull(robot.getRobotTeams());
+        assertThat(robot.getRobotTeams()).hasSize(0);
     }
 
     @Test
@@ -44,10 +44,10 @@ class RobotTest {
         Registration registration2 = Registration.builder()
                 .id(2L)
                 .build();
-        Team team1 = Team.builder()
+        RobotTeam team1 = RobotTeam.builder()
                 .id(1L)
                 .build();
-        Team team2 = Team.builder()
+        RobotTeam team2 = RobotTeam.builder()
                 .id(2L)
                 .build();
 
@@ -57,7 +57,7 @@ class RobotTest {
                 .name(NAME)
                 .timeAdded(TIME_ADDED)
                 .build();
-        robot.getTeams().addAll(Set.of(team1, team2));
+        robot.getRobotTeams().addAll(Set.of(team1, team2));
         robot.getRegistrations().addAll(Set.of(registration1, registration2));
 
         //then
@@ -66,7 +66,7 @@ class RobotTest {
         assertEquals(TIME_ADDED, robot.getTimeAdded());
         assertNotNull(robot.getRegistrations());
         assertThat(robot.getRegistrations()).hasSize(2);
-        assertNotNull(robot.getTeams());
-        assertThat(robot.getTeams()).hasSize(2);
+        assertNotNull(robot.getRobotTeams());
+        assertThat(robot.getRobotTeams()).hasSize(2);
     }
 }

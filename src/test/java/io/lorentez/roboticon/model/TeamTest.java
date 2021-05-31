@@ -26,8 +26,8 @@ class TeamTest {
                 .build();
 
         //then
-        assertNotNull(team.getRobots());
-        assertThat(team.getRobots()).hasSize(0);
+        assertNotNull(team.getRobotTeams());
+        assertThat(team.getRobotTeams()).hasSize(0);
 
         assertNotNull(team.getUserTeams());
         assertThat(team.getUserTeams()).hasSize(0);
@@ -36,8 +36,8 @@ class TeamTest {
     @Test
     void builderAndPopulateCollections() {
         //given
-        Robot robot1 = Robot.builder().id(1L).build();
-        Robot robot2 = Robot.builder().id(2L).build();
+        RobotTeam robot1 = RobotTeam.builder().id(1L).build();
+        RobotTeam robot2 = RobotTeam.builder().id(2L).build();
 
         UserTeam userTeam1 = UserTeam.builder().id(1L).build();
         UserTeam userTeam2 = UserTeam.builder().id(2L).build();
@@ -49,11 +49,11 @@ class TeamTest {
                 .timeCreated(TIME_CREATED)
                 .build();
         team.getUserTeams().addAll(Set.of(userTeam1, userTeam2));
-        team.getRobots().addAll(Set.of(robot1, robot2));
+        team.getRobotTeams().addAll(Set.of(robot1, robot2));
 
         //then
-        assertNotNull(team.getRobots());
-        assertThat(team.getRobots()).hasSize(2);
+        assertNotNull(team.getRobotTeams());
+        assertThat(team.getRobotTeams()).hasSize(2);
 
         assertNotNull(team.getUserTeams());
         assertThat(team.getUserTeams()).hasSize(2);

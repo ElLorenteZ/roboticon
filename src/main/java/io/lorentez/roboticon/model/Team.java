@@ -39,12 +39,11 @@ public class Team {
     private LocalDateTime timeCreated;
 
     @Builder.Default
-    @ManyToMany(mappedBy = "teams")
-    private Set<Robot> robots = new HashSet<>();
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    Set<RobotTeam> robotTeams = new HashSet<>();
 
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @Builder.Default
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private Set<UserTeam> userTeams = new HashSet<>();
 
     @PrePersist

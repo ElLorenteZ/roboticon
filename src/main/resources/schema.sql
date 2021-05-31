@@ -17,9 +17,11 @@ CREATE TABLE Team(
 );
 
 CREATE TABLE RobotTeam(
+                          id BIGSERIAL NOT NULL PRIMARY KEY,
                           team_id BIGINT NOT NULL,
                           robot_id BIGINT NOT NULL,
-                          PRIMARY KEY(team_id, robot_id)
+                          time_added DATE NOT NULL,
+                          time_removed DATE
 );
 
 CREATE TABLE Robot(
@@ -76,7 +78,7 @@ CREATE TABLE Competition(
 );
 
 CREATE TABLE CompetitionType(
-                                id BIGINT NOT NULL PRIMARY KEY,
+                                id BIGSERIAL NOT NULL PRIMARY KEY,
                                 type VARCHAR(80) NOT NULL,
                                 score_type VARCHAR(80) NOT NULL
 );
