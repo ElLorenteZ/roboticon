@@ -25,9 +25,11 @@ public class Competition {
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "competition_type_id")
     private CompetitionType competitionType;
 
     @ManyToOne
+    @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
 }

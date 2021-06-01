@@ -72,7 +72,7 @@ CREATE TABLE RegistrationStatus(
 CREATE TABLE Competition(
                             id BIGSERIAL NOT NULL PRIMARY KEY,
                             name VARCHAR(200) NOT NULL,
-                            competitiontype_id  BIGINT NOT NULL,
+                            competition_type_id  BIGINT NOT NULL,
                             tournament_id BIGINT,
                             description TEXT
 );
@@ -86,8 +86,8 @@ CREATE TABLE CompetitionType(
 CREATE TABLE Tournament(
                            id BIGSERIAL NOT NULL PRIMARY KEY,
                            name VARCHAR(200) NOT NULL,
-                           time_start TIMESTAMP NOT NULL,
-                           time_end TIMESTAMP NOT NULL
+                           date_start TIMESTAMP NOT NULL,
+                           date_end TIMESTAMP NOT NULL
 );
 
 ALTER TABLE Team ADD CONSTRAINT team_university_id FOREIGN KEY (university_id) REFERENCES University(id);
@@ -99,5 +99,5 @@ ALTER TABLE UserRegistration ADD CONSTRAINT userregistration_user_id FOREIGN KEY
 ALTER TABLE UserRegistration ADD CONSTRAINT userregistration_registration_id FOREIGN KEY (registration_id) REFERENCES Registration(id);
 ALTER TABLE RegistrationStatus ADD CONSTRAINT registrationstatus_registration_id FOREIGN KEY (registration_id) REFERENCES Registration(id);
 ALTER TABLE Registration ADD CONSTRAINT registration_competition_id FOREIGN KEY (competition_id) REFERENCES Competition(id);
-ALTER TABLE Competition ADD CONSTRAINT competition_competitiontype_id FOREIGN KEY (competitiontype_id) REFERENCES CompetitionType(id);
+ALTER TABLE Competition ADD CONSTRAINT competition_competitiontype_id FOREIGN KEY (competition_type_id) REFERENCES CompetitionType(id);
 ALTER TABLE Competition ADD CONSTRAINT competition_tournament_id FOREIGN KEY (tournament_id) REFERENCES Tournament(id);

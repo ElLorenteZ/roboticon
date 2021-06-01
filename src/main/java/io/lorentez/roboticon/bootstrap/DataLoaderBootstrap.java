@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
@@ -25,17 +26,20 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final CompetitionTypeRepository competitionTypeRepository;
+    private final TournamentRepository tournamentRepository;
     private final RobotRepository robotRepository;
 
     public DataLoaderBootstrap(UniversityRepository universityRepository,
                                TeamRepository teamRepository,
                                UserRepository userRepository,
                                CompetitionTypeRepository competitionTypeRepository,
+                               TournamentRepository tournamentRepository,
                                RobotRepository robotRepository) {
         this.universityRepository = universityRepository;
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.competitionTypeRepository = competitionTypeRepository;
+        this.tournamentRepository = tournamentRepository;
         this.robotRepository = robotRepository;
     }
 
@@ -43,9 +47,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         log.info("Loading mock data on application startup..");
         loadStartupUserAndTeamData();
-        loadRobotsAndCompetitionTypes();
+        loadRobots();
+        loadTournamentsAndCompetitions();
         log.info("Loading mock data finished..");
-        //loadCompetitions();
     }
 
     private void loadStartupUserAndTeamData(){
@@ -625,49 +629,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
     }
 
-    private void loadRobotsAndCompetitionTypes() {
-        CompetitionType lineFollowerType = CompetitionType.builder()
-                .type("Line Follower".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MIN_TIME)
-                .build();
-        lineFollowerType = competitionTypeRepository.save(lineFollowerType);
-
-        CompetitionType sumoCompetitionType = CompetitionType.builder()
-                .type("Sumo".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MAX_POINTS)
-                .build();
-        sumoCompetitionType = competitionTypeRepository.save(sumoCompetitionType);
-
-        CompetitionType micromouseCompetitionType = CompetitionType.builder()
-                .type("Micromouse".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MIN_TIME)
-                .build();
-        micromouseCompetitionType = competitionTypeRepository.save(micromouseCompetitionType);
-
-        CompetitionType roboSprintType = CompetitionType.builder()
-                .type("Robo Sprint".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MIN_TIME)
-                .build();
-        roboSprintType = competitionTypeRepository.save(roboSprintType);
-
-        CompetitionType freestyleType = CompetitionType.builder()
-                .type("Freestyle".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MAX_POINTS)
-                .build();
-        freestyleType = competitionTypeRepository.save(freestyleType);
-
-        CompetitionType raceType = CompetitionType.builder()
-                .type("Robo Race".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MIN_TIME)
-                .build();
-        raceType = competitionTypeRepository.save(raceType);
-
-        CompetitionType puckCollectType = CompetitionType.builder()
-                .type("Puck Collect".toUpperCase(Locale.ROOT))
-                .scoreType(ScoreType.MAX_POINTS)
-                .build();
-        puckCollectType = competitionTypeRepository.save(puckCollectType);
-
+    private void loadRobots() {
         Optional<Team> nephthysTeamOptional = teamRepository.findByNameWithRobotTeams("Nephthys".toLowerCase(Locale.ROOT));
         Optional<Team> chronosTeamOptional = teamRepository.findByNameWithRobotTeams("Chronos".toLowerCase(Locale.ROOT));
         Optional<Team> marshalTeamOptional = teamRepository.findByNameWithRobotTeams("Marshal".toLowerCase(Locale.ROOT));
@@ -944,6 +906,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
 
     }
+
     private void addMockRobots(Team team, Robot robot1, Robot robot2) {
         addMockRobots(team, robot1, robot2, null);
     }
@@ -978,6 +941,181 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         }
 
         team = teamRepository.save(team);
+    }
+
+    private void loadTournamentsAndCompetitions(){
+        CompetitionType lineFollowerType = CompetitionType.builder()
+                .type("Line Follower".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        lineFollowerType = competitionTypeRepository.save(lineFollowerType);
+
+        CompetitionType sumoCompetitionType = CompetitionType.builder()
+                .type("Sumo".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        sumoCompetitionType = competitionTypeRepository.save(sumoCompetitionType);
+
+        CompetitionType micromouseCompetitionType = CompetitionType.builder()
+                .type("Micromouse".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        micromouseCompetitionType = competitionTypeRepository.save(micromouseCompetitionType);
+
+        CompetitionType roboSprintType = CompetitionType.builder()
+                .type("Robo Sprint".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        roboSprintType = competitionTypeRepository.save(roboSprintType);
+
+        CompetitionType freestyleType = CompetitionType.builder()
+                .type("Freestyle".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        freestyleType = competitionTypeRepository.save(freestyleType);
+
+        CompetitionType raceType = CompetitionType.builder()
+                .type("Robo Race".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MIN_TIME)
+                .build();
+        raceType = competitionTypeRepository.save(raceType);
+
+        CompetitionType puckCollectType = CompetitionType.builder()
+                .type("Puck Collect".toUpperCase(Locale.ROOT))
+                .scoreType(ScoreType.MAX_POINTS)
+                .build();
+        puckCollectType = competitionTypeRepository.save(puckCollectType);
+
+
+        Tournament roboticonTournament = Tournament.builder()
+                .name("Roboticon")
+                .dateStart(LocalDate.now().plusMonths(1))
+                .dateEnd(LocalDate.now().plusMonths(1).plusDays(1))
+                .build();
+
+        Competition competitionRoboticonStandardSumo = Competition.builder()
+                .name("Sumo Standard")
+                .description("Sumo - dwa roboty próbują zepchnąć się nawzajem z ringu (dohyo). " +
+                        "Podczas walki nie można sterować robotem (poza włączeniem i wyłączeniem)." +
+                        "Wielkość robota nie może przekroczyć 20 x 20cm (wysokość bez ograniczeń), " +
+                        "waga do 3kg. Ring ma średnicę 149cm.")
+                .competitionType(sumoCompetitionType)
+                .tournament(roboticonTournament)
+                .build();
+        roboticonTournament.getCompetitions().add(competitionRoboticonStandardSumo);
+
+        Competition competitionRoboticonLineFollower = Competition.builder()
+                .name("Line Follower Enchanced")
+                .description("Kategoria Line Follower Enhanced (L.F.E.) to w pełni autonomiczne roboty mobilne, " +
+                        "zdolne do szybkiego poruszania się po kontrastującej z tłem linii oraz omijania " +
+                        "znajdujących się na torze przeszkód. ")
+                .competitionType(lineFollowerType)
+                .tournament(roboticonTournament)
+                .build();
+        roboticonTournament.getCompetitions().add(competitionRoboticonLineFollower);
+
+        Competition competitionRoboticonFreestyle = Competition.builder()
+                .name("Robot Freestyle")
+                .description("Celem konkurencji jest prezentacja najciekawszych pomysłów. " +
+                        "Miejsca zostają przydzielone na podstawie punktów przydzielonych przez jury. " +
+                        "Oprócz miejsc przydzielane są również nagrody specjalne np. nagroda od publiczonści.")
+                .competitionType(freestyleType)
+                .tournament(roboticonTournament)
+                .build();
+        roboticonTournament.getCompetitions().add(competitionRoboticonFreestyle);
+
+        Competition competitionRoboticonMicromouse = Competition.builder()
+                .name("Micromouse")
+                .description("Micromouse – rodzaj zawodów robotów, w których robot 'mysz' " +
+                        "ma do pokonania labirynt " +
+                        "złożony z płaskiej powierzchni i ułożonych pojedynczych ścianek. " +
+                        "Klasyczny labirynt jest ułożony w kwadracie powstałym po połączaniu " +
+                        "16 ścianek na wszystkich jego bokach, " +
+                        "gdzie każda z nich ma 180 mm długości i 50 mm wysokości.")
+                .competitionType(micromouseCompetitionType)
+                .tournament(roboticonTournament)
+                .build();
+        roboticonTournament.getCompetitions().add(competitionRoboticonMicromouse);
+        roboticonTournament = tournamentRepository.save(roboticonTournament);
+
+        Tournament roboCupTournament = Tournament.builder()
+                .name("Robo Cup")
+                .dateStart(LocalDate.now().plusMonths(2))
+                .dateEnd(LocalDate.now().plusMonths(2))
+                .build();
+
+        Competition competitionRoboCupSprint = Competition.builder()
+                .name("Robo Sprint")
+                .description("Specjalne zawody przeznaczone dla wszelkiego rodzaju robotów kroczących. " +
+                        "Podczas zawodów liczy się jak najszybsze przebiegnięcie przez robota wskazanego dystansu.")
+                .competitionType(roboSprintType)
+                .tournament(roboCupTournament)
+                .build();
+        roboCupTournament.getCompetitions().add(competitionRoboCupSprint);
+
+        Competition competitionRoboCupRaceTime = Competition.builder()
+                .name("F1 Tenth")
+                .description("Zawody przeznaczone dla modeli pojazdów samochodowych. " +
+                        "Celem jest pokonanie jak największej liczby okrążeń we wskazanym czasie.")
+                .competitionType(raceType)
+                .tournament(roboCupTournament)
+                .build();
+        roboCupTournament.getCompetitions().add(competitionRoboCupRaceTime);
+
+        Competition competitionRoboCupRace = Competition.builder()
+                .name("F1 Tenth Race")
+                .description("Zawody przeznaczone dla modeli pojazdów samochodowych. " +
+                        "Wyścig, podczas którego na torze ścigają się jednocześnie autonomiczne roboty. " +
+                        "Wygrywa ten kto pierwszy minie linię mety.")
+                .competitionType(raceType)
+                .tournament(roboCupTournament)
+                .build();
+        roboCupTournament.getCompetitions().add(competitionRoboCupRace);
+
+        Competition competitionRoboCupMicromouse = Competition.builder()
+                .name("Micromouse")
+                .description("Zawody, podzczas których liczy się najszybsze pokonanie labirytnu " +
+                        "przez robo mysz.")
+                .competitionType(micromouseCompetitionType)
+                .tournament(roboCupTournament)
+                .build();
+        roboCupTournament.getCompetitions().add(competitionRoboCupMicromouse);
+        roboCupTournament = tournamentRepository.save(roboCupTournament);
+
+        Tournament platiniumPantherTournament = Tournament.builder()
+                .name("Platinium Pather")
+                .dateStart(LocalDate.now())
+                .dateEnd(LocalDate.now().plusDays(1))
+                .build();
+
+        Competition competitionPlatiniumPantherSumo = Competition.builder()
+                .name("Standard Sumo")
+                .description("Pojedynek robotów niczym japońskich wojowników sumo.")
+                .competitionType(sumoCompetitionType)
+                .tournament(platiniumPantherTournament)
+                .build();
+        platiniumPantherTournament.getCompetitions().add(competitionPlatiniumPantherSumo);
+
+        Competition competitionPlatiniumPantherLineFollower = Competition.builder()
+                .name("Line Follower Turbo")
+                .description("Zawody typu line follower dopuszczające pojazdy z turbiną.")
+                .competitionType(lineFollowerType)
+                .tournament(platiniumPantherTournament)
+                .build();
+        platiniumPantherTournament.getCompetitions().add(competitionPlatiniumPantherLineFollower);
+
+        Competition competitionPlatiniumPantherPuckCollect = Competition.builder()
+                .name("Puck collect")
+                .description("Zawody robotów typu puck collect. Celem jest zebranie jak największej liczby krążków " +
+                        "w określonym kolorze.")
+                .competitionType(puckCollectType)
+                .tournament(platiniumPantherTournament)
+                .build();
+        platiniumPantherTournament.getCompetitions().add(competitionPlatiniumPantherPuckCollect);
+
+        platiniumPantherTournament = tournamentRepository.save(platiniumPantherTournament);
+
+
     }
 
 
