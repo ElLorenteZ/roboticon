@@ -1,10 +1,10 @@
 package io.lorentez.roboticon.converters;
 
-import com.sun.istack.Nullable;
 import io.lorentez.roboticon.commands.CompetitionTypeCommand;
 import io.lorentez.roboticon.model.CompetitionType;
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 @Component
