@@ -1115,7 +1115,6 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
         platiniumPantherTournament = tournamentRepository.save(platiniumPantherTournament);
 
-
     }
 
 
