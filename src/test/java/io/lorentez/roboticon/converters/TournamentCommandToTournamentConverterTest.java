@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,9 +73,9 @@ class TournamentCommandToTournamentConverterTest {
                 .dateEnd(DATE_END)
                 .build();
         tournamentCommand.getCompetitions().add(new CompetitionCommand());
+        given(competitionConverter.convert(any(CompetitionCommand.class))).willReturn(new Competition());
 
         //when
-        when(competitionConverter.convert(any(CompetitionCommand.class))).thenReturn(new Competition());
         Tournament tournament = converter.convert(tournamentCommand);
 
         //then

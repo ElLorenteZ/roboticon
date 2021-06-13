@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,9 +47,9 @@ class CompetitionToCompetitionCommandConverterTest {
     void testEmpty() {
         //given
         Competition competition = new Competition();
+        given(competitionTypeConverter.convert(null)).willReturn(null);
 
         //when
-        when(competitionTypeConverter.convert(null)).thenReturn(null);
         CompetitionCommand competitionCommand = converter.convert(competition);
 
         //then
@@ -66,9 +67,9 @@ class CompetitionToCompetitionCommandConverterTest {
                 .description(DESCRIPTION)
                 .competitionType(new CompetitionType())
                 .build();
+        given(competitionTypeConverter.convert(any(CompetitionType.class))).willReturn(new CompetitionTypeCommand());
 
         //when
-        when(competitionTypeConverter.convert(any(CompetitionType.class))).thenReturn(new CompetitionTypeCommand());
         CompetitionCommand competitionCommand = converter.convert(competition);
 
         //then
