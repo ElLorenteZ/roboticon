@@ -37,6 +37,5 @@ public class Tournament {
 
     @Builder.Default
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
-    @OrderBy("name")
     private Set<Competition> competitions = new HashSet<>();
 }

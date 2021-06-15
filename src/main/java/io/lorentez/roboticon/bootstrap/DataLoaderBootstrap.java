@@ -1040,8 +1040,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
         Tournament roboCupTournament = Tournament.builder()
                 .name("Robo Cup")
-                .dateStart(LocalDate.now().plusMonths(2))
-                .dateEnd(LocalDate.now().plusMonths(2))
+                .dateStart(LocalDate.now().minusDays(2))
+                .dateEnd(LocalDate.now().minusDays(2))
                 .build();
 
         Competition competitionRoboCupSprint = Competition.builder()

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface TournamentRepository extends CrudRepository<Tournament, Long> {
 
-    @Query(value = "SELECT DISTINCT t FROM Tournament t LEFT JOIN t.competitions c LEFT JOIN c.registrations r ORDER BY t.dateStart ASC")
+    @Query(value = "SELECT DISTINCT t FROM Tournament t LEFT JOIN FETCH t.competitions c LEFT JOIN FETCH c.registrations r ORDER BY t.dateStart ASC, c.name ASC")
     List<Tournament> findAllWithCompetitions();
 
 }
