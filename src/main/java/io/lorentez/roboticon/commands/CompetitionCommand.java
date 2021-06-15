@@ -14,5 +14,6 @@ public class CompetitionCommand {
     private String name;
     private String description;
     private CompetitionTypeCommand competitionType;
+    private Integer registrationsCounter;
 
 }

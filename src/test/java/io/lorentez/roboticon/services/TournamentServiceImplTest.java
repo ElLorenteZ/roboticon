@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,10 +40,10 @@ class TournamentServiceImplTest {
                 .id(1L)
                 .build();
         tournaments.add(tournament1);
+        given(converter.convert(any())).willReturn(TournamentCommand.builder().id(1L).build());
+        given(repository.findAllWithCompetitions()).willReturn(tournaments);
 
         //when
-        when(converter.convert(any())).thenReturn(TournamentCommand.builder().id(1L).build());
-        when(repository.findAllWithCompetitions()).thenReturn(tournaments);
         List<TournamentCommand> tournamentCommands = service.findAll();
 
         //then

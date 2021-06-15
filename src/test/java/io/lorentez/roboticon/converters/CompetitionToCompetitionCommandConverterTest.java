@@ -4,6 +4,7 @@ import io.lorentez.roboticon.commands.CompetitionCommand;
 import io.lorentez.roboticon.commands.CompetitionTypeCommand;
 import io.lorentez.roboticon.model.Competition;
 import io.lorentez.roboticon.model.CompetitionType;
+import io.lorentez.roboticon.model.Registration;
 import io.lorentez.roboticon.model.ScoreType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -66,6 +69,7 @@ class CompetitionToCompetitionCommandConverterTest {
                 .name(NAME)
                 .description(DESCRIPTION)
                 .competitionType(new CompetitionType())
+                .registrations(Set.of(Registration.builder().id(1L).build()))
                 .build();
         given(competitionTypeConverter.convert(any(CompetitionType.class))).willReturn(new CompetitionTypeCommand());
 
@@ -78,6 +82,7 @@ class CompetitionToCompetitionCommandConverterTest {
         assertEquals(NAME, competitionCommand.getName());
         assertEquals(DESCRIPTION, competitionCommand.getDescription());
         assertNotNull(competitionCommand.getCompetitionType());
+        assertEquals(1, competitionCommand.getRegistrationsCounter());
         verify(competitionTypeConverter, times(1)).convert(any());
         verifyNoMoreInteractions(competitionTypeConverter);
     }

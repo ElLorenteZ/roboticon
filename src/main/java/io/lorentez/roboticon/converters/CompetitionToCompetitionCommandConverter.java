@@ -29,6 +29,7 @@ public class CompetitionToCompetitionCommandConverter implements Converter<Compe
         competitionCommand.setName(competition.getName());
         competitionCommand.setDescription(competition.getDescription());
         competitionCommand.setCompetitionType(competitionTypeConverter.convert(competition.getCompetitionType()));
+        competitionCommand.setRegistrationsCounter(competition.getRegistrations().size());
         return competitionCommand;
     }
 }
