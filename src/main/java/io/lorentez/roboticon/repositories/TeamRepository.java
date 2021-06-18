@@ -21,7 +21,10 @@ public interface TeamRepository extends CrudRepository<Team, Long> {
     @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.robotTeams WHERE LOWER(t.name) LIKE %:name%")
     Optional<Team> findByNameWithRobotTeams(String name);
 
-    @Query(value = "SELECT t FROM Team t LEFT JOIN FETCH t.robotTeams")
+    @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.robotTeams")
     Set<Team> findAllByNameWithRobotTeams();
+
+    @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.userTeams u WHERE u.timeRemoved IS NULL AND u.user.id =:id")
+    Set<Team> findUserTeams(Long id);
 
 }
