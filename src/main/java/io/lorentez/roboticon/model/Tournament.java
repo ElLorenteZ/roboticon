@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.lorentez.roboticon.model.validators.DateEndNotBeforeDateStart;
 import lombok.*;
 
@@ -30,9 +31,11 @@ public class Tournament {
     private String name;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate dateStart;
 
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate dateEnd;
 
     @Builder.Default

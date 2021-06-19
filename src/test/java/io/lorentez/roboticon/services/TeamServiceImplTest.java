@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,7 @@ class TeamServiceImplTest {
     @Test
     void fetchCurrentUserTeams() {
         //given
-        Set<Team> teams = Set.of(
+        List<Team> teams = List.of(
             Team.builder().id(TEAM_ID).name(TEAM_NAME).build()
         );
         given(converter.convert(any(Team.class)))
@@ -48,7 +49,7 @@ class TeamServiceImplTest {
         given(teamRepository.findUserTeams(anyLong())).willReturn(teams);
 
         //when
-        Set<CurrentTeamUserCommand> currentTeamCommands = teamService.fetchCurrentUserTeams(1L);
+        List<CurrentTeamUserCommand> currentTeamCommands = teamService.fetchCurrentUserTeams(1L);
 
         //then
         assertNotNull(currentTeamCommands);

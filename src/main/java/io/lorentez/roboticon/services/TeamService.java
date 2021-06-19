@@ -2,8 +2,8 @@ package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 
-import java.util.Set;
+import java.util.List;
 
 public interface TeamService {
-    Set<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId);
+    List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId);
 }

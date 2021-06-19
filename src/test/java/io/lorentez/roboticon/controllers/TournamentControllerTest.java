@@ -5,7 +5,6 @@ import io.lorentez.roboticon.commands.CompetitionTypeCommand;
 import io.lorentez.roboticon.commands.TournamentCommand;
 import io.lorentez.roboticon.model.ScoreType;
 import io.lorentez.roboticon.services.TournamentService;
-import io.lorentez.roboticon.services.TournamentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +19,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @ExtendWith(MockitoExtension.class)
 class TournamentControllerTest {
+
+    public static final String TOURNAMENT1_NAME = "Tournament 1 Name";
+    public static final LocalDate TOURNAMENT1_DATESTART = LocalDate.now().plusMonths(1);
+    public static final LocalDate TOURNAMENT1_DATEEND = LocalDate.now().plusMonths(1).plusDays(1);
 
     @Mock
     TournamentService service;
@@ -49,7 +51,16 @@ class TournamentControllerTest {
 
         mockMvc.perform(get("/api/v1/tournaments"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$[0].name", is(TOURNAMENT1_NAME)))
+                .andExpect(jsonPath("$[0].dateStart[0]", is(TOURNAMENT1_DATESTART.getYear())))
+                .andExpect(jsonPath("$[0].dateStart[1]", is(TOURNAMENT1_DATESTART.getMonth().getValue())))
+                .andExpect(jsonPath("$[0].dateStart[2]", is(TOURNAMENT1_DATESTART.getDayOfMonth())))
+                .andExpect(jsonPath("$[0].dateEnd[0]", is(TOURNAMENT1_DATEEND.getYear())))
+                .andExpect(jsonPath("$[0].dateEnd[1]", is(TOURNAMENT1_DATEEND.getMonth().getValue())))
+                .andExpect(jsonPath("$[0].dateEnd[2]", is(TOURNAMENT1_DATEEND.getDayOfMonth())))
+                .andExpect(jsonPath("$[0].competitions.length()", is(5)));
     }
 
     private List<TournamentCommand> mockTournaments() {
@@ -71,9 +82,9 @@ class TournamentControllerTest {
         List<TournamentCommand> tournamentCommandList = new ArrayList<>();
         TournamentCommand tournament1 = TournamentCommand.builder()
                 .id(1L)
-                .name("Tournament 1 Name")
-                .dateStart(LocalDate.now().plusMonths(1))
-                .dateEnd(LocalDate.now().plusMonths(1).plusDays(1))
+                .name(TOURNAMENT1_NAME)
+                .dateStart(TOURNAMENT1_DATESTART)
+                .dateEnd(TOURNAMENT1_DATEEND)
                 .build();
         tournament1.getCompetitions().add(
                 CompetitionCommand.builder()
@@ -115,6 +126,8 @@ class TournamentControllerTest {
                         .name("Competition 5")
                         .competitionType(micromouseType)
                         .build());
+        tournamentCommandList.add(tournament1);
+        tournamentCommandList.add(tournament2);
         return tournamentCommandList;
     }
 }

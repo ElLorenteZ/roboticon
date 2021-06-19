@@ -5,7 +5,7 @@ import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.repositories.TeamRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,10 +21,10 @@ public class TeamServiceImpl implements TeamService{
     }
 
     @Override
-    public Set<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId) {
+    public List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId) {
         return teamRepository.findUserTeams(userId)
                 .stream()
                 .map(converter::convert)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }
