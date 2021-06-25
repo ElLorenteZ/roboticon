@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TeamRepositoryTest {
+class TeamRepositoryTestIT {
 
     private static final String SAMPLE_TEAM_NAME = "Sample Team";
     private static final String SAMPLE_TEAM_NAME2 = "Sample Team With Sample Robot";

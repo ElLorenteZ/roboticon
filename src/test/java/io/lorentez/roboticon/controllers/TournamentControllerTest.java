@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,7 +50,7 @@ class TournamentControllerTest {
     void findAll() throws Exception {
         given(service.findAll()).willReturn(mockTournaments());
 
-        mockMvc.perform(get("/api/v1/tournaments"))
+        mockMvc.perform(get("/api/v1/tournaments").with(anonymous()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(2)))
@@ -130,4 +131,6 @@ class TournamentControllerTest {
         tournamentCommandList.add(tournament2);
         return tournamentCommandList;
     }
+
+
 }

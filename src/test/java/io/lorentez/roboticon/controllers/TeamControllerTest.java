@@ -49,6 +49,8 @@ class TeamControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(teamController).build();
     }
 
+
+
     @Test
     void controllerTest() throws Exception {
         given(teamService.fetchCurrentUserTeams(anyLong())).willReturn(mockTeams());
