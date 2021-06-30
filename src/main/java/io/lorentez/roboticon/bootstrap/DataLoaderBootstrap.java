@@ -1,7 +1,12 @@
 package io.lorentez.roboticon.bootstrap;
 
 import io.lorentez.roboticon.model.*;
+import io.lorentez.roboticon.model.security.Authority;
+import io.lorentez.roboticon.model.security.Role;
+import io.lorentez.roboticon.model.security.RoleAuthority;
+import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +24,7 @@ import java.util.Optional;
 
 @Profile("default")
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -28,20 +34,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
     private final CompetitionTypeRepository competitionTypeRepository;
     private final TournamentRepository tournamentRepository;
     private final RobotRepository robotRepository;
+    private final AuthorityRepository authorityRepository;
+    private final RoleRepository roleRepository;
 
-    public DataLoaderBootstrap(UniversityRepository universityRepository,
-                               TeamRepository teamRepository,
-                               UserRepository userRepository,
-                               CompetitionTypeRepository competitionTypeRepository,
-                               TournamentRepository tournamentRepository,
-                               RobotRepository robotRepository) {
-        this.universityRepository = universityRepository;
-        this.teamRepository = teamRepository;
-        this.userRepository = userRepository;
-        this.competitionTypeRepository = competitionTypeRepository;
-        this.tournamentRepository = tournamentRepository;
-        this.robotRepository = robotRepository;
-    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -64,274 +59,335 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         Optional<University> watUniversityOptional = universityRepository
                 .findByNameContainingIgnoreCase("wojskowa akademia techniczna");
 
+        Authority createTournamentAuthority = Authority.builder()
+                .permission("tournament.create")
+                .description("Permission to create new tournament.")
+                .build();
+        Authority updateTournamentAuthority = Authority.builder()
+                .permission("tournament.update")
+                .description("Permission to update tournament data.")
+                .build();
+
+        Role adminRole = Role.builder()
+                .name("ADMIN")
+                .build();
+        adminRole.grantAuthority(createTournamentAuthority);
+        adminRole.grantAuthority(updateTournamentAuthority);
+        adminRole = roleRepository.save(adminRole);
+
         User user1 = User.builder()
                 .name("Janusz")
                 .surname("Iksiński")
                 .email("janusz.iksinski@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user2 = User.builder()
                 .name("Anna")
                 .surname("Kowal")
                 .email("anna.kowal@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user3 = User.builder()
                 .name("Tomasz")
                 .surname("Chomik")
                 .email("tomasz.chomik@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user4 = User.builder()
                 .name("Karol")
                 .surname("Żurawski")
                 .email("karol.zurawski@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user5 = User.builder()
                 .name("Magdalena")
                 .surname("Kowalska")
                 .email("magdalena.kowalska@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user6 = User.builder()
                 .name("Kazimierz")
                 .surname("Motyka")
                 .email("kazimierz.motyka@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user7 = User.builder()
                 .name("Radosław")
                 .surname("Gola")
                 .email("radoslaw.gola@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user8 = User.builder()
                 .name("Maria")
                 .surname("Nuta")
                 .email("maria.nuta@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user9 = User.builder()
                 .name("Katarzyna")
                 .surname("Groteska")
                 .email("katarzyna.groteska@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user10 = User.builder()
                 .name("Natalia")
                 .surname("Koryto")
                 .email("natalia.koryto@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user11 = User.builder()
                 .name("Lucjan")
                 .surname("Anatoliński")
                 .email("lucjan.anatolinski@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user12 = User.builder()
                 .name("Stanisław")
                 .surname("Bonkiewicz")
                 .email("stanislaw.bonkiewicz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user13 = User.builder()
                 .name("Michał")
                 .surname("Kuczma")
                 .email("michal.kuczma@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user14 = User.builder()
                 .name("Mateusz")
                 .surname("Juczkiewicz")
                 .email("mateusz.juczkiewicz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user15 = User.builder()
                 .name("Urszula")
                 .surname("Potra")
                 .email("urszula.potra@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user16 = User.builder()
                 .name("Bartosz")
                 .surname("Czarny")
                 .email("bartosz.czarny@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user17 = User.builder()
                 .name("Bartłomiej")
                 .surname("Wertowski")
                 .email("bartlomiej.wertowski@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user18 = User.builder()
                 .name("Paweł")
                 .surname("Kuwert")
                 .email("pawel.kuwert@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user19 = User.builder()
                 .name("Piotr")
                 .surname("Intel")
                 .email("piotr.intel@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user20 = User.builder()
                 .name("Klaudia")
                 .surname("Fasada")
                 .email("klaudia.fasada@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user21 = User.builder()
                 .name("Aneta")
                 .surname("Adapter")
                 .email("aneta.adapter@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user22 = User.builder()
                 .name("Elżbieta")
                 .surname("Gromada")
                 .email("elżbieta.gromada@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user23 = User.builder()
                 .name("Wojciech")
                 .surname("Chyży")
                 .email("wojciech.chyzy@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user24 = User.builder()
                 .name("Wiktoria")
                 .surname("Tygrys")
                 .email("wiktoria.tygrys@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user25 = User.builder()
                 .name("Weronika")
                 .surname("Kot")
                 .email("weronika.kot@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user26 = User.builder()
                 .name("Małgorzata")
                 .surname("Pies")
                 .email("malgorzata.pies@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user27 = User.builder()
                 .name("Tadeusz")
                 .surname("Lew")
                 .email("tadeusz.lew@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user28 = User.builder()
                 .name("Iga")
                 .surname("Niedźwiedź")
                 .email("iga.niedzwiedz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user29 = User.builder()
                 .name("Oliwia")
                 .surname("Mamba")
                 .email("oliwia.mamba@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user30 = User.builder()
                 .name("Justyna")
                 .surname("Urbańska")
                 .email("justyna.urbanska@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user31 = User.builder()
                 .name("Cecylia")
                 .surname("Loki")
                 .email("cecylia.loki@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user32 = User.builder()
                 .name("Celina")
                 .surname("Zeus")
                 .email("celina.zeus@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user33 = User.builder()
                 .name("Lucyna")
                 .surname("Hermes")
                 .email("lucyna.hermes@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user34 = User.builder()
                 .name("Filip")
                 .surname("Buk")
                 .email("filip.buk@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user35 = User.builder()
                 .name("Amelia")
                 .surname("Dąb")
                 .email("amelia.dab@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user36 = User.builder()
                 .name("Hubert")
                 .surname("Szyszka")
                 .email("hubert.szyszka@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user37 = User.builder()
                 .name("Robert")
                 .surname("Sosna")
                 .email("robert.sosna@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user38 = User.builder()
                 .name("Tomasz")
                 .surname("Jodła")
                 .email("tomasz.jodla@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user39 = User.builder()
                 .name("Tadeusz")
                 .surname("Stalowy")
                 .email("tadeusz.stalowy@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user40 = User.builder()
                 .name("Jacek")
                 .surname("Banderas")
                 .email("jacek.banderas@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user41 = User.builder()
                 .name("Eryk")
                 .surname("Browar")
                 .email("eryk.browar@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user42 = User.builder()
                 .name("Kacper")
                 .surname("Listkiewicz")
                 .email("kacper.listkiewicz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user43 = User.builder()
                 .name("Krystian")
                 .surname("Barka")
                 .email("krystian.barka@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user44 = User.builder()
                 .name("Adam")
                 .surname("Spychacz")
                 .email("adam.spychacz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         User user45 = User.builder()
                 .name("Antoni")
                 .surname("Spawacz")
                 .email("antoni.spawacz@test.pl")
+                .password("{noop}testtest")
                 .build();
 
         user1 = userRepository.save(user1);

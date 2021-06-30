@@ -1,9 +1,14 @@
 package io.lorentez.roboticon.repositories;
 
-import io.lorentez.roboticon.model.User;
+import io.lorentez.roboticon.model.security.User;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userRoles WHERE u.email = :email")
+    Optional<User> findByEmailWithAuthorities(String email);
 }

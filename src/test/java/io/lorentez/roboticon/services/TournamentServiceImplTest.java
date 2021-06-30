@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TournamentServiceImplTest {
+
+    public static final long ID = 1L;
+    public static final String TOURNAMENT_NAME = "Sample tournament";
+    public static final LocalDate TOURNAMENT_DATESTART = LocalDate.now().plusDays(10);
 
     @Mock
     TournamentToTournamentCommandConverter converter;
@@ -55,4 +60,44 @@ class TournamentServiceImplTest {
         verifyNoMoreInteractions(converter);
     }
 
+    @Test
+    void findByIdNotFound() {
+        //given
+        given(repository.findById(anyLong())).willReturn(Optional.empty());
+
+        //when
+        TournamentCommand tournamentCommand = service.findById(1L);
+
+        //then
+        assertNull(tournamentCommand);
+        verify(repository).findById(anyLong());
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(converter);
+    }
+
+    @Test
+    void findByIdSuccess() {
+        //given
+        Tournament tournament = Tournament.builder()
+                .id(ID)
+                .name(TOURNAMENT_NAME)
+                .dateStart(TOURNAMENT_DATESTART)
+                .build();
+        given(repository.findById(anyLong())).willReturn(Optional.of(tournament));
+        given(converter.convert(tournament)).willReturn(TournamentCommand.builder()
+                .id(ID)
+                .name(TOURNAMENT_NAME)
+                .dateStart(TOURNAMENT_DATESTART)
+                .build());
+
+        //when
+        TournamentCommand tournamentCommand = service.findById(ID);
+
+        //then
+        assertNotNull(tournamentCommand);
+        assertEquals(ID, tournamentCommand.getId());
+        assertEquals(TOURNAMENT_NAME, tournamentCommand.getName());
+        verify(repository).findById(anyLong());
+        verifyNoMoreInteractions(repository);
+    }
 }

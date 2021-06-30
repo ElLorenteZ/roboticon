@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.model;
 
+import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.model.validators.TimeEndAfterTimeStart;
 import lombok.*;
 

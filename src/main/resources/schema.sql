@@ -44,9 +44,38 @@ CREATE TABLE User(
                      name VARCHAR (100),
                      surname VARCHAR (200),
                      email VARCHAR (200) NOT NULL,
+                     password VARCHAR (200) NOT NULL,
+                     enabled BOOLEAN NOT NULL,
                      account_non_expired BOOLEAN NOT NULL,
                      credentials_non_expired BOOLEAN NOT NULL,
                      account_non_locked BOOLEAN NOT NULL
+);
+
+CREATE TABLE UserRole(
+                    id BIGSERIAL NOT NULL PRIMARY KEY,
+                    user_id BIGINT NOT NULL,
+                    role_id BIGINT NOT NULL,
+                    time_granted TIMESTAMP NOT NULL,
+                    time_removed TIMESTAMP
+);
+
+CREATE TABLE Role(
+                    id BIGSERIAL NOT NULL PRIMARY KEY,
+                    name VARCHAR (200) NOT NULL
+);
+
+CREATE TABLE RoleAuthority(
+                    id BIGSERIAL NOT NULL PRIMARY KEY,
+                    role_id BIGINT NOT NULL,
+                    authority_id BIGINT NOT NULL,
+                    time_granted TIMESTAMP NOT NULL,
+                    time_removed TIMESTAMP
+);
+
+CREATE TABLE Authority(
+                    id BIGSERIAL NOT NULL PRIMARY KEY,
+                    permission VARCHAR (200) NOT NULL,
+                    description VARCHAR (500) NOT NULL
 );
 
 CREATE TABLE UserRegistration(
@@ -101,3 +130,7 @@ ALTER TABLE RegistrationStatus ADD CONSTRAINT registrationstatus_registration_id
 ALTER TABLE Registration ADD CONSTRAINT registration_competition_id FOREIGN KEY (competition_id) REFERENCES Competition(id);
 ALTER TABLE Competition ADD CONSTRAINT competition_competitiontype_id FOREIGN KEY (competition_type_id) REFERENCES CompetitionType(id);
 ALTER TABLE Competition ADD CONSTRAINT competition_tournament_id FOREIGN KEY (tournament_id) REFERENCES Tournament(id);
+ALTER TABLE RoleAuthority ADD CONSTRAINT roleauthority_role_id FOREIGN KEY (role_id) REFERENCES Role(id);
+ALTER TABLE RoleAuthority ADD CONSTRAINT roleauthority_authority_id FOREIGN KEY (authority_id) REFERENCES Authority(id);
+ALTER TABLE UserRole ADD CONSTRAINT userrole_role_id FOREIGN KEY (role_id) REFERENCES Role(id);
+ALTER TABLE UserRole ADD CONSTRAINT userrole_user_id FOREIGN KEY (user_id) REFERENCES User(id);

@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface TournamentService {
 
-    public List<TournamentCommand> findAll();
+    List<TournamentCommand> findAll();
+
+    TournamentCommand findById(Long id);
 
 }

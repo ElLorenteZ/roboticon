@@ -30,4 +30,10 @@ public class TournamentServiceImpl implements TournamentService{
 
     }
 
+    @Override
+    public TournamentCommand findById(Long id) {
+        return tournamentRepository.findById(id)
+                .map(tournamentConverter::convert)
+                .orElse(null);
+    }
 }
