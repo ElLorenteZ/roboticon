@@ -19,5 +19,10 @@ public class TournamentControllerTestIT extends BaseIT{
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
-
+    @Test
+    void testFindTournamentByIdAnonymous() throws Exception {
+        mockMvc.perform(get("/api/v1/tournaments/1").with(anonymous()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 }

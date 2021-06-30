@@ -71,7 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/api/v1/auth/**").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/api/v1/competitions/*").permitAll()
-                .mvcMatchers(HttpMethod.GET,"/api/v1/tournaments").permitAll()
+                .mvcMatchers(HttpMethod.GET,"/api/v1/tournaments", "/api/v1/tournaments/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
