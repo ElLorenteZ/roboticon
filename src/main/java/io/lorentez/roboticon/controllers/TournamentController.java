@@ -3,6 +3,7 @@ package io.lorentez.roboticon.controllers;
 import io.lorentez.roboticon.commands.TournamentCommand;
 import io.lorentez.roboticon.services.TournamentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -26,8 +27,14 @@ public class TournamentController {
     }
 
     @GetMapping(value = "{id}")
-    public TournamentCommand getById(@PathVariable Long id){
-        return tournamentService.findById(id);
+    public ResponseEntity<?> getById(@PathVariable Long id){
+        TournamentCommand command = tournamentService.findById(id);
+        if (command == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(command);
+
     }
+
 
 }

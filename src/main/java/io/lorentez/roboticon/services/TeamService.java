@@ -5,5 +5,5 @@ import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import java.util.List;
 
 public interface TeamService {
-    List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId);
+    List<CurrentTeamUserCommand> fetchCurrentUserTeams(String userEmail);
 }

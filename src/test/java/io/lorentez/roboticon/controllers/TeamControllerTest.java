@@ -2,9 +2,9 @@ package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.model.UserTeamStatus;
-import io.lorentez.roboticon.repositories.TeamRepository;
 import io.lorentez.roboticon.services.TeamService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,19 +16,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+// it was used before implementation of spring security
+// can be safely deleted
+@Disabled
 @ExtendWith(MockitoExtension.class)
 class TeamControllerTest {
 
@@ -53,9 +53,9 @@ class TeamControllerTest {
 
     @Test
     void controllerTest() throws Exception {
-        given(teamService.fetchCurrentUserTeams(anyLong())).willReturn(mockTeams());
+        given(teamService.fetchCurrentUserTeams(anyString())).willReturn(mockTeams());
 
-        mockMvc.perform(get("/api/v1/teams/user/1"))
+        mockMvc.perform(get("/api/v1/teams/user"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(2)))

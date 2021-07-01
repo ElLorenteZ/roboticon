@@ -21,8 +21,8 @@ public class TeamServiceImpl implements TeamService{
     }
 
     @Override
-    public List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId) {
-        return teamRepository.findUserTeams(userId)
+    public List<CurrentTeamUserCommand> fetchCurrentUserTeams(String email) {
+        return teamRepository.findUserTeams(email)
                 .stream()
                 .map(converter::convert)
                 .collect(Collectors.toList());

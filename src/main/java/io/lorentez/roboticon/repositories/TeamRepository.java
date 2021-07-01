@@ -24,7 +24,7 @@ public interface TeamRepository extends CrudRepository<Team, Long> {
     @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.robotTeams ORDER BY t.name")
     Set<Team> findAllByNameWithRobotTeams();
 
-    @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.userTeams u WHERE u.timeRemoved IS NULL AND u.user.id =:id")
-    List<Team> findUserTeams(Long id);
+    @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.userTeams u WHERE u.timeRemoved IS NULL AND u.user.email =:email")
+    List<Team> findUserTeams(String email);
 
 }

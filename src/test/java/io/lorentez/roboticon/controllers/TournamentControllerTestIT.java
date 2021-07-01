@@ -46,4 +46,10 @@ public class TournamentControllerTestIT extends BaseIT{
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
+
+    @Test
+    void testFindTournamentByIdNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/tournaments/10000000000"))
+                .andExpect(status().isNotFound());
+    }
 }
