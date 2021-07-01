@@ -20,6 +20,27 @@ public class TournamentControllerTestIT extends BaseIT{
     }
 
     @Test
+    void testFindAllTournamentsAnonymousSlash() throws Exception {
+        mockMvc.perform(get("/api/v1/tournaments/").with(anonymous()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testFindAllTournamentsAnonymousKeyword() throws Exception {
+        mockMvc.perform(get("/api/v1/tournaments?keyword=robocomp").with(anonymous()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testFindAllTournamentsAnonymousKeywordEmpty() throws Exception {
+        mockMvc.perform(get("/api/v1/tournaments?keyword=").with(anonymous()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     void testFindTournamentByIdAnonymous() throws Exception {
         mockMvc.perform(get("/api/v1/tournaments/1").with(anonymous()))
                 .andExpect(status().isOk())

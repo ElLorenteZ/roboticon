@@ -10,4 +10,5 @@ public interface TournamentService {
 
     TournamentCommand findById(Long id);
 
+    List<TournamentCommand> findSearchedTournaments(String keyword);
 }

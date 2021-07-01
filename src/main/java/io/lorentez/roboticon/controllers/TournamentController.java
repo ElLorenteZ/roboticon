@@ -16,15 +16,18 @@ public class TournamentController {
     private final TournamentService tournamentService;
 
     @GetMapping(value = {"", "/"})
-    public List<TournamentCommand> list(){
-        return tournamentService.findAll();
+    public List<TournamentCommand> list(@RequestParam(required = false) String keyword){
+        if(keyword == null || keyword.isBlank()){
+            return tournamentService.findAll();
+        }
+        else {
+            return tournamentService.findSearchedTournaments(keyword);
+        }
     }
 
     @GetMapping(value = "{id}")
     public TournamentCommand getById(@PathVariable Long id){
         return tournamentService.findById(id);
     }
-
-
 
 }

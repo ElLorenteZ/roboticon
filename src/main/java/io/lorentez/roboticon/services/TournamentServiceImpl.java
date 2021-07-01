@@ -6,7 +6,9 @@ import io.lorentez.roboticon.model.Tournament;
 import io.lorentez.roboticon.repositories.TournamentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,5 +37,17 @@ public class TournamentServiceImpl implements TournamentService{
         return tournamentRepository.findById(id)
                 .map(tournamentConverter::convert)
                 .orElse(null);
+    }
+
+    @Override
+    public List<TournamentCommand> findSearchedTournaments(String keyword) {
+        Set<Long> ids = tournamentRepository.getSearchedTournamentsIds(keyword);
+        if (ids.isEmpty()){
+            return new ArrayList<>();
+        }
+        return tournamentRepository.searchForCompetition(ids)
+                .stream()
+                .map(tournamentConverter::convert)
+                .collect(Collectors.toList());
     }
 }
