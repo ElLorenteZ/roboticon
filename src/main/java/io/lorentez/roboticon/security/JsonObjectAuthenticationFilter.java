@@ -77,6 +77,7 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
                     new UsernamePasswordAuthenticationToken(loginCredentials.getEmail(),
                             loginCredentials.getPassword());
             token.setDetails(this.authenticationDetailsSource.buildDetails(httpServletRequest));
+            log.info("Attempt of authentication with user: " + loginCredentials.getEmail());
             return getAuthenticationManager().authenticate(token);
         }
         catch (IOException e) {

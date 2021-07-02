@@ -35,4 +35,11 @@ public class PasswordResetToken {
         this.user = user;
     }
 
+    public Boolean isValid(){
+        return LocalDateTime.now().isBefore(this.expirationDate);
+    }
+
+    public Boolean isInvalid(){
+        return !this.isValid();
+    }
 }

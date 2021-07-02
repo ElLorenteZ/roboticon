@@ -87,6 +87,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .surname("Kowal")
                 .email("anna.kowal@test.pl")
                 .password("{noop}testtest")
+                .accountNonExpired(Boolean.FALSE)
                 .build();
 
         User user3 = User.builder()

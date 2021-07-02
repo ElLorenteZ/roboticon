@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.EmailObject;
+import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class AuthController {
 
     private final UserService userService;
 
-    @PostMapping("/resetPassword")
+    @PostMapping("resetPassword")
     public ResponseEntity<?> resetPassword(@RequestParam String email) {
         User user = userService.findByEmail(email);
         if (user == null){
@@ -31,5 +32,22 @@ public class AuthController {
         //TODO mail sender redirecting to angular application
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("setPassword")
+    public ResponseEntity<?> changePassword(@RequestParam String token,
+                                            @RequestParam String newPassword){
+        PasswordResetToken passwordResetToken = userService.getPasswordResetToken(token);
+        if (passwordResetToken == null){
+            return ResponseEntity.notFound().build();
+        }
+        if (passwordResetToken.isInvalid()){
+            return ResponseEntity.badRequest().build();
+        }
+        userService.setNewPassword(passwordResetToken.getUser(), newPassword);
+        userService.removeToken(passwordResetToken);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }
