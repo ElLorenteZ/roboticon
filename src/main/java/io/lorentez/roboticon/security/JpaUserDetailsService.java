@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+// Used to provide UserDetails to Spring Security filters.
+
 @RequiredArgsConstructor
 @Service
 public class JpaUserDetailsService implements UserDetailsService {

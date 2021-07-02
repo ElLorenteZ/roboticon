@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public JsonObjectAuthenticationFilter jsonObjectAuthenticationFilter(AuthenticationManager authenticationManager){
         JsonObjectAuthenticationFilter filter = new JsonObjectAuthenticationFilter(
-                new AntPathRequestMatcher("/api/**"),
+                new AntPathRequestMatcher("/api/v1/auth/login"),
                 objectMapper);
         filter.setAuthenticationSuccessHandler(successHandler);
         filter.setAuthenticationFailureHandler(failureHandler);

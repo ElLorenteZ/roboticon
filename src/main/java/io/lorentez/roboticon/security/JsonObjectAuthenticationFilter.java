@@ -70,7 +70,9 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
             String requestBody = requestToString(httpServletRequest);
 
             LoginCredentials loginCredentials = objectMapper.readValue(requestBody, LoginCredentials.class);
-
+            if (loginCredentials.getPassword() == null || loginCredentials.getPassword().isBlank()){
+                return null;
+            }
             UsernamePasswordAuthenticationToken token =
                     new UsernamePasswordAuthenticationToken(loginCredentials.getEmail(),
                             loginCredentials.getPassword());

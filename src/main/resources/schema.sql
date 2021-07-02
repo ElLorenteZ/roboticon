@@ -119,6 +119,13 @@ CREATE TABLE Tournament(
                            date_end TIMESTAMP NOT NULL
 );
 
+CREATE TABLE PasswordResetToken(
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    token VARCHAR(200) NOT NULL,
+    expiration_date TIMESTAMP NOT NULL,
+    user_id BIGINT NOT NULL
+);
+
 ALTER TABLE Team ADD CONSTRAINT team_university_id FOREIGN KEY (university_id) REFERENCES University(id);
 ALTER TABLE RobotTeam ADD CONSTRAINT robotteam_team_id FOREIGN KEY (team_id) REFERENCES Team(id);
 ALTER TABLE RobotTeam ADD CONSTRAINT robotteam_robot_id FOREIGN KEY (robot_id) REFERENCES Robot(id);
@@ -134,3 +141,4 @@ ALTER TABLE RoleAuthority ADD CONSTRAINT roleauthority_role_id FOREIGN KEY (role
 ALTER TABLE RoleAuthority ADD CONSTRAINT roleauthority_authority_id FOREIGN KEY (authority_id) REFERENCES Authority(id);
 ALTER TABLE UserRole ADD CONSTRAINT userrole_role_id FOREIGN KEY (role_id) REFERENCES Role(id);
 ALTER TABLE UserRole ADD CONSTRAINT userrole_user_id FOREIGN KEY (user_id) REFERENCES User(id);
+ALTER TABLE PasswordResetToken ADD CONSTRAINT passwordresettoken_user_id FOREIGN KEY (user_id) REFERENCES User(id);
