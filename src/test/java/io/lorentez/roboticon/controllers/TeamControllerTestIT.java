@@ -4,13 +4,18 @@ import io.lorentez.roboticon.security.commands.LoginCredentials;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 public class TeamControllerTestIT extends BaseIT{
+
+    public static final String EMAIL_PARAM_NAME = "email";
+    public static final String NEW_EMAIL = "thisissomenewemail@test.pl";
 
     @Test
     void findTeamsOfAnonymousUser() throws Exception {
@@ -25,4 +30,70 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
+
+    @Test
+    void testUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, NEW_EMAIL))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testUserNotInTeam() throws Exception {
+        String token = getToken("klaudia.fasada@test.pl","testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, NEW_EMAIL)
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testUserMemberInTeam() throws Exception {
+        String token = getToken("adam.spychacz@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, NEW_EMAIL)
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Rollback
+    @Test
+    void testGlobalAdmin() throws Exception {
+        String token = getToken("admin@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, "kacper.listkiewicz@test.pl")
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Rollback
+    @Test
+    void testOwnerInTeam() throws Exception {
+        String token = getToken("janusz.iksinski@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, "klaudia.fasada@test.pl")
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Rollback
+    @Test
+    void testAdminInTeam() throws Exception {
+        String token = getToken("antoni.spawacz@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, "jacek.banderas@test.pl")
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testAdminInTeamUserAlreadyInTeam() throws Exception {
+        String token = getToken("antoni.spawacz@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/teams/1/invite")
+                .param(EMAIL_PARAM_NAME, "adam.spychacz@test.pl")
+                .header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+
 }

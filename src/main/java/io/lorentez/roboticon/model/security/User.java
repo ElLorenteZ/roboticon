@@ -71,7 +71,7 @@ public class User implements UserDetails, CredentialsContainer {
     private Set<Registration> registrations = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Set<UserRole> userRoles = new HashSet<>();
 
     @Override
@@ -117,5 +117,22 @@ public class User implements UserDetails, CredentialsContainer {
                 .map(RoleAuthority::getAuthority)
                 .map(authority -> new SimpleGrantedAuthority(authority.getPermission()))
                 .collect(Collectors.toSet());
+    }
+
+    public void grantRole(Role role){
+        UserRole userRole = UserRole.builder()
+                .user(this)
+                .role(role)
+                .build();
+        this.getUserRoles().add(userRole);
+    }
+
+    public void grantRole(Role role, LocalDateTime expirationDate){
+        UserRole userRole = UserRole.builder()
+                .user(this)
+                .role(role)
+                .timeRemoved(expirationDate)
+                .build();
+        this.getUserRoles().add(userRole);
     }
 }

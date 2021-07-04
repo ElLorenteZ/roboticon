@@ -3,6 +3,7 @@ package io.lorentez.roboticon.services;
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.model.Team;
+import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.repositories.TeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,5 +59,58 @@ class TeamServiceImplTest {
         verify(converter, times(1)).convert(any(Team.class));
         verify(teamRepository, times(1)).findUserTeams(anyString());
         verifyNoMoreInteractions(converter, teamRepository);
+    }
+
+    @Test
+    void isUserInTeamActiveFalse() {
+        //given
+        
+        //when
+        boolean isActive = teamService.isUserInTeamActive(1L, "johny@bravo.eu");
+
+        //then
+        assertFalse(isActive);
+    }
+
+    @Test
+    void isUserInTeamActiveTrue() {
+        //given
+        Optional<UserTeam> teamOptional = Optional.of(UserTeam.builder().id(TEAM_ID).build());
+        given(teamRepository.findActualMembersByTeamId(anyLong(), anyString())).willReturn(teamOptional);
+
+        //when
+        boolean isActive = teamService.isUserInTeamActive(1L, "johny@bravo.eu");
+
+        //then
+        assertTrue(isActive);
+    }
+
+    @Test
+    void testFindByIdFound() {
+        //given
+        given(teamRepository.findById(any())).willReturn(Optional.of(Team.builder()
+                .id(TEAM_ID)
+                .name(TEAM_NAME)
+                .build()));
+
+        //when
+        Team team = teamService.findById(TEAM_ID);
+
+        //then
+        assertNotNull(team);
+        assertEquals(TEAM_ID, team.getId());
+        assertEquals(TEAM_NAME, team.getName());
+    }
+
+    @Test
+    void testFindByIdNotFound() {
+        //given
+        given(teamRepository.findById(any())).willReturn(Optional.empty());
+
+        //when
+        Team team = teamService.findById(10000L);
+
+        //then
+        assertNull(team);
     }
 }

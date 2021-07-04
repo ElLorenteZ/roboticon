@@ -41,5 +41,4 @@ public class UserTeam {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-
 }

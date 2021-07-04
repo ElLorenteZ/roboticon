@@ -1,10 +1,7 @@
 package io.lorentez.roboticon.bootstrap;
 
 import io.lorentez.roboticon.model.*;
-import io.lorentez.roboticon.model.security.Authority;
-import io.lorentez.roboticon.model.security.Role;
-import io.lorentez.roboticon.model.security.RoleAuthority;
-import io.lorentez.roboticon.model.security.User;
+import io.lorentez.roboticon.model.security.*;
 import io.lorentez.roboticon.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 /*
     This class is used only to read mock data.
@@ -67,13 +65,65 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("tournament.update")
                 .description("Permission to update tournament data.")
                 .build();
+        Authority createTeamAuthority = Authority.builder()
+                .permission("team.create")
+                .description("Permission to create teams.")
+                .build();
+        Authority adminUpdateTeamAuthority = Authority.builder()
+                .permission("admin.team.update")
+                .description("Permission to update any team data.")
+                .build();
+        Authority adminReadTeamAuthority = Authority.builder()
+                .permission("admin.team.read")
+                .description("Permission to read any team data.")
+                .build();
+        Authority adminInviteTeamAuthority = Authority.builder()
+                .permission("admin.team.invite")
+                .description("Permission to invite any user to any team.")
+                .build();
+        Authority userUpdateTeamAuthority = Authority.builder()
+                .permission("user.team.update")
+                .description("Permission to update team data where user has status of owner or admin.")
+                .build();
+        Authority userInviteTeamAuthority = Authority.builder()
+                .permission("user.team.invite")
+                .description("Permission to invite any user to team where user has status owner or admin.")
+                .build();
+        Authority userReadTeamAuthority = Authority.builder()
+                .permission("user.team.read")
+                .description("Permission to read team data where user has status of owner or admin.")
+                .build();
+
+        createTournamentAuthority = authorityRepository.save(createTeamAuthority);
+        updateTournamentAuthority = authorityRepository.save(updateTournamentAuthority);
+        createTeamAuthority = authorityRepository.save(createTeamAuthority);
+        adminUpdateTeamAuthority = authorityRepository.save(adminUpdateTeamAuthority);
+        adminReadTeamAuthority = authorityRepository.save(adminReadTeamAuthority);
+        adminInviteTeamAuthority = authorityRepository.save(adminInviteTeamAuthority);
+        userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
+        userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
+        userUpdateTeamAuthority = authorityRepository.save(userUpdateTeamAuthority);
 
         Role adminRole = Role.builder()
                 .name("ADMIN")
                 .build();
+
         adminRole.grantAuthority(createTournamentAuthority);
         adminRole.grantAuthority(updateTournamentAuthority);
+        adminRole.grantAuthority(createTeamAuthority);
+        adminRole.grantAuthority(adminUpdateTeamAuthority);
+        adminRole.grantAuthority(adminReadTeamAuthority);
+        adminRole.grantAuthority(adminInviteTeamAuthority);
         adminRole = roleRepository.save(adminRole);
+
+        Role userRole = Role.builder()
+                .name("USER")
+                .build();
+        userRole.grantAuthority(createTeamAuthority);
+        userRole.grantAuthority(userUpdateTeamAuthority);
+        userRole.grantAuthority(userReadTeamAuthority);
+        userRole.grantAuthority(userInviteTeamAuthority);
+        userRole = roleRepository.save(userRole);
 
         User user1 = User.builder()
                 .name("Janusz")
@@ -81,6 +131,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("janusz.iksinski@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user1.grantRole(userRole);
 
         User user2 = User.builder()
                 .name("Anna")
@@ -89,6 +140,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .password("{noop}testtest")
                 .accountNonExpired(Boolean.FALSE)
                 .build();
+        user2.grantRole(userRole);
 
         User user3 = User.builder()
                 .name("Tomasz")
@@ -96,6 +148,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("tomasz.chomik@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user3.grantRole(userRole);
 
         User user4 = User.builder()
                 .name("Karol")
@@ -103,6 +156,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("karol.zurawski@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user4.grantRole(userRole);
 
         User user5 = User.builder()
                 .name("Magdalena")
@@ -110,6 +164,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("magdalena.kowalska@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user5.grantRole(userRole);
 
         User user6 = User.builder()
                 .name("Kazimierz")
@@ -117,6 +172,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("kazimierz.motyka@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user6.grantRole(userRole);
 
         User user7 = User.builder()
                 .name("Radosław")
@@ -124,6 +180,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("radoslaw.gola@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user7.grantRole(userRole);
 
         User user8 = User.builder()
                 .name("Maria")
@@ -131,6 +188,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("maria.nuta@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user8.grantRole(userRole);
 
         User user9 = User.builder()
                 .name("Katarzyna")
@@ -138,6 +196,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("katarzyna.groteska@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user9.grantRole(userRole);
 
         User user10 = User.builder()
                 .name("Natalia")
@@ -145,6 +204,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("natalia.koryto@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user10.grantRole(userRole);
 
         User user11 = User.builder()
                 .name("Lucjan")
@@ -152,6 +212,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("lucjan.anatolinski@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user11.grantRole(userRole);
 
         User user12 = User.builder()
                 .name("Stanisław")
@@ -159,6 +220,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("stanislaw.bonkiewicz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user12.grantRole(userRole);
 
         User user13 = User.builder()
                 .name("Michał")
@@ -166,6 +228,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("michal.kuczma@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user13.grantRole(userRole);
 
         User user14 = User.builder()
                 .name("Mateusz")
@@ -173,6 +236,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("mateusz.juczkiewicz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user14.grantRole(userRole);
 
         User user15 = User.builder()
                 .name("Urszula")
@@ -180,6 +244,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("urszula.potra@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user15.grantRole(userRole);
 
         User user16 = User.builder()
                 .name("Bartosz")
@@ -187,6 +252,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("bartosz.czarny@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user16.grantRole(userRole);
 
         User user17 = User.builder()
                 .name("Bartłomiej")
@@ -194,6 +260,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("bartlomiej.wertowski@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user17.grantRole(userRole);
 
         User user18 = User.builder()
                 .name("Paweł")
@@ -201,6 +268,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("pawel.kuwert@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user18.grantRole(userRole);
 
         User user19 = User.builder()
                 .name("Piotr")
@@ -208,6 +276,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("piotr.intel@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user19.grantRole(userRole);
 
         User user20 = User.builder()
                 .name("Klaudia")
@@ -215,6 +284,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("klaudia.fasada@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user20.grantRole(userRole);
 
         User user21 = User.builder()
                 .name("Aneta")
@@ -222,6 +292,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("aneta.adapter@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user21.grantRole(userRole);
 
         User user22 = User.builder()
                 .name("Elżbieta")
@@ -229,6 +300,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("elżbieta.gromada@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user22.grantRole(userRole);
 
         User user23 = User.builder()
                 .name("Wojciech")
@@ -236,6 +308,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("wojciech.chyzy@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user23.grantRole(userRole);
 
         User user24 = User.builder()
                 .name("Wiktoria")
@@ -243,6 +316,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("wiktoria.tygrys@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user24.grantRole(userRole);
 
         User user25 = User.builder()
                 .name("Weronika")
@@ -250,6 +324,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("weronika.kot@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user25.grantRole(userRole);
 
         User user26 = User.builder()
                 .name("Małgorzata")
@@ -257,6 +332,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("malgorzata.pies@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user26.grantRole(userRole);
 
         User user27 = User.builder()
                 .name("Tadeusz")
@@ -264,6 +340,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("tadeusz.lew@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user27.grantRole(userRole);
 
         User user28 = User.builder()
                 .name("Iga")
@@ -271,6 +348,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("iga.niedzwiedz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user28.grantRole(userRole);
 
         User user29 = User.builder()
                 .name("Oliwia")
@@ -278,6 +356,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("oliwia.mamba@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user29.grantRole(userRole);
 
         User user30 = User.builder()
                 .name("Justyna")
@@ -285,6 +364,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("justyna.urbanska@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user30.grantRole(userRole);
 
         User user31 = User.builder()
                 .name("Cecylia")
@@ -292,6 +372,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("cecylia.loki@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user31.grantRole(userRole);
 
         User user32 = User.builder()
                 .name("Celina")
@@ -299,6 +380,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("celina.zeus@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user32.grantRole(userRole);
 
         User user33 = User.builder()
                 .name("Lucyna")
@@ -306,6 +388,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("lucyna.hermes@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user33.grantRole(userRole);
 
         User user34 = User.builder()
                 .name("Filip")
@@ -313,6 +396,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("filip.buk@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user34.grantRole(userRole);
 
         User user35 = User.builder()
                 .name("Amelia")
@@ -320,6 +404,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("amelia.dab@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user35.grantRole(userRole);
 
         User user36 = User.builder()
                 .name("Hubert")
@@ -327,6 +412,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("hubert.szyszka@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user36.grantRole(userRole);
 
         User user37 = User.builder()
                 .name("Robert")
@@ -334,6 +420,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("robert.sosna@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user37.grantRole(userRole);
 
         User user38 = User.builder()
                 .name("Tomasz")
@@ -341,6 +428,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("tomasz.jodla@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user38.grantRole(userRole);
 
         User user39 = User.builder()
                 .name("Tadeusz")
@@ -348,6 +436,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("tadeusz.stalowy@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user39.grantRole(userRole);
 
         User user40 = User.builder()
                 .name("Jacek")
@@ -355,6 +444,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("jacek.banderas@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user40.grantRole(userRole);
 
         User user41 = User.builder()
                 .name("Eryk")
@@ -362,6 +452,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("eryk.browar@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user41.grantRole(userRole);
 
         User user42 = User.builder()
                 .name("Kacper")
@@ -369,6 +460,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("kacper.listkiewicz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user42.grantRole(userRole);
 
         User user43 = User.builder()
                 .name("Krystian")
@@ -376,6 +468,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("krystian.barka@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user43.grantRole(userRole);
 
         User user44 = User.builder()
                 .name("Adam")
@@ -383,6 +476,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("adam.spychacz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user44.grantRole(userRole);
 
         User user45 = User.builder()
                 .name("Antoni")
@@ -390,6 +484,16 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .email("antoni.spawacz@test.pl")
                 .password("{noop}testtest")
                 .build();
+        user45.grantRole(userRole);
+
+
+        User adminUser = User.builder()
+                .name("Mr")
+                .surname("Administrator")
+                .email("admin@test.pl")
+                .password("{noop}testtest")
+                .build();
+        adminUser.grantRole(adminRole);
 
         user1 = userRepository.save(user1);
         user2 = userRepository.save(user2);
@@ -436,6 +540,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         user43 = userRepository.save(user43);
         user44 = userRepository.save(user44);
         user45 = userRepository.save(user45);
+
+        adminUser = userRepository.save(adminUser);
 
         Team nephthysTeam = Team.builder()
                 .name("Nephthys")
@@ -579,7 +685,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .build();
 
         UserTeam userTeam45 = UserTeam.builder()
-                .status(UserTeamStatus.MEMBER)
+                .status(UserTeamStatus.ADMIN)
                 .user(user45)
                 .team(nephthysTeam)
                 .timeAdded(LocalDateTime.now().minusDays(3))

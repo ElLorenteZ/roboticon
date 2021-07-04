@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userRoles WHERE u.email = :email")
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userRoles ur WHERE u.email = :email")
     Optional<User> findByEmailWithAuthorities(String email);
 
     Optional<User> findByEmail(String email);

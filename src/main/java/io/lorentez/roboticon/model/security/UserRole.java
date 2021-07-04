@@ -32,4 +32,9 @@ public class UserRole {
 
     private LocalDateTime timeRemoved;
 
+    @PrePersist
+    private void setTimeGranted(){
+        this.timeGranted = LocalDateTime.now();
+    }
+
 }

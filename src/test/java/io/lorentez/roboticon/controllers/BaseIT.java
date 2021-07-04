@@ -39,7 +39,7 @@ public abstract class BaseIT {
         return getToken("janusz.iksinski@test.pl", "testtest");
     }
 
-    private String getToken(String email, String password) throws Exception {
+    protected String getToken(String email, String password) throws Exception {
         LoginCredentials credentials = new LoginCredentials(email, password);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String jsonCredentials =ow.writeValueAsString(credentials);

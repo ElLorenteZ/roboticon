@@ -28,7 +28,7 @@ public class Role {
     private Set<UserRole> userRoles = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "authority", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<RoleAuthority> roleAuthorities = new HashSet<>();
 
     public void grantAuthority(Authority authority){

@@ -1,14 +1,13 @@
 package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
+import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.services.TeamService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +23,17 @@ public class TeamController {
         return teamService.fetchCurrentUserTeams(email);
     }
 
+    @PreAuthorize("hasAuthority('admin.team.invite') OR " +
+            "hasAuthority('user.team.invite') AND @teamsAuthenticationManager.userCanInvite(authentication, #teamId)")
+    @PostMapping("{teamId}/invite")
+    public ResponseEntity<?> inviteToTeam(@PathVariable Long teamId, @RequestParam String email){
+        if (teamService.isUserInTeamActive(teamId, email)){
+            return ResponseEntity.unprocessableEntity().build();
+        }
+        Team team = teamService.findById(teamId);
+        teamService.invitePersonToTeamByEmail(team, email);
+        return ResponseEntity.noContent().build();
 
+    }
 
 }
