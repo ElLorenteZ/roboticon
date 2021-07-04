@@ -7,6 +7,7 @@ import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.security.commands.LoginCredentials;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -15,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -42,10 +44,17 @@ public abstract class BaseIT {
     protected String getToken(String email, String password) throws Exception {
         LoginCredentials credentials = new LoginCredentials(email, password);
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String jsonCredentials =ow.writeValueAsString(credentials);
-        MvcResult result = mockMvc.perform(post("/api/v1/auth/login").content(jsonCredentials))
+        String jsonCredentials = ow.writeValueAsString(credentials);
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonCredentials)
+                .accept(MediaType.ALL))
                 .andExpect(status().isOk())
                 .andReturn();
         return result.getResponse().getHeader(AUTHORIZATION_HEADER);
+    }
+
+    protected String getGlobalAdminToken() throws Exception {
+        return this.getToken("admin@test.pl", "testtest");
     }
 }

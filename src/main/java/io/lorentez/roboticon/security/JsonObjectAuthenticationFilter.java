@@ -10,23 +10,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 @Slf4j
 public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
 
-    public JsonObjectAuthenticationFilter(RequestMatcher requiredAuthenticationRequestMatcher,
-                                          ObjectMapper objectMapper) {
-        super(requiredAuthenticationRequestMatcher);
+    public JsonObjectAuthenticationFilter(ObjectMapper objectMapper) {
+        super("/api/v1/auth/**");
         this.objectMapper = objectMapper;
     }
 
@@ -35,7 +32,7 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
         if (log.isDebugEnabled()) {
             log.debug("Authentication success. Updating SecurityContextHolder to contain: " + authResult);
         }
-        //SecurityContextHolder.getContext().setAuthentication(authResult);
+        SecurityContextHolder.getContext().setAuthentication(authResult);
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 
@@ -44,19 +41,21 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
+        CachedRequestWrapper wrappedRequest = new CachedRequestWrapper(request);
+
         if (logger.isDebugEnabled()){
             logger.debug("Request is to process authentication in JsonObjectAuthenticationFilter");
         }
         try {
-            Authentication authResult = attemptAuthentication(request, response);
+            Authentication authResult = attemptAuthentication(wrappedRequest, response);
             if (authResult != null) {
-                successfulAuthentication(request, response, chain, authResult);
+                successfulAuthentication(wrappedRequest, response, chain, authResult);
             } else {
-                chain.doFilter(request, response);
+                chain.doFilter(wrappedRequest, response);
             }
         }
         catch (AuthenticationException e) {
-            unsuccessfulAuthentication(request, response, e);
+            unsuccessfulAuthentication(wrappedRequest, response, e);
         }
 
 
@@ -67,6 +66,7 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
                                                 HttpServletResponse httpServletResponse)
             throws AuthenticationException {
         try {
+
             String requestBody = requestToString(httpServletRequest);
 
             LoginCredentials loginCredentials = objectMapper.readValue(requestBody, LoginCredentials.class);
@@ -87,13 +87,15 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
     }
 
     private String requestToString(HttpServletRequest httpServletRequest) throws IOException {
-        BufferedReader reader = httpServletRequest.getReader();
+        ServletInputStream inputStream = httpServletRequest.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder builder = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             builder.append(line);
         }
         return builder.toString();
+
     }
 
 

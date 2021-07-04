@@ -1,7 +1,9 @@
 package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
+import io.lorentez.roboticon.commands.StatusCredentials;
 import io.lorentez.roboticon.model.Team;
+import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.services.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +36,14 @@ public class TeamController {
         Team team = teamService.findById(teamId);
         teamService.invitePersonToTeamByEmail(team, email);
         return ResponseEntity.noContent().build();
+    }
 
+    @PreAuthorize("hasAuthority('admin.team.user.status')")
+    @PostMapping("{teamId}/status")
+    public ResponseEntity<?> changeStatusInTeam(@PathVariable Long teamId, @RequestBody StatusCredentials credentials){
+        teamService.changeUserStatus(teamId, credentials.getEmail(), UserTeamStatus.valueOf(credentials.getStatus()
+                .toUpperCase(Locale.ROOT)));
+        return ResponseEntity.noContent().build();
     }
 
 }

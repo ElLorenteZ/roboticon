@@ -4,7 +4,9 @@ import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
+import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.repositories.TeamRepository;
+import io.lorentez.roboticon.repositories.UserTeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +29,9 @@ class TeamServiceImplTest {
 
     public static final Long TEAM_ID = 8L;
     public static final String TEAM_NAME = "Test team name";
+
+    @Mock
+    UserTeamRepository userTeamRepository;
 
     @Mock
     TeamToCurrentTeamUserCommandConverter converter;
@@ -112,5 +117,36 @@ class TeamServiceImplTest {
 
         //then
         assertNull(team);
+    }
+
+    @Test
+    void changeUserStatusNewStatus() {
+        //given
+        given(teamRepository.findActualMembersByTeamId(anyLong(), anyString()))
+                .willReturn(Optional.of(UserTeam.builder().status(UserTeamStatus.MEMBER).build()));
+
+        //when
+        teamService.changeUserStatus(1L, "test@test.com", UserTeamStatus.ADMIN);
+
+        //then
+        verify(userTeamRepository, times(2)).save(any());
+        verify(teamRepository).findActualMembersByTeamId(anyLong(), anyString());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoMoreInteractions(userTeamRepository);
+    }
+
+    @Test
+    void changeUserStatusSame() {
+        //given
+        given(teamRepository.findActualMembersByTeamId(anyLong(), anyString()))
+                .willReturn(Optional.of(UserTeam.builder().status(UserTeamStatus.MEMBER).build()));
+
+        //when
+        teamService.changeUserStatus(1L, "test@test.com", UserTeamStatus.MEMBER);
+
+        //then
+        verify(teamRepository).findActualMembersByTeamId(anyLong(), anyString());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(userTeamRepository);
     }
 }

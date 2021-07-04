@@ -1,8 +1,8 @@
 package io.lorentez.roboticon.controllers;
 
-import io.lorentez.roboticon.commands.EmailObject;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
+import io.lorentez.roboticon.security.commands.LoginCredentials;
 import io.lorentez.roboticon.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +48,9 @@ public class AuthController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PostMapping("login")
+    public ResponseEntity<Object> loginUser(@RequestBody LoginCredentials credentials){
+        return ResponseEntity.ok().build();
+    }
 
 }

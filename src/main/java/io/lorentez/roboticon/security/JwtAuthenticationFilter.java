@@ -47,7 +47,9 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
+
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(TOKEN_HEADER);
         if (token != null && token.startsWith(TOKEN_PREFIX)) {

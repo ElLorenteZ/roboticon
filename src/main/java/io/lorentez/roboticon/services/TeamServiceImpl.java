@@ -5,11 +5,14 @@ import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
+import io.lorentez.roboticon.model.security.Role;
 import io.lorentez.roboticon.model.security.User;
+import io.lorentez.roboticon.repositories.RoleRepository;
 import io.lorentez.roboticon.repositories.TeamRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import io.lorentez.roboticon.repositories.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class TeamServiceImpl implements TeamService{
 
+    private final RoleRepository roleRepository;
     private final UserTeamRepository userTeamRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
@@ -51,11 +55,16 @@ public class TeamServiceImpl implements TeamService{
                     .build());
         }
         else {
+            Optional<Role> userRoleOptional = roleRepository.findByName("USER");
+            if(userRoleOptional.isEmpty()){
+                throw new RuntimeException("Cannot find user role in database!");
+            }
             User user = User.builder()
                     .email(email)
                     .password("{noop}password")
                     .enabled(false)
                     .build();
+            user.grantRole(userRoleOptional.get());
             user = userRepository.save(user);
             userTeamRepository.save(UserTeam.builder()
                     .team(team)
@@ -71,4 +80,23 @@ public class TeamServiceImpl implements TeamService{
         Optional<Team> teamOptional = teamRepository.findById(teamId);
         return teamOptional.orElse(null);
     }
+
+    @Override
+    public void changeUserStatus(Long teamId, String email, UserTeamStatus status) {
+        Optional<UserTeam> previousUserStatus = teamRepository.findActualMembersByTeamId(teamId, email);
+        previousUserStatus.ifPresent(userTeam -> {
+            if (!userTeam.getStatus().equals(status)){
+                LocalDateTime timestamp = LocalDateTime.now();
+                userTeam.setTimeRemoved(timestamp);
+                userTeamRepository.save(userTeam);
+                userTeamRepository.save(UserTeam.builder()
+                        .user(userTeam.getUser())
+                        .team(userTeam.getTeam())
+                        .status(status)
+                        .timeAdded(timestamp)
+                        .build());
+            }
+        });
+    }
+
 }

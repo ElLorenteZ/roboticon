@@ -1,6 +1,5 @@
 package io.lorentez.roboticon.controllers;
 
-import io.lorentez.roboticon.security.commands.LoginCredentials;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -49,7 +48,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void testUserMemberInTeam() throws Exception {
-        String token = getToken("adam.spychacz@test.pl", "testtest");
+        String token = getToken("krystian.barka@test.pl", "testtest");
         mockMvc.perform(post("/api/v1/teams/1/invite")
                 .param(EMAIL_PARAM_NAME, NEW_EMAIL)
                 .header(AUTHORIZATION_HEADER, token))
@@ -58,8 +57,8 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Rollback
     @Test
-    void testGlobalAdmin() throws Exception {
-        String token = getToken("admin@test.pl", "testtest");
+    void testInviteGlobalAdmin() throws Exception {
+        String token = this.getGlobalAdminToken();
         mockMvc.perform(post("/api/v1/teams/1/invite")
                 .param(EMAIL_PARAM_NAME, "kacper.listkiewicz@test.pl")
                 .header(AUTHORIZATION_HEADER, token))
@@ -95,5 +94,15 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isUnprocessableEntity());
     }
 
-
+    @Test
+    void testChangeStatusGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        String payload = "{ \"email\": \"adam.spychacz@test.pl\", \"status\": \"ADMIN\" }";
+        mockMvc.perform(post("/api/v1/teams/1/status")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 }

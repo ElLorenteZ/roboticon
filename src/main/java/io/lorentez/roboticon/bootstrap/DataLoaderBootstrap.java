@@ -93,6 +93,14 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("user.team.read")
                 .description("Permission to read team data where user has status of owner or admin.")
                 .build();
+        Authority adminChangeUserStatus = Authority.builder()
+                .permission("admin.team.user.status")
+                .description("Permission to change internal status of any user in team.")
+                .build();
+        Authority userChangeUserStatus = Authority.builder()
+                .permission("user.team.user.status")
+                .description("Permission to change status of user in team.")
+                .build();
 
         createTournamentAuthority = authorityRepository.save(createTeamAuthority);
         updateTournamentAuthority = authorityRepository.save(updateTournamentAuthority);
@@ -100,9 +108,11 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminUpdateTeamAuthority = authorityRepository.save(adminUpdateTeamAuthority);
         adminReadTeamAuthority = authorityRepository.save(adminReadTeamAuthority);
         adminInviteTeamAuthority = authorityRepository.save(adminInviteTeamAuthority);
+        adminChangeUserStatus = authorityRepository.save(adminChangeUserStatus);
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
         userUpdateTeamAuthority = authorityRepository.save(userUpdateTeamAuthority);
+        userChangeUserStatus = authorityRepository.save(userChangeUserStatus);
 
         Role adminRole = Role.builder()
                 .name("ADMIN")
@@ -114,6 +124,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminUpdateTeamAuthority);
         adminRole.grantAuthority(adminReadTeamAuthority);
         adminRole.grantAuthority(adminInviteTeamAuthority);
+        adminRole.grantAuthority(adminChangeUserStatus);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()
@@ -123,6 +134,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userRole.grantAuthority(userUpdateTeamAuthority);
         userRole.grantAuthority(userReadTeamAuthority);
         userRole.grantAuthority(userInviteTeamAuthority);
+        userRole.grantAuthority(userChangeUserStatus);
         userRole = roleRepository.save(userRole);
 
         User user1 = User.builder()

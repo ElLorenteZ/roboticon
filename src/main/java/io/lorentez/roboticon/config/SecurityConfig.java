@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -50,9 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public JsonObjectAuthenticationFilter jsonObjectAuthenticationFilter(AuthenticationManager authenticationManager){
-        JsonObjectAuthenticationFilter filter = new JsonObjectAuthenticationFilter(
-                new AntPathRequestMatcher("/api/v1/auth/login"),
-                objectMapper);
+        JsonObjectAuthenticationFilter filter = new JsonObjectAuthenticationFilter(objectMapper);
         filter.setAuthenticationSuccessHandler(successHandler);
         filter.setAuthenticationFailureHandler(failureHandler);
         filter.setAuthenticationManager(authenticationManager);
@@ -78,7 +76,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jsonObjectAuthenticationFilter(authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), super.userDetailsService(), secret))
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(), super.userDetailsService(), secret),
+                        UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
