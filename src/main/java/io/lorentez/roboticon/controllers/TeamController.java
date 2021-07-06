@@ -27,7 +27,8 @@ public class TeamController {
     }
 
     @PreAuthorize("hasAuthority('admin.team.invite') OR " +
-            "hasAuthority('user.team.invite') AND @teamsAuthenticationManager.userCanInvite(authentication, #teamId)")
+            "hasAuthority('user.team.invite') " +
+                    "AND @teamsAuthenticationManager.userCanInvite(authentication, #teamId)")
     @PostMapping("{teamId}/invite")
     public ResponseEntity<?> inviteToTeam(@PathVariable Long teamId, @RequestParam String email){
         if (teamService.isUserInTeamActive(teamId, email)){
@@ -38,7 +39,9 @@ public class TeamController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('admin.team.user.status')")
+    @PreAuthorize("hasAuthority('admin.team.user.status') OR " +
+            "hasAuthority('user.team.user.status') " +
+                    "AND @teamsAuthenticationManager.userCanChangeStatus(authentication, #teamId, #credentials)")
     @PostMapping("{teamId}/status")
     public ResponseEntity<?> changeStatusInTeam(@PathVariable Long teamId, @RequestBody StatusCredentials credentials){
         teamService.changeUserStatus(teamId, credentials.getEmail(), UserTeamStatus.valueOf(credentials.getStatus()

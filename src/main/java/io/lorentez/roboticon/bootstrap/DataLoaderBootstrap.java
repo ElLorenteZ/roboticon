@@ -659,6 +659,12 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .name("GoQuo")
                 .build();
 
+        UserTeam userTeam1_inv4 = UserTeam.builder()
+                .status(UserTeamStatus.INVITED)
+                .user(user4)
+                .team(nephthysTeam)
+                .timeAdded(LocalDateTime.now().minusDays(1))
+                .build();
 
         UserTeam userTeam1 = UserTeam.builder()
                 .status(UserTeamStatus.OWNER)
@@ -709,6 +715,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         nephthysTeam.getUserTeams().add(userTeam1);
         nephthysTeam.getUserTeams().add(userTeam2);
         nephthysTeam.getUserTeams().add(userTeam3);
+        nephthysTeam.getUserTeams().add(userTeam1_inv4);
 
         nephthysTeam = teamRepository.save(nephthysTeam);
 

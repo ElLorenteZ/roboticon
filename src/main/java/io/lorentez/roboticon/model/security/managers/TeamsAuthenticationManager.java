@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -29,23 +30,35 @@ public class TeamsAuthenticationManager {
 
     public boolean userCanChangeStatus(Authentication authentication,
                                        Long teamId,
-                                       String userEmail,
-                                       String statusString){
+                                       StatusCredentials credentials){
+        UserTeamStatus status = UserTeamStatus.valueOf(credentials.getStatus().toUpperCase(Locale.ROOT));
         String email = (String) authentication.getPrincipal();
-        log.info("User: " + email + " attempted to change status of user: " + userEmail + " in team with ID: " + teamId.toString());
-        Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
-        if (userTeamOptional.isPresent()){
-            UserTeam requestUserTeam = userTeamOptional.get();
-            Optional<UserTeam> userUserTeam = teamRepository
-                    .findActualMembersByTeamId(teamId, userEmail);
-            if(userUserTeam.isEmpty()){
+        log.info("User: " + email + " attempted to change status of user: " + credentials.getEmail() + " in team with ID: " + teamId.toString());
+        Optional<UserTeam> requesterUserTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
+        if (requesterUserTeamOptional.isPresent()){
+            UserTeam requesterUserTeam = requesterUserTeamOptional.get();
+            Optional<UserTeam> updatedUserTeamOptional = teamRepository
+                    .findActualMembersByTeamId(teamId, credentials.getEmail());
+            if(updatedUserTeamOptional.isEmpty()){
                 return false;
             }
-            else return (requestUserTeam.getStatus() == UserTeamStatus.OWNER) ||
-                    (requestUserTeam.getStatus() == UserTeamStatus.ADMIN
-                            && userUserTeam.get().getStatus() != UserTeamStatus.OWNER) ||
-                    (requestUserTeam.getStatus() == UserTeamStatus.INVITED
-                            && userUserTeam.get().getUser().getEmail().equals(userEmail));
+            UserTeam updatedUserTeam = updatedUserTeamOptional.get();
+            if (email.equals(credentials.getEmail())
+                    && requesterUserTeam.getStatus().equals(UserTeamStatus.INVITED)
+                    && status.equals(UserTeamStatus.MEMBER)){
+                return true;
+            }
+            else if (!requesterUserTeam.getStatus().equals(UserTeamStatus.INVITED)
+                    && (!requesterUserTeam.getStatus().equals(UserTeamStatus.REQUEST_JOIN))) {
+                boolean statusMemberOrAdmin = status.equals(UserTeamStatus.MEMBER) || status.equals(UserTeamStatus.ADMIN);
+                if (requesterUserTeam.getStatus().equals(UserTeamStatus.OWNER)
+                        && statusMemberOrAdmin){
+                    return true;
+                }
+                else return requesterUserTeam.getStatus().equals(UserTeamStatus.ADMIN)
+                        && (!updatedUserTeam.getStatus().equals(UserTeamStatus.OWNER))
+                        && statusMemberOrAdmin;
+            }
         }
         return false;
     }
