@@ -7,6 +7,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Basic;
+
 @Component
 public class UserToBasicUserCommandConverter implements Converter<User, BasicUserCommand> {
 
@@ -17,12 +19,12 @@ public class UserToBasicUserCommandConverter implements Converter<User, BasicUse
         if(user == null){
             return null;
         }
-        return BasicUserCommand.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .surname(user.getSurname())
-                .email(user.getEmail())
-                .build();
+        BasicUserCommand userCommand = new BasicUserCommand();
+        userCommand.setId(user.getId());
+        userCommand.setName(user.getName());
+        userCommand.setSurname(user.getSurname());
+        userCommand.setEmail(user.getEmail());
+        return userCommand;
     }
 
 }

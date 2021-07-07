@@ -8,7 +8,6 @@ import java.util.HashSet;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class BasicUserCommand {
 
     private Long id;
