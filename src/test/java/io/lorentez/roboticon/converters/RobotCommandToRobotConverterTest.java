@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RobotCommandToRobotConverterTest {
 
@@ -31,7 +30,7 @@ class RobotCommandToRobotConverterTest {
         Robot robot = converter.convert(null);
 
         //then
-        assertNotNull(robot);
+        assertNull(robot);
     }
 
     @Test

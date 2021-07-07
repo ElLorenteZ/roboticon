@@ -8,7 +8,8 @@ import org.springframework.test.annotation.Rollback;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 public class TeamControllerTestIT extends BaseIT{
@@ -19,6 +20,8 @@ public class TeamControllerTestIT extends BaseIT{
     private static final String TEAM1_ADMIN_EMAIL = "antoni.spawacz@test.pl"; //User ID: 45
     private static final String TEAM1_MEMBER_EMAIL = "krystian.barka@test.pl"; //User ID: 43
     private static final String TEAM1_OWNER_EMAIL = "janusz.iksinski@test.pl"; //User ID: 1
+    public static final String TEAM1_INVITED_EMAIL = "karol.zurawski@test.pl";
+    public static final String TEAM1_NOT_IN_TEAM_EMAIL = "klaudia.fasada@test.pl";
 
     @Test
     void findTeamsOfAnonymousUser() throws Exception {
@@ -43,7 +46,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void testInviteUserNotInTeam() throws Exception {
-        String token = getToken("klaudia.fasada@test.pl","testtest");
+        String token = getToken(TEAM1_NOT_IN_TEAM_EMAIL,"testtest");
         mockMvc.perform(post("/api/v1/teams/1/invite")
                 .param(EMAIL_PARAM_NAME, NEW_EMAIL)
                 .header(AUTHORIZATION_HEADER, token))
@@ -74,7 +77,7 @@ public class TeamControllerTestIT extends BaseIT{
     void testOwnerInTeam() throws Exception {
         String token = getToken("janusz.iksinski@test.pl", "testtest");
         mockMvc.perform(post("/api/v1/teams/1/invite")
-                .param(EMAIL_PARAM_NAME, "klaudia.fasada@test.pl")
+                .param(EMAIL_PARAM_NAME, TEAM1_NOT_IN_TEAM_EMAIL)
                 .header(AUTHORIZATION_HEADER, token))
                 .andExpect(status().isNoContent());
     }
@@ -174,8 +177,8 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void testChangeStatusMemberAcceptInvitation() throws Exception {
-        String token = getToken("karol.zurawski@test.pl", "testtest");
-        String payload = "{ \"email\" : \"" + "karol.zurawski@test.pl" + "\", \"status\" : \"MEMBER\" }";
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
+        String payload = "{ \"email\" : \"" + TEAM1_INVITED_EMAIL + "\", \"status\" : \"MEMBER\" }";
         mockMvc.perform(post("/api/v1/teams/1/status")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -186,7 +189,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void testChangeStatusMemberAcceptInvitationAdmin() throws Exception {
-        String token = getToken("karol.zurawski@test.pl", "testtest");
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
         String payload = "{ \"email\" : \"" + TEAM1_MEMBER_EMAIL + "\", \"status\" : \"ADMIN\" }";
         mockMvc.perform(post("/api/v1/teams/1/status")
                 .header(AUTHORIZATION_HEADER, token)
@@ -198,7 +201,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void testChangeStatusMemberAcceptInvitationOwner() throws Exception {
-        String token = getToken("karol.zurawski@test.pl", "testtest");
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
         String payload = "{ \"email\" : \"" + TEAM1_MEMBER_EMAIL + "\", \"status\" : \"Owner\" }";
         mockMvc.perform(post("/api/v1/teams/1/status")
                 .header(AUTHORIZATION_HEADER, token)
@@ -207,4 +210,70 @@ public class TeamControllerTestIT extends BaseIT{
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testTeamDetailsViewUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/teams/1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testTeamDetailsViewGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testTeamDetailsViewTeamOwner() throws Exception {
+        String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testTeamDetailsViewTeamMember() throws Exception {
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testTeamDetailsViewTeamAdmin() throws Exception {
+        String token = getToken(TEAM1_ADMIN_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testTeamDetailsViewTeamInvited() throws Exception {
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testTeamDetailsViewNotInTeam() throws Exception {
+        String token = getToken(TEAM1_NOT_IN_TEAM_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
 }

@@ -1,7 +1,9 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
+import io.lorentez.roboticon.commands.TeamCommand;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
+import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
@@ -15,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,9 @@ class TeamServiceImplTest {
 
     public static final Long TEAM_ID = 8L;
     public static final String TEAM_NAME = "Test team name";
+
+    @Mock
+    TeamToTeamCommandConverter teamConverter;
 
     @Mock
     UserTeamRepository userTeamRepository;
@@ -148,5 +152,40 @@ class TeamServiceImplTest {
         verify(teamRepository).findActualMembersByTeamId(anyLong(), anyString());
         verifyNoMoreInteractions(teamRepository);
         verifyNoInteractions(userTeamRepository);
+    }
+
+    @Test
+    void testFindCommandByIdEmpty() {
+        //given
+        given(teamRepository.fetchSingleTeamInformation(any())).willReturn(Optional.empty());
+
+        //when
+        TeamCommand teamCommand = teamService.findCommandById(1L);
+
+        //then
+        assertNull(teamCommand);
+        verify(teamRepository).fetchSingleTeamInformation(any());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamConverter);
+    }
+
+    @Test
+    void testFindCommandByIdFound() {
+        //given
+        given(teamRepository.fetchSingleTeamInformation(any()))
+                .willReturn(Optional.of(Team.builder().id(150L).build()));
+        TeamCommand teamCommand = new TeamCommand();
+        teamCommand.setId(150L);
+        given(teamConverter.convert(any())).willReturn(teamCommand);
+
+        //when
+        TeamCommand returnedCommand = teamService.findCommandById(150L);
+
+        //then
+        assertNotNull(returnedCommand);
+        verify(teamRepository).fetchSingleTeamInformation(any());
+        verify(teamConverter).convert(any());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoMoreInteractions(teamConverter);
     }
 }

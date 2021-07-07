@@ -2,6 +2,7 @@ package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.commands.StatusCredentials;
+import io.lorentez.roboticon.commands.TeamCommand;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.services.TeamService;
@@ -47,6 +48,17 @@ public class TeamController {
         teamService.changeUserStatus(teamId, credentials.getEmail(), UserTeamStatus.valueOf(credentials.getStatus()
                 .toUpperCase(Locale.ROOT)));
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority('admin.team.view') OR " +
+            "hasAuthority('user.team.view') AND @teamsAuthenticationManager.isUserInTeam(authentication, #teamId)")
+    @GetMapping("{teamId}")
+    public ResponseEntity<?> getTeamById(@PathVariable Long teamId){
+        TeamCommand teamCommand = teamService.findCommandById(teamId);
+        if (teamCommand == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(teamCommand);
     }
 
 }

@@ -1,7 +1,9 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
+import io.lorentez.roboticon.commands.TeamCommand;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
+import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
@@ -12,7 +14,6 @@ import io.lorentez.roboticon.repositories.TeamRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import io.lorentez.roboticon.repositories.UserTeamRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class TeamServiceImpl implements TeamService{
 
+    private final TeamToTeamCommandConverter teamConverter;
     private final RoleRepository roleRepository;
     private final UserTeamRepository userTeamRepository;
     private final UserRepository userRepository;
@@ -99,4 +101,9 @@ public class TeamServiceImpl implements TeamService{
         });
     }
 
+    @Override
+    public TeamCommand findCommandById(Long id) {
+        Optional<Team> teamOptional = teamRepository.fetchSingleTeamInformation(id);
+        return teamOptional.map(teamConverter::convert).orElse(null);
+    }
 }

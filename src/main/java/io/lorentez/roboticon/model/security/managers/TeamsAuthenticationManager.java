@@ -21,6 +21,9 @@ public class TeamsAuthenticationManager {
 
     public boolean userCanInvite(Authentication authentication, Long teamId){
         String email = (String) authentication.getPrincipal();
+        if (email == null){
+            email = "";
+        }
         log.info("User: " + email + " attempted to invite user to team with id: " + teamId.toString());
         Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
         return userTeamOptional.map(userTeam -> userTeam.getStatus().equals(UserTeamStatus.ADMIN)
@@ -33,6 +36,9 @@ public class TeamsAuthenticationManager {
                                        StatusCredentials credentials){
         UserTeamStatus status = UserTeamStatus.valueOf(credentials.getStatus().toUpperCase(Locale.ROOT));
         String email = (String) authentication.getPrincipal();
+        if (email == null){
+            email = "";
+        }
         log.info("User: " + email + " attempted to change status of user: " + credentials.getEmail() + " in team with ID: " + teamId.toString());
         Optional<UserTeam> requesterUserTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
         if (requesterUserTeamOptional.isPresent()){
@@ -61,5 +67,16 @@ public class TeamsAuthenticationManager {
             }
         }
         return false;
+    }
+
+    public boolean isUserInTeam(Authentication authentication, Long teamId){
+        String email = (String) authentication.getPrincipal();
+        if (email == null){
+            email = "";
+        }
+        log.info("User: " + email + " attempted to get information of team: " + teamId.toString());
+        Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
+        return userTeamOptional.filter(userTeam -> !userTeam.getStatus().equals(UserTeamStatus.INVITED)
+                && !userTeam.getStatus().equals(UserTeamStatus.REQUEST_JOIN)).isPresent();
     }
 }

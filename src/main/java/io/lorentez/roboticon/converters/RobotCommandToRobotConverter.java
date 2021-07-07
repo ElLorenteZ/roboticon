@@ -14,6 +14,13 @@ public class RobotCommandToRobotConverter implements Converter<RobotCommand, Rob
     @Nullable
     @Override
     public Robot convert(RobotCommand robotCommand) {
-        return null;
+        if (robotCommand == null){
+            return null;
+        }
+        return Robot.builder()
+                .id(robotCommand.getId())
+                .name(robotCommand.getName())
+                .timeAdded(robotCommand.getTimeAdded())
+                .build();
     }
 }

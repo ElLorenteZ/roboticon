@@ -5,7 +5,6 @@ import io.lorentez.roboticon.model.University;
 import io.lorentez.roboticon.model.UserTeam;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,4 +29,7 @@ public interface TeamRepository extends CrudRepository<Team, Long> {
 
     @Query(value = "SELECT DISTINCT ut FROM UserTeam ut LEFT JOIN FETCH ut.user u LEFT JOIN FETCH ut.team t WHERE t.id = :teamId AND u.email = :email AND ut.timeRemoved IS NULL ")
     Optional<UserTeam> findActualMembersByTeamId(Long teamId, String email);
+
+    @Query(value = "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.university LEFT JOIN FETCH t.userTeams ut LEFT JOIN FETCH t.robotTeams rt WHERE t.id = :id")
+    Optional<Team> fetchSingleTeamInformation(Long id);
 }

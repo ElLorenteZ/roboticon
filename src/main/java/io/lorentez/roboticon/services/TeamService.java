@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
+import io.lorentez.roboticon.commands.TeamCommand;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeamStatus;
 
@@ -14,6 +15,8 @@ public interface TeamService {
     void invitePersonToTeamByEmail(Team team, String email);
 
     Team findById(Long teamId);
+
+    TeamCommand findCommandById(Long id);
 
     void changeUserStatus(Long teamId, String email, UserTeamStatus status);
 }
