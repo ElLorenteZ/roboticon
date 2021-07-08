@@ -2,6 +2,7 @@ package io.lorentez.roboticon.converters;
 
 import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.model.Robot;
+import io.lorentez.roboticon.model.RobotTeamStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

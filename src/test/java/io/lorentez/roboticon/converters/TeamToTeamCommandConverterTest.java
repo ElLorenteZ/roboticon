@@ -30,7 +30,7 @@ class TeamToTeamCommandConverterTest {
     UserTeamToUserInTeamCommandConverter userConverter;
 
     @Mock
-    RobotToRobotCommandConverter robotConverter;
+    RobotTeamToRobotCommandConverter robotConverter;
 
     @Mock
     UniversityToUniversityCommandConverter universityConverter;

@@ -20,6 +20,7 @@ CREATE TABLE RobotTeam(
                           id BIGSERIAL NOT NULL PRIMARY KEY,
                           team_id BIGINT NOT NULL,
                           robot_id BIGINT NOT NULL,
+                          status VARCHAR (50) NOT NULL,
                           time_added DATE NOT NULL,
                           time_removed DATE
 );

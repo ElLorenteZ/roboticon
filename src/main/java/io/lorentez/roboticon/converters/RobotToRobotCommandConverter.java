@@ -2,6 +2,7 @@ package io.lorentez.roboticon.converters;
 
 import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.model.Robot;
+import io.lorentez.roboticon.model.RobotTeam;
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
@@ -23,4 +24,5 @@ public class RobotToRobotCommandConverter implements Converter<Robot, RobotComma
                 .timeAdded(robot.getTimeAdded())
                 .build();
     }
+
 }

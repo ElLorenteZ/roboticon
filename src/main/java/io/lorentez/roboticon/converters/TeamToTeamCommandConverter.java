@@ -17,7 +17,7 @@ public class TeamToTeamCommandConverter implements Converter<Team, TeamCommand> 
 
     private final UserTeamToUserInTeamCommandConverter userConverter;
 
-    private final RobotToRobotCommandConverter robotConverter;
+    private final RobotTeamToRobotCommandConverter robotTeamToRobotCommandConverter;
 
     private final UniversityToUniversityCommandConverter universityConverter;
 
@@ -38,14 +38,14 @@ public class TeamToTeamCommandConverter implements Converter<Team, TeamCommand> 
                 .filter(robotTeam -> robotTeam.getTimeRemoved() == null ||
                         (robotTeam.getTimeAdded().isBefore(LocalDateTime.now())
                                 && robotTeam.getTimeRemoved().isAfter(LocalDateTime.now())))
-                .map(robotTeam -> robotConverter.convert(robotTeam.getRobot()))
+                .map(robotTeamToRobotCommandConverter::convert)
                 .collect(Collectors.toList()));
         command.setUsers(team.getUserTeams()
                 .stream()
                 .filter(userTeam -> userTeam.getTimeRemoved() == null ||
                         (userTeam.getTimeAdded().isBefore(LocalDateTime.now())
                                 && userTeam.getTimeRemoved().isAfter(LocalDateTime.now())))
-                .map(userTeam -> userConverter.convert(userTeam))
+                .map(userConverter::convert)
                 .collect(Collectors.toList()));
         return command;
     }

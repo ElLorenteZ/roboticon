@@ -28,6 +28,11 @@ public class RobotTeam {
 
     private LocalDateTime timeRemoved;
 
+    @Builder.Default
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private RobotTeamStatus status = RobotTeamStatus.OWNED;
+
     @ManyToOne
     @JoinColumn(name = "robot_id", nullable = false)
     private Robot robot;
