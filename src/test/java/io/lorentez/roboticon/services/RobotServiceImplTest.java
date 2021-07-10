@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -17,8 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RobotServiceImplTest {
@@ -98,5 +98,24 @@ class RobotServiceImplTest {
         assertNotNull(existingRobot);
         assertEquals(ROBOT_ID, existingRobot.getId());
         assertEquals(ROBOT_NAME, existingRobot.getName());
+    }
+
+    @Test
+    void testListAll() {
+        //given
+        given(robotRepository.findAll()).willReturn(
+                List.of(Robot.builder().id(1L).build(),
+                        Robot.builder().id(2L).build())
+        );
+
+        //when
+        List<RobotCommand> commandList = service.list();
+
+        //then
+        assertNotNull(commandList);
+        verify(robotRepository).findAll();
+        verify(robotToCommandConverter, times(2)).convert(any());
+        verifyNoMoreInteractions(robotRepository);
+        verifyNoMoreInteractions(robotToCommandConverter);
     }
 }

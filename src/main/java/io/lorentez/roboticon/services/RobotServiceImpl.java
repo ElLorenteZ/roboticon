@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -33,5 +36,13 @@ public class RobotServiceImpl implements RobotService{
             throw new IllegalArgumentException("Updated robot name cannot be blank!");
         }
         existingRobot.setName(command.getName());
+    }
+
+    @Override
+    public List<RobotCommand> list() {
+        return robotRepository.findAll()
+                .stream()
+                .map(robotToCommandConverter::convert)
+                .collect(Collectors.toList());
     }
 }

@@ -94,6 +94,10 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.robot.edit")
                 .description("Permission to change details of any robot.")
                 .build();
+        Authority adminListRobotsAuthority = Authority.builder()
+                .permission("admin.robot.list")
+                .description("Permission to list all robots.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -120,7 +124,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .description("Permission to change details of robot in team if user has Admin or Owner status.")
                 .build();
 
-        createTournamentAuthority = authorityRepository.save(createTeamAuthority);
+        createTournamentAuthority = authorityRepository.save(createTournamentAuthority);
         updateTournamentAuthority = authorityRepository.save(updateTournamentAuthority);
         createTeamAuthority = authorityRepository.save(createTeamAuthority);
         adminUpdateTeamAuthority = authorityRepository.save(adminUpdateTeamAuthority);
@@ -129,6 +133,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminChangeUserStatusAuthority = authorityRepository.save(adminChangeUserStatusAuthority);
         adminViewTeamAuthority = authorityRepository.save(adminViewTeamAuthority);
         adminChangeRobotDetailsAuthority = authorityRepository.save(adminChangeRobotDetailsAuthority);
+        adminListRobotsAuthority = authorityRepository.save(adminListRobotsAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -150,6 +155,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminChangeUserStatusAuthority);
         adminRole.grantAuthority(adminViewTeamAuthority);
         adminRole.grantAuthority(adminChangeRobotDetailsAuthority);
+        adminRole.grantAuthority(adminListRobotsAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -31,6 +32,12 @@ public class RobotController {
         catch (NoSuchElementException e){
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PreAuthorize("hasAuthority('admin.robot.list')")
+    @GetMapping
+    public List<RobotCommand> list(){
+        return robotService.list();
     }
 
 }

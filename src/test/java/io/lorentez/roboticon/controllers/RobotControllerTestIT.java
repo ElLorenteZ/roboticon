@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -94,4 +95,43 @@ public class RobotControllerTestIT extends BaseIT {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testChangeRobotNameNotInTeam() throws Exception {
+        String token = getToken(TEAM1_NOT_IN_TEAM_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/robots/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ROBOT_UPDATE_NAME_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testListRobotsUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/robots")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testListRobotsGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(get("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+
+    @Test
+    void testListRobotsUserRole() throws Exception {
+        String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
 }
