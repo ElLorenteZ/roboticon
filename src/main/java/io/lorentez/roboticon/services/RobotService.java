@@ -10,4 +10,7 @@ public interface RobotService {
 
     List<RobotCommand> list();
 
+    void transferToTeam(Long robotId, Long teamId);
+
+    void transferAcceptRobot(Long robotId);
 }

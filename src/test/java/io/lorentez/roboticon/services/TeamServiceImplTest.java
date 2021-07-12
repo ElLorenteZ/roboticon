@@ -188,4 +188,22 @@ class TeamServiceImplTest {
         verifyNoMoreInteractions(teamRepository);
         verifyNoMoreInteractions(teamConverter);
     }
+
+    void testExistByTeamIdFound() {
+        given(teamRepository.findById(any()))
+                .willReturn(Optional.of(Team.builder().id(10L).build()));
+
+        boolean exists = teamService.existByTeamId(10L);
+
+        assertTrue(exists);
+    }
+
+    void testExistByTeamIdNotFound() {
+        given(teamRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        boolean exists = teamService.existByTeamId(10L);
+
+        assertFalse(exists);
+    }
 }

@@ -1,2 +1,14 @@
-package io.lorentez.roboticon.commands;public class RobotTransferCommand {
+package io.lorentez.roboticon.commands;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class RobotTransferCommand {
+    private Long teamId;
 }

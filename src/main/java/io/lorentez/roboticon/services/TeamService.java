@@ -19,4 +19,6 @@ public interface TeamService {
     TeamCommand findCommandById(Long id);
 
     void changeUserStatus(Long teamId, String email, UserTeamStatus status);
+
+    boolean existByTeamId(Long teamId);
 }

@@ -98,6 +98,14 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.robot.list")
                 .description("Permission to list all robots.")
                 .build();
+        Authority adminRobotTransferAuthority = Authority.builder()
+                .permission("admin.robot.transfer")
+                .description("Permission to request transfer of any robot.")
+                .build();
+        Authority adminRobotTransferAcceptAuthority = Authority.builder()
+                .permission("admin.robot.transfer.accept")
+                .description("Permission to request accept transfer of any robot.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -123,6 +131,14 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("user.robot.edit")
                 .description("Permission to change details of robot in team if user has Admin or Owner status.")
                 .build();
+        Authority userRobotTransferAuthority = Authority.builder()
+                .permission("user.robot.transfer")
+                .description("Permission to transfer robot is user has status OWNER in team.")
+                .build();
+        Authority userRobotTransferAcceptAuthority = Authority.builder()
+                .permission("user.robot.transfer.accept")
+                .description("Permission to accept transfer robot to user's team when he has OWNER status.")
+                .build();
 
         createTournamentAuthority = authorityRepository.save(createTournamentAuthority);
         updateTournamentAuthority = authorityRepository.save(updateTournamentAuthority);
@@ -134,6 +150,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminViewTeamAuthority = authorityRepository.save(adminViewTeamAuthority);
         adminChangeRobotDetailsAuthority = authorityRepository.save(adminChangeRobotDetailsAuthority);
         adminListRobotsAuthority = authorityRepository.save(adminListRobotsAuthority);
+        adminRobotTransferAuthority = authorityRepository.save(adminRobotTransferAuthority);
+        adminRobotTransferAcceptAuthority = authorityRepository.save(adminRobotTransferAcceptAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -141,6 +159,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userChangeUserStatusAuthority = authorityRepository.save(userChangeUserStatusAuthority);
         userViewTeamAuthority = authorityRepository.save(userViewTeamAuthority);
         userChangeRobotDetails = authorityRepository.save(userChangeRobotDetails);
+        userRobotTransferAuthority = authorityRepository.save(userRobotTransferAuthority);
+        userRobotTransferAcceptAuthority = authorityRepository.save(userRobotTransferAcceptAuthority);
 
         Role adminRole = Role.builder()
                 .name("ADMIN")
@@ -156,6 +176,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminViewTeamAuthority);
         adminRole.grantAuthority(adminChangeRobotDetailsAuthority);
         adminRole.grantAuthority(adminListRobotsAuthority);
+        adminRole.grantAuthority(adminRobotTransferAuthority);
+        adminRole.grantAuthority(adminRobotTransferAcceptAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()
@@ -168,6 +190,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userRole.grantAuthority(userChangeUserStatusAuthority);
         userRole.grantAuthority(userViewTeamAuthority);
         userRole.grantAuthority(userChangeRobotDetails);
+        userRole.grantAuthority(userRobotTransferAuthority);
+        userRole.grantAuthority(userRobotTransferAcceptAuthority);
         userRole = roleRepository.save(userRole);
 
         User user1 = User.builder()
@@ -1008,8 +1032,43 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .build();
 
         if (nephthysTeamOptional.isPresent()){
+
             Team nephthysTeam = nephthysTeamOptional.get();
-            addMockRobots(nephthysTeam, robot1, robot15, robot29);
+
+            robot1 = robotRepository.save(robot1);
+            RobotTeam robotTeam1 = RobotTeam.builder()
+                    .robot(robot1)
+                    .team(nephthysTeam)
+                    .build();
+            nephthysTeam.getRobotTeams().add(robotTeam1);
+
+
+            robot15 = robotRepository.save(robot15);
+            RobotTeam robotTeam15 = RobotTeam.builder()
+                    .robot(robot15)
+                    .team(nephthysTeam)
+                    .build();
+            nephthysTeam.getRobotTeams().add(robotTeam15);
+
+
+            robot29 = robotRepository.save(robot29);
+            RobotTeam robotTeam29 = RobotTeam.builder()
+                    .robot(robot29)
+                    .team(nephthysTeam)
+                    .build();
+
+            nephthysTeam.getRobotTeams().add(robotTeam29);
+
+            robot5 = robotRepository.save(robot5);
+            RobotTeam robotTeam5pending = RobotTeam.builder()
+                    .robot(robot5)
+                    .team(nephthysTeam)
+                    .status(RobotTeamStatus.PENDING)
+                    .build();
+            nephthysTeam.getRobotTeams().add(robotTeam5pending);
+
+            nephthysTeam = teamRepository.save(nephthysTeam);
+
         }
         else{
             log.warn("Couldn\'t find \'Nephthys\' team in database..");
@@ -1041,7 +1100,16 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
         if(trailblazerTeamOptional.isPresent()){
             Team trailblazerTeam = trailblazerTeamOptional.get();
-            addMockRobots(trailblazerTeam, robot5, robot19, robot33);
+            addMockRobots(trailblazerTeam, robot19, robot33);
+
+            robot5 = robotRepository.save(robot5);
+            RobotTeam robotTeam5sent = RobotTeam.builder()
+                    .robot(robot5)
+                    .team(trailblazerTeam)
+                    .status(RobotTeamStatus.SENT)
+                    .build();
+            trailblazerTeam.getRobotTeams().add(robotTeam5sent);
+            trailblazerTeam = teamRepository.save(trailblazerTeam);
         }
         else{
             log.warn("Couldn't find \'Trailblazer\' team in database..");

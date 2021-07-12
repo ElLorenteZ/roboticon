@@ -106,4 +106,9 @@ public class TeamServiceImpl implements TeamService{
         Optional<Team> teamOptional = teamRepository.fetchSingleTeamInformation(id);
         return teamOptional.map(teamConverter::convert).orElse(null);
     }
+
+    @Override
+    public boolean existByTeamId(Long teamId) {
+        return teamRepository.existsById(teamId);
+    }
 }

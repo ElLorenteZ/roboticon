@@ -3,13 +3,20 @@ package io.lorentez.roboticon.services;
 import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.converters.RobotToRobotCommandConverter;
 import io.lorentez.roboticon.model.Robot;
+import io.lorentez.roboticon.model.RobotTeam;
+import io.lorentez.roboticon.model.RobotTeamStatus;
+import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.repositories.RobotRepository;
+import io.lorentez.roboticon.repositories.RobotTeamRepository;
+import io.lorentez.roboticon.repositories.TeamRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -27,7 +34,13 @@ class RobotServiceImplTest {
     RobotToRobotCommandConverter robotToCommandConverter;
 
     @Mock
+    TeamRepository teamRepository;
+
+    @Mock
     RobotRepository robotRepository;
+
+    @Mock
+    RobotTeamRepository robotTeamRepository;
 
     @InjectMocks
     RobotServiceImpl service;
@@ -117,5 +130,105 @@ class RobotServiceImplTest {
         verify(robotToCommandConverter, times(2)).convert(any());
         verifyNoMoreInteractions(robotRepository);
         verifyNoMoreInteractions(robotToCommandConverter);
+    }
+
+    @Test
+    void testTransferToTeam() {
+        //given
+        given(robotRepository.getRobotByActualStatus(anyLong(), any()))
+                .willReturn(Optional.of(
+                        RobotTeam.builder()
+                                .id(11L)
+                                .robot(Robot.builder().id(100L).build())
+                                .team(Team.builder().id(11L).build())
+                                .status(RobotTeamStatus.OWNED)
+                                .build()));
+        given(teamRepository.findById(any())).willReturn(Optional.of(Team.builder().build()));
+
+        //when
+        service.transferToTeam(100L, 10L);
+
+        //then
+        verify(robotRepository).getRobotByActualStatus(any(), any());
+        verify(robotTeamRepository, times(1)).save(any());
+        verify(robotTeamRepository, times(1)).saveAll(any());
+        verify(teamRepository).findById(anyLong());
+        verifyNoMoreInteractions(robotRepository);
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(robotToCommandConverter);
+    }
+
+    @Test
+    void testTransferToSameTeam() {
+        //given
+        given(robotRepository.getRobotByActualStatus(anyLong(), any()))
+                .willReturn(Optional.of(
+                        RobotTeam.builder()
+                                .id(11L)
+                                .robot(Robot.builder().id(100L).build())
+                                .team(Team.builder().id(10L).build())
+                                .status(RobotTeamStatus.OWNED)
+                                .build()));
+
+        //when
+        service.transferToTeam(100L, 10L);
+
+        //then
+        verify(robotRepository).getRobotByActualStatus(any(), any());
+        verifyNoMoreInteractions(robotRepository);
+        verifyNoInteractions(teamRepository);
+        verifyNoInteractions(robotToCommandConverter);
+        verifyNoInteractions(robotTeamRepository);
+    }
+
+    @Test
+    void testTransferAcceptRequested() {
+        LocalDateTime timestamp = LocalDateTime.now().minusDays(1);
+        given(robotRepository.getRobotActualStatuses(anyLong()))
+                .willReturn(List.of(
+                        RobotTeam.builder()
+                                .robot(Robot.builder().id(15L).build())
+                                .team(Team.builder().id(20L).build())
+                                .timeAdded(timestamp)
+                                .status(RobotTeamStatus.SENT)
+                                .build(),
+                        RobotTeam.builder()
+                                .robot(Robot.builder().id(15L).build())
+                                .team(Team.builder().id(21L).build())
+                                .timeAdded(timestamp)
+                                .status(RobotTeamStatus.PENDING)
+                                .build()
+                ));
+
+        service.transferAcceptRobot(10L);
+
+        verify(robotRepository).getRobotActualStatuses(10L);
+        verify(robotTeamRepository).save(any());
+        verify(robotTeamRepository).saveAll(any());
+        verifyNoMoreInteractions(robotRepository);
+        verifyNoMoreInteractions(robotTeamRepository);
+        verifyNoInteractions(teamRepository);
+    }
+
+    @Test
+    void testTransferAcceptNotRequested() {
+        given(robotRepository.getRobotActualStatuses(anyLong()))
+                .willReturn(List.of(
+                        RobotTeam.builder()
+                                .robot(Robot.builder().id(15L).build())
+                                .team(Team.builder().id(20L).build())
+                                .timeAdded(LocalDateTime.now().minusDays(1))
+                                .status(RobotTeamStatus.OWNED)
+                                .build()
+                ));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            service.transferAcceptRobot(10L);
+        });
+
+        verify(robotRepository).getRobotActualStatuses(10L);
+        verifyNoMoreInteractions(robotRepository);
+        verifyNoInteractions(robotTeamRepository);
+        verifyNoInteractions(teamRepository);
     }
 }
