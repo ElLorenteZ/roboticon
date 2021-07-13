@@ -7,18 +7,17 @@ import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
+import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.Role;
 import io.lorentez.roboticon.model.security.User;
-import io.lorentez.roboticon.repositories.RoleRepository;
-import io.lorentez.roboticon.repositories.TeamRepository;
-import io.lorentez.roboticon.repositories.UserRepository;
-import io.lorentez.roboticon.repositories.UserTeamRepository;
+import io.lorentez.roboticon.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,6 +30,7 @@ public class TeamServiceImpl implements TeamService{
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final TeamToCurrentTeamUserCommandConverter converter;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public List<CurrentTeamUserCommand> fetchCurrentUserTeams(String email) {
@@ -74,6 +74,9 @@ public class TeamServiceImpl implements TeamService{
                     .timeAdded(LocalDateTime.now())
                     .status(UserTeamStatus.INVITED)
                     .build());
+            String token = UUID.randomUUID().toString();
+            PasswordResetToken passwordResetToken = new PasswordResetToken(token, user);
+            passwordResetTokenRepository.save(passwordResetToken);
         }
     }
 

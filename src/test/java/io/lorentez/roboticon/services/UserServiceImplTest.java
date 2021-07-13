@@ -1,17 +1,21 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.PasswordResetTokenRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,8 +35,14 @@ class UserServiceImplTest {
 
     public static final String SAMPLE_TOKEN = "Test token";
 
+    @Captor
+    ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
     @InjectMocks
     UserServiceImpl service;
+
+    @Mock
+    UserToBasicUserCommandConverter converter;
 
     @Mock
     UserRepository userRepository;
@@ -136,6 +146,60 @@ class UserServiceImplTest {
         verify(passwordResetTokenRepository, times(1)).delete(any());
         verifyNoMoreInteractions(passwordResetTokenRepository);
         verifyNoInteractions(userRepository);
+    }
 
+    @Test
+    void testUserDetailsUpdate() {
+        given(userRepository.findById(anyLong()))
+                .willReturn(Optional.of(User.builder()
+                    .id(USER_ID)
+                    .email("Old email")
+                    .name("Old name")
+                    .surname("Old surname")
+                    .build()));
+        BasicUserCommand returnedUserCommand = new BasicUserCommand(USER_ID,
+                USER_NAME,
+                USER_SURNAME,
+                USER_EMAIL);
+        given(converter.convert(any())).willReturn(returnedUserCommand);
+
+        BasicUserCommand updatedUser = service.changeUserDetails(USER_ID, returnedUserCommand);
+
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
+        assertEquals(USER_ID, savedUser.getId());
+        assertEquals(USER_NAME, savedUser.getName());
+        assertEquals(USER_SURNAME, savedUser.getSurname());
+        assertEquals(USER_EMAIL, savedUser.getEmail());
+        verify(userRepository).findById(anyLong());
+        verify(converter).convert(any());
+    }
+
+    @Test
+    void changeUsersPasswordSuccess() throws IllegalAccessException {
+        given(passwordEncoder.matches(any(), any())).willReturn(Boolean.TRUE);
+
+        service.changeUserPassword(User.builder().build(),
+                Map.of("currentPassword", "testtest", "newPassword", "testtest2"));
+
+        verify(userRepository).save(any());
+        verifyNoMoreInteractions(userRepository);
+        verify(passwordEncoder).matches(any(), any());
+        verify(passwordEncoder).encode(any());
+        verifyNoMoreInteractions(passwordEncoder);
+    }
+
+    @Test
+    void changeUsersPasswordFailure() {
+        given(passwordEncoder.matches(any(), any())).willReturn(Boolean.FALSE);
+
+        assertThrows(IllegalAccessException.class, () -> {
+            service.changeUserPassword(User.builder().build(),
+                    Map.of("currentPassword", "testtest", "newPassword", "testtest2"));
+        });
+
+        verify(passwordEncoder).matches(any(), any());
+        verifyNoMoreInteractions(passwordEncoder);
+        verifyNoInteractions(userRepository);
     }
 }

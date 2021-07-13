@@ -7,8 +7,11 @@ import io.lorentez.roboticon.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -53,4 +56,18 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+
+    @PreAuthorize("hasAuthority('user.user.password.change')")
+    @PostMapping("changePassword")
+    public ResponseEntity<?> changeUsersPassword(@RequestBody Map<String, String> credentials,
+                                                 @AuthenticationPrincipal String email){
+        User currentUser = userService.findByEmail(email);
+        try {
+            userService.changeUserPassword(currentUser, credentials);
+            return ResponseEntity.noContent().build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

@@ -1,16 +1,18 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.PasswordResetTokenRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
-import io.lorentez.roboticon.security.RoboticonPasswordEncoderFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 // Used to provide information about Users
@@ -21,6 +23,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final PasswordEncoder passwordEncoder;
+    private final UserToBasicUserCommandConverter converter;
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder encoder;
@@ -60,5 +64,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeToken(PasswordResetToken token) {
         passwordResetTokenRepository.delete(token);
+    }
+
+    @Override
+    public BasicUserCommand changeUserDetails(Long userId, BasicUserCommand newUserData) {
+        log.info("Attempt of update data of user with id: " + userId.toString());
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()){
+            User updatedUser = userOptional.get();
+            updatedUser.setName(newUserData.getName());
+            updatedUser.setSurname(newUserData.getSurname());
+            updatedUser.setEmail(newUserData.getEmail());
+            updatedUser = userRepository.save(updatedUser);
+            return converter.convert(updatedUser);
+        }
+        else {
+            log.warn("User with id: " + userId.toString() + " was not found!");
+            throw new NoSuchElementException("User with id: " + userId.toString() + " was not found!");
+        }
+    }
+
+    @Override
+    public void changeUserPassword(User user, Map<String, String> credentials) throws IllegalAccessException {
+        if (passwordEncoder.matches(credentials.get("currentPassword"), user.getPassword())){
+            user.setPassword(passwordEncoder.encode(credentials.get("newPassword")));
+            userRepository.save(user);
+        }
+        else {
+            log.info("Attempt of update password user: " + user.getEmail() + " with wrong password!");
+            throw new IllegalAccessException("Current password is not correct!");
+        }
     }
 }

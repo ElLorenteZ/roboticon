@@ -1,18 +1,27 @@
 package io.lorentez.roboticon.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 class AuthControllerTestIT extends BaseIT{
+
+    private static final String EMAIL_USER_ID1 = "janusz.iksinski@test.pl";
+    private static final String EMAIL_USER_ID3 = "tomasz.chomik@test.pl";
+
 
     @Autowired
     UserRepository userRepository;
@@ -35,4 +44,36 @@ class AuthControllerTestIT extends BaseIT{
                 .with(anonymous()))
                 .andExpect(status().isNoContent());
     }
+
+
+    @Test
+    void testChangePasswordUnauthorized() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("currentPassword", "testtest");
+        credentials.put("newPassword", "sedessedes");
+
+        mockMvc.perform(post("/api/v1/auth/changePassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(credentials)))
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testChangePasswordUser1() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String token = getToken(EMAIL_USER_ID1, "testtest");
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("currentPassword", "testtest");
+        credentials.put("newPassword", "sedessedes");
+
+        mockMvc.perform(post("/api/v1/auth/changePassword")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(credentials)))
+                .andExpect(status().isNoContent());
+    }
+
 }
