@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,10 @@ class AuthControllerTestIT extends BaseIT{
     private static final String EMAIL_USER_ID1 = "janusz.iksinski@test.pl";
     private static final String EMAIL_USER_ID3 = "tomasz.chomik@test.pl";
 
+    private static final String REGISTER_USER_NAME = "Johny";
+    private static final String REGISTER_USER_SURNAME = "Montana";
+    private static final String REGISTER_USER_EMAIL = "newuser@test.eu";
+    private static final String REGISTER_USER_PASSWORD = "john1234";
 
     @Autowired
     UserRepository userRepository;
@@ -76,4 +81,19 @@ class AuthControllerTestIT extends BaseIT{
                 .andExpect(status().isNoContent());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testRegisterUser() throws Exception {
+        UserRegisterCommand command = new UserRegisterCommand();
+        command.setName(REGISTER_USER_NAME);
+        command.setSurname(REGISTER_USER_SURNAME);
+        command.setEmail(REGISTER_USER_EMAIL);
+        command.setPassword(REGISTER_USER_PASSWORD);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/api/v1/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(command)))
+                .andExpect(status().isNoContent());
+    }
 }

@@ -1,10 +1,13 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
+import io.lorentez.roboticon.model.security.Role;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.PasswordResetTokenRepository;
+import io.lorentez.roboticon.repositories.RoleRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserToBasicUserCommandConverter converter;
     private final UserRepository userRepository;
@@ -93,6 +97,25 @@ public class UserServiceImpl implements UserService {
         else {
             log.info("Attempt of update password user: " + user.getEmail() + " with wrong password!");
             throw new IllegalAccessException("Current password is not correct!");
+        }
+    }
+
+    @Override
+    public void registerUser(UserRegisterCommand command) {
+        if(!userRepository.existsByEmail(command.getEmail())){
+            User user = User.builder()
+                    .name(command.getName())
+                    .surname(command.getSurname())
+                    .email(command.getEmail())
+                    .password(passwordEncoder.encode(command.getPassword()))
+                    .build();
+            Role userRole = roleRepository.findByName("USER").orElseThrow();
+            user.grantRole(userRole);
+            user = userRepository.save(user);
+        }
+        else{
+            log.info("Attempt of creating user with email which is currently in database: " + command.getEmail());
+            throw new IllegalArgumentException();
         }
     }
 }

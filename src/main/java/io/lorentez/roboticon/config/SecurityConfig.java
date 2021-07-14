@@ -1,9 +1,7 @@
 package io.lorentez.roboticon.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.lorentez.roboticon.repositories.UserRepository;
 import io.lorentez.roboticon.security.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +15,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -67,7 +61,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/api/v1/auth/**").permitAll()
+                .antMatchers("/api/v1/auth/resetPassword",
+                        "/api/v1/auth/setPassword",
+                        "/api/v1/auth/login",
+                        "/api/v1/auth/register").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/api/v1/competitions/*").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/api/v1/tournaments", "/api/v1/tournaments/**").permitAll()
                 .anyRequest().authenticated()

@@ -8,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +77,13 @@ public class JsonObjectAuthenticationFilter extends AbstractAuthenticationProces
                             loginCredentials.getPassword());
             token.setDetails(this.authenticationDetailsSource.buildDetails(httpServletRequest));
             log.info("Attempt of authentication with user: " + loginCredentials.getEmail());
-            return getAuthenticationManager().authenticate(token);
+            try{
+                return getAuthenticationManager().authenticate(token);
+            }
+            catch (AuthenticationException e){
+                log.info("Unable to authenticate user with email: " + loginCredentials.getEmail());
+                return null;
+            }
         }
         catch (IOException e) {
             return null;

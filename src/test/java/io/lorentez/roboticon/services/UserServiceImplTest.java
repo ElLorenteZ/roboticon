@@ -1,10 +1,13 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
+import io.lorentez.roboticon.model.security.Role;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.PasswordResetTokenRepository;
+import io.lorentez.roboticon.repositories.RoleRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,6 +36,7 @@ class UserServiceImplTest {
     public static final String USER_PASSWORD = "{noop}nomatter";
     public static final String USER_NAME = "John";
     public static final String USER_SURNAME = "Doe";
+    public static final String USER_RAW_PASSWORD = "nomatter";
 
     public static final String SAMPLE_TOKEN = "Test token";
 
@@ -40,6 +45,9 @@ class UserServiceImplTest {
 
     @InjectMocks
     UserServiceImpl service;
+
+    @Mock
+    RoleRepository roleRepository;
 
     @Mock
     UserToBasicUserCommandConverter converter;
@@ -201,5 +209,50 @@ class UserServiceImplTest {
         verify(passwordEncoder).matches(any(), any());
         verifyNoMoreInteractions(passwordEncoder);
         verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    void testRegisterUserExistingEmail() {
+        given(userRepository.existsByEmail(anyString())).willReturn(Boolean.TRUE);
+        UserRegisterCommand command = new UserRegisterCommand();
+        command.setName(USER_NAME);
+        command.setSurname(USER_SURNAME);
+        command.setEmail(USER_EMAIL);
+        command.setPassword(USER_RAW_PASSWORD);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.registerUser(command);
+        });
+
+        verify(userRepository).existsByEmail(anyString());
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void testRegisterUserNonExistingEmail() {
+        given(userRepository.existsByEmail(anyString())).willReturn(Boolean.FALSE);
+        given(roleRepository.findByName(anyString())).willReturn(Optional.of(Role.builder().name("USER").build()));
+        UserRegisterCommand command = new UserRegisterCommand();
+        command.setName(USER_NAME);
+        command.setSurname(USER_SURNAME);
+        command.setEmail(USER_EMAIL);
+        command.setPassword(USER_RAW_PASSWORD);
+
+        service.registerUser(command);
+
+        verify(userRepository).existsByEmail(any());
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
+        assertEquals(USER_NAME, savedUser.getName());
+        assertEquals(USER_SURNAME, savedUser.getSurname());
+        assertEquals(USER_EMAIL, savedUser.getEmail());
+        verify(passwordEncoder).encode(any());
+        assertThat(savedUser.getUserRoles()).isNotEmpty();
+        assertEquals("USER", savedUser.getUserRoles()
+                .stream()
+                .findFirst()
+                .map(userRole -> userRole.getRole().getName()).orElse(""));
+        verifyNoMoreInteractions(userRepository);
+        verifyNoInteractions(converter);
     }
 }

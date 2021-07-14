@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.controllers;
 
+import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.security.commands.LoginCredentials;
@@ -64,6 +65,17 @@ public class AuthController {
         User currentUser = userService.findByEmail(email);
         try {
             userService.changeUserPassword(currentUser, credentials);
+            return ResponseEntity.noContent().build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("register")
+    public ResponseEntity<?> registerUser(@RequestBody UserRegisterCommand command){
+        try {
+            userService.registerUser(command);
             return ResponseEntity.noContent().build();
         }
         catch (Exception e){
