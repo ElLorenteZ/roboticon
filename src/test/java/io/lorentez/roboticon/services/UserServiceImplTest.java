@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.commands.ChangePasswordCredentials;
 import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
@@ -188,7 +189,7 @@ class UserServiceImplTest {
         given(passwordEncoder.matches(any(), any())).willReturn(Boolean.TRUE);
 
         service.changeUserPassword(User.builder().build(),
-                Map.of("currentPassword", "testtest", "newPassword", "testtest2"));
+                ChangePasswordCredentials.builder().currentPassword("testtest").newPassword("testtest2").build());
 
         verify(userRepository).save(any());
         verifyNoMoreInteractions(userRepository);
@@ -203,7 +204,7 @@ class UserServiceImplTest {
 
         assertThrows(IllegalAccessException.class, () -> {
             service.changeUserPassword(User.builder().build(),
-                    Map.of("currentPassword", "testtest", "newPassword", "testtest2"));
+                    ChangePasswordCredentials.builder().currentPassword("testtest").newPassword("testtest2").build());
         });
 
         verify(passwordEncoder).matches(any(), any());

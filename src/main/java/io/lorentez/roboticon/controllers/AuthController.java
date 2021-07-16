@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.controllers;
 
+import io.lorentez.roboticon.commands.ChangePasswordCredentials;
 import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
@@ -60,11 +61,11 @@ public class AuthController {
 
     @PreAuthorize("hasAuthority('user.user.password.change')")
     @PostMapping("changePassword")
-    public ResponseEntity<?> changeUsersPassword(@RequestBody Map<String, String> credentials,
+    public ResponseEntity<?> changeUsersPassword(@RequestBody ChangePasswordCredentials passwordCredentials,
                                                  @AuthenticationPrincipal String email){
         User currentUser = userService.findByEmail(email);
         try {
-            userService.changeUserPassword(currentUser, credentials);
+            userService.changeUserPassword(currentUser, passwordCredentials);
             return ResponseEntity.noContent().build();
         }
         catch (Exception e){

@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.BasicUserCommand;
+import io.lorentez.roboticon.commands.ChangePasswordCredentials;
 import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.converters.UserToBasicUserCommandConverter;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
@@ -89,9 +90,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeUserPassword(User user, Map<String, String> credentials) throws IllegalAccessException {
-        if (passwordEncoder.matches(credentials.get("currentPassword"), user.getPassword())){
-            user.setPassword(passwordEncoder.encode(credentials.get("newPassword")));
+    public void changeUserPassword(User user, ChangePasswordCredentials passwordCredentials) throws IllegalAccessException {
+        if (passwordEncoder.matches(passwordCredentials.getCurrentPassword(), user.getPassword())){
+            user.setPassword(passwordEncoder.encode(passwordCredentials.getNewPassword()));
             userRepository.save(user);
         }
         else {
