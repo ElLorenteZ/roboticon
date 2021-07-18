@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.controllers;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.commands.StatusCredentials;
 import io.lorentez.roboticon.commands.TeamCommand;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @RestController
@@ -61,4 +63,17 @@ public class TeamController {
         return ResponseEntity.ok(teamCommand);
     }
 
+    @PreAuthorize("hasAuthority('admin.team.edit') OR " +
+            "hasAuthority('user.team.edit') AND @teamsAuthenticationManager.canUserUpdateTeamData(authentication, #teamId)")
+    @PutMapping("{teamId}")
+    public ResponseEntity<?> updateTeam(@PathVariable Long teamId,
+                                        @RequestBody BasicTeamCommand newTeamData){
+        try {
+            BasicTeamCommand teamCommand = teamService.update(teamId, newTeamData);
+            return ResponseEntity.ok(teamCommand);
+        }
+        catch (NoSuchElementException ex){
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

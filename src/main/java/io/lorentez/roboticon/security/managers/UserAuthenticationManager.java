@@ -1,4 +1,4 @@
-package io.lorentez.roboticon.model.security.managers;
+package io.lorentez.roboticon.security.managers;
 
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.UserRepository;

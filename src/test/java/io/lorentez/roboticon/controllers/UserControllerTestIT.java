@@ -1,6 +1,5 @@
 package io.lorentez.roboticon.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lorentez.roboticon.commands.BasicUserCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +31,6 @@ class UserControllerTestIT extends BaseIT{
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeUserDetailsGlobalAdmin() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         String token = getGlobalAdminToken();
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 
@@ -52,7 +50,6 @@ class UserControllerTestIT extends BaseIT{
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeDetailsUserSelf() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         String token = getToken(EMAIL_USER_ID1, "testtest");
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 
@@ -70,7 +67,6 @@ class UserControllerTestIT extends BaseIT{
 
     @Test
     void testChangeUserDetailsOtherUser() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         String token = getToken(EMAIL_USER_ID3, "testtest");
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 

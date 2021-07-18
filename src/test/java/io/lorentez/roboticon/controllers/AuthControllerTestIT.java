@@ -1,6 +1,5 @@
 package io.lorentez.roboticon.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,6 @@ class AuthControllerTestIT extends BaseIT{
 
     @Test
     void testChangePasswordUnauthorized() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> credentials = new HashMap<>();
         credentials.put("currentPassword", "testtest");
         credentials.put("newPassword", "sedessedes");
@@ -68,7 +66,6 @@ class AuthControllerTestIT extends BaseIT{
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangePasswordUser1() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
         String token = getToken(EMAIL_USER_ID1, "testtest");
         Map<String, String> credentials = new HashMap<>();
         credentials.put("currentPassword", "testtest");
@@ -89,7 +86,6 @@ class AuthControllerTestIT extends BaseIT{
         command.setSurname(REGISTER_USER_SURNAME);
         command.setEmail(REGISTER_USER_EMAIL);
         command.setPassword(REGISTER_USER_PASSWORD);
-        ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,21 +1,23 @@
 package io.lorentez.roboticon.controllers;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
+import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 public class TeamControllerTestIT extends BaseIT{
 
     public static final String EMAIL_PARAM_NAME = "email";
     public static final String NEW_EMAIL = "thisissomenewemail@test.pl";
+    public static final String TEAM_UPDATED_NAME = "Team updated name";
 
     private static final String TEAM1_ADMIN_EMAIL = "antoni.spawacz@test.pl"; //User ID: 45
     private static final String TEAM1_MEMBER_EMAIL = "krystian.barka@test.pl"; //User ID: 43
@@ -276,4 +278,80 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void teamUpdateUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/v1/teams/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand())))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void teamUpdateGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(put("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEAM_UPDATED_NAME)));
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void teamUpdateTeamOwner() throws Exception {
+        String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEAM_UPDATED_NAME)));
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void teamUpdateTeamAdmin() throws Exception {
+        String token = getToken(TEAM1_ADMIN_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name", is(TEAM_UPDATED_NAME)));
+    }
+
+    @Test
+    void teamUpdateTeamMember() throws Exception {
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand())))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void teamUpdateTeamInvited() throws Exception {
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/teams/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand())))
+                .andExpect(status().isForbidden());
+    }
+
+    private BasicTeamCommand getUpdatedBasicTeamCommand(){
+        return BasicTeamCommand.builder()
+                .id(1L)
+                .name(TEAM_UPDATED_NAME)
+                .build();
+    }
 }

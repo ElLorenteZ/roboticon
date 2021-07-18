@@ -1,4 +1,4 @@
-package io.lorentez.roboticon.model.security.managers;
+package io.lorentez.roboticon.security.managers;
 
 import io.lorentez.roboticon.commands.StatusCredentials;
 import io.lorentez.roboticon.model.UserTeam;
@@ -19,12 +19,25 @@ public class TeamsAuthenticationManager {
 
     private final TeamRepository teamRepository;
 
+    public boolean canUserUpdateTeamData(Authentication authentication, Long teamId){
+        String email = (String) authentication.getPrincipal();
+        if (email == null){
+            email = "";
+        }
+        log.info("User: " + email + " attempted to change details of team with id: " + teamId.toString());
+        return isUserAdminOrOwner(teamId, email);
+    }
+
     public boolean userCanInvite(Authentication authentication, Long teamId){
         String email = (String) authentication.getPrincipal();
         if (email == null){
             email = "";
         }
         log.info("User: " + email + " attempted to invite user to team with id: " + teamId.toString());
+        return isUserAdminOrOwner(teamId, email);
+    }
+
+    private boolean isUserAdminOrOwner(Long teamId, String email) {
         Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
         return userTeamOptional.map(userTeam -> userTeam.getStatus().equals(UserTeamStatus.ADMIN)
                 || userTeam.getStatus().equals(UserTeamStatus.OWNER))

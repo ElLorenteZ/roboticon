@@ -1,9 +1,12 @@
 package io.lorentez.roboticon.services;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.commands.TeamCommand;
+import io.lorentez.roboticon.converters.TeamToBasicTeamCommandConverter;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
+import io.lorentez.roboticon.converters.UniversityCommandToUniversityConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class TeamServiceImpl implements TeamService{
 
+    private final TeamToBasicTeamCommandConverter basicTeamConverter;
     private final TeamToTeamCommandConverter teamConverter;
     private final RoleRepository roleRepository;
     private final UserTeamRepository userTeamRepository;
@@ -31,6 +35,7 @@ public class TeamServiceImpl implements TeamService{
     private final TeamRepository teamRepository;
     private final TeamToCurrentTeamUserCommandConverter converter;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final UniversityCommandToUniversityConverter universityConverter;
 
     @Override
     public List<CurrentTeamUserCommand> fetchCurrentUserTeams(String email) {
@@ -114,4 +119,17 @@ public class TeamServiceImpl implements TeamService{
     public boolean existByTeamId(Long teamId) {
         return teamRepository.existsById(teamId);
     }
+
+    @Override
+    public BasicTeamCommand update(Long teamId, BasicTeamCommand newTeamData) {
+        Optional<Team> updatedTeamOptional = teamRepository.findById(teamId);
+        return updatedTeamOptional.map(updatedTeam -> {
+            updatedTeam.setName(newTeamData.getName());
+            updatedTeam.setUniversity(universityConverter.convert(newTeamData.getUniversityCommand()));
+            Team team = teamRepository.save(updatedTeam);
+            return basicTeamConverter.convert(team);
+        }).orElseThrow();
+    }
+
+
 }

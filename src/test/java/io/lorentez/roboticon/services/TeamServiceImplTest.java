@@ -1,9 +1,13 @@
 package io.lorentez.roboticon.services;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
 import io.lorentez.roboticon.commands.CurrentTeamUserCommand;
 import io.lorentez.roboticon.commands.TeamCommand;
+import io.lorentez.roboticon.commands.UniversityCommand;
+import io.lorentez.roboticon.converters.TeamToBasicTeamCommandConverter;
 import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
+import io.lorentez.roboticon.converters.UniversityCommandToUniversityConverter;
 import io.lorentez.roboticon.model.Team;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
@@ -11,11 +15,15 @@ import io.lorentez.roboticon.repositories.TeamRepository;
 import io.lorentez.roboticon.repositories.UserTeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +38,10 @@ class TeamServiceImplTest {
 
     public static final Long TEAM_ID = 8L;
     public static final String TEAM_NAME = "Test team name";
+    public static final String TEAM_UPDATED_NAME = "New team name";
+
+    @Mock
+    TeamToBasicTeamCommandConverter basicTeamConverter;
 
     @Mock
     TeamToTeamCommandConverter teamConverter;
@@ -43,8 +55,14 @@ class TeamServiceImplTest {
     @Mock
     TeamRepository teamRepository;
 
+    @Mock
+    UniversityCommandToUniversityConverter universityConverter;
+
     @InjectMocks
     TeamServiceImpl teamService;
+
+    @Captor
+    ArgumentCaptor<Team> teamArgumentCaptor;
 
     @Test
     void fetchCurrentUserTeams() {
@@ -205,5 +223,51 @@ class TeamServiceImplTest {
         boolean exists = teamService.existByTeamId(10L);
 
         assertFalse(exists);
+    }
+
+    @Test
+    void teamUpdateThrowsException() {
+        given(teamRepository.findById(any())).willReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> teamService.update(10L, TeamCommand.builder().build()));
+    }
+
+    @Test
+    void testUpdateSuccess() {
+        LocalDateTime timestamp = LocalDateTime.now();
+        given(teamRepository.findById(anyLong()))
+                .willReturn(Optional.of(
+                        Team.builder()
+                                .id(10L)
+                                .name(TEAM_NAME)
+                                .timeCreated(timestamp)
+                                .build()));
+        given(teamRepository.save(any()))
+                .willReturn(Team.builder()
+                        .id(10L)
+                        .name(TEAM_UPDATED_NAME)
+                        .timeCreated(timestamp)
+                        .build());
+        given(basicTeamConverter.convert(any()))
+                .willReturn(TeamCommand.builder()
+                        .id(10L)
+                        .name(TEAM_UPDATED_NAME)
+                        .build());
+
+        BasicTeamCommand command = teamService.update(10L, TeamCommand.builder()
+                .name(TEAM_UPDATED_NAME)
+                .universityCommand(UniversityCommand.builder().build())
+                .build());
+
+        verify(teamRepository).findById(any());
+        verify(teamRepository).save(teamArgumentCaptor.capture());
+        Team team = teamArgumentCaptor.getValue();
+        assertNotNull(team);
+        assertEquals(TEAM_UPDATED_NAME, team.getName());
+        verifyNoMoreInteractions(teamRepository);
+        verify(basicTeamConverter).convert(any());
+        verifyNoMoreInteractions(basicTeamConverter);
+        verify(universityConverter).convert(any());
+        verifyNoMoreInteractions(universityConverter);
     }
 }
