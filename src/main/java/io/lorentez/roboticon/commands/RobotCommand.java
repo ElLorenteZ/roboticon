@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.commands;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.lorentez.roboticon.model.RobotTeamStatus;
 import lombok.*;
@@ -18,6 +19,8 @@ public class RobotCommand {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private RobotTeamStatus status;
-    private LocalDateTime timeAdded;
 
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime timeAdded;
+    private BasicTeamCommand teamCommand;
 }

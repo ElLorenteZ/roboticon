@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 /*
     This class is used only to read mock data.
@@ -27,6 +29,8 @@ import java.util.Optional;
 @Component
 public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
+    private final RegistrationStatusRepository registrationStatusRepository;
+    private final RegistrationRepository registrationRepository;
     private final UniversityRepository universityRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
@@ -43,6 +47,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         loadStartupUserAndTeamData();
         loadRobots();
         loadTournamentsAndCompetitions();
+        loadRegistrations();
         log.info("Loading mock data finished..");
     }
 
@@ -114,6 +119,22 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.team.edit")
                 .description("Permission to update any team's details.")
                 .build();
+        Authority adminCreateRegistrationAuthority = Authority.builder()
+                .permission("admin.registration.create")
+                .description("Permission to create registration for any team.")
+                .build();
+        Authority adminRegistrationStatusUpdateAuthority = Authority.builder()
+                .permission("admin.registration.status.update")
+                .description("Permission to change registration status.")
+                .build();
+        Authority adminEditRegistrationAuthority = Authority.builder()
+                .permission("admin.registration.edit")
+                .description("Permission to edit any registration.")
+                .build();
+        Authority adminViewTeamRegistrationAuthority = Authority.builder()
+                .permission("admin.registration.team.view")
+                .description("Permission to preview any team registration.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -159,6 +180,18 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("user.team.edit")
                 .description("Permission to edit team's data.")
                 .build();
+        Authority userRegistrationCreateAuthority = Authority.builder()
+                .permission("user.registration.create")
+                .description("Permission to create registration for team where user has status of Admin or Owner.")
+                .build();
+        Authority userRegistrationEditAuthority = Authority.builder()
+                .permission("user.registration.edit")
+                .description("Permission to edit registration for team where user has status of Admin or Owner.")
+                .build();
+        Authority userViewTeamRegistrationAuthority = Authority.builder()
+                .permission("user.registration.team.view")
+                .description("Permission to preview registration of team in which user has status of owner, admin or member.")
+                .build();
 
         createTournamentAuthority = authorityRepository.save(createTournamentAuthority);
         updateTournamentAuthority = authorityRepository.save(updateTournamentAuthority);
@@ -174,6 +207,10 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRobotTransferAcceptAuthority = authorityRepository.save(adminRobotTransferAcceptAuthority);
         adminUserEditAuthority = authorityRepository.save(adminUserEditAuthority);
         adminTeamEditAuthority = authorityRepository.save(adminTeamEditAuthority);
+        adminViewTeamRegistrationAuthority = authorityRepository.save(adminViewTeamRegistrationAuthority);
+        adminCreateRegistrationAuthority = authorityRepository.save(adminCreateRegistrationAuthority);
+        adminEditRegistrationAuthority = authorityRepository.save(adminEditRegistrationAuthority);
+        adminRegistrationStatusUpdateAuthority = authorityRepository.save(adminRegistrationStatusUpdateAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -186,6 +223,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userUserEditAuthority = authorityRepository.save(userUserEditAuthority);
         userUserPasswordChangeAuthority = authorityRepository.save(userUserPasswordChangeAuthority);
         userTeamEditAuthority = authorityRepository.save(userTeamEditAuthority);
+        userViewTeamRegistrationAuthority = authorityRepository.save(userViewTeamRegistrationAuthority);
+        userRegistrationCreateAuthority = authorityRepository.save(userRegistrationCreateAuthority);
+        userRegistrationEditAuthority = authorityRepository.save(userRegistrationEditAuthority);
 
         Role adminRole = Role.builder()
                 .name("ADMIN")
@@ -205,11 +245,16 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminRobotTransferAcceptAuthority);
         adminRole.grantAuthority(adminUserEditAuthority);
         adminRole.grantAuthority(adminTeamEditAuthority);
+        adminRole.grantAuthority(adminViewTeamRegistrationAuthority);
+        adminRole.grantAuthority(adminCreateRegistrationAuthority);
+        adminRole.grantAuthority(adminEditRegistrationAuthority);
+        adminRole.grantAuthority(adminRegistrationStatusUpdateAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()
                 .name("USER")
                 .build();
+
         userRole.grantAuthority(createTeamAuthority);
         userRole.grantAuthority(userUpdateTeamAuthority);
         userRole.grantAuthority(userReadTeamAuthority);
@@ -222,6 +267,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userRole.grantAuthority(userUserEditAuthority);
         userRole.grantAuthority(userUserPasswordChangeAuthority);
         userRole.grantAuthority(userTeamEditAuthority);
+        userRole.grantAuthority(userViewTeamRegistrationAuthority);
+        userRole.grantAuthority(userRegistrationCreateAuthority);
+        userRole.grantAuthority(userRegistrationEditAuthority);
         userRole = roleRepository.save(userRole);
 
         User user1 = User.builder()
@@ -1430,5 +1478,81 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
 
     }
 
+    private void loadRegistrations() {
+        Tournament roboticonTournament = tournamentRepository.findByIdFetchCompetitions(1L).orElseThrow();
+
+        Competition sampleCompetition =roboticonTournament.getCompetitions().stream().findFirst().orElseThrow();
+        Robot robot2 = robotRepository.findById(2L).orElseThrow();
+        Set<User> registrationUsers1 = new HashSet<>();
+        userRepository.findAllById(Set.of(3L, 43L, 44L)).forEach(user -> {
+            registrationUsers1.add(user);
+        });
+        Registration registration1 = Registration.builder()
+                .robot(robot2)
+                .competition(sampleCompetition)
+                .build();
+        registration1.setUsers(registrationUsers1);
+        registration1 = registrationRepository.save(registration1);
+        RegistrationStatus registrationStatus1 = RegistrationStatus.builder()
+                .timeFrom(LocalDateTime.now())
+                .status(RegistrationCurrentStatus.APPLIED)
+                .registration(registration1)
+                .build();
+        registrationStatus1 = registrationStatusRepository.save(registrationStatus1);
+
+        Robot robot8 = robotRepository.findById(8L).orElseThrow();
+        Set<User> registrationUsers2 = new HashSet<>();
+        userRepository.findAllById(Set.of(8L, 9L)).forEach(user -> {
+            registrationUsers2.add(user);
+        });
+
+        Registration registration2 = Registration.builder()
+                .robot(robot8)
+                .users(registrationUsers2)
+                .competition(sampleCompetition)
+                .build();
+        registration2 = registrationRepository.save(registration2);
+        RegistrationStatus registrationStatus2 = RegistrationStatus.builder()
+                .timeFrom(LocalDateTime.now())
+                .status(RegistrationCurrentStatus.APPLIED)
+                .registration(registration2)
+                .build();
+        registrationStatus2 = registrationStatusRepository.save(registrationStatus2);
+
+        Robot robot16 = robotRepository.findById(16L).orElseThrow();
+        Set<User> registrationUsers3 = new HashSet<>();
+        userRepository.findAllById(Set.of(16L, 17L, 18L)).forEach(user -> {
+            registrationUsers3.add(user);
+        });
+        Registration registration3 = Registration.builder()
+                .robot(robot16)
+                .competition(sampleCompetition)
+                .users(registrationUsers3)
+                .build();
+        registration3 = registrationRepository.save(registration3);
+        RegistrationStatus registrationStatus3 = RegistrationStatus.builder()
+                .timeFrom(LocalDateTime.now())
+                .status(RegistrationCurrentStatus.APPLIED)
+                .registration(registration3)
+                .build();
+        registrationStatus3 = registrationStatusRepository.save(registrationStatus3);
+
+        Robot robot19 = robotRepository.findById(19L).orElseThrow();
+        Set<User> registrationUsers4 = new HashSet<>();
+        userRepository.findAllById(Set.of(19L, 21L)).forEach(registrationUsers4::add);
+        Registration registration4 = Registration.builder()
+                .robot(robot19)
+                .competition(sampleCompetition)
+                .users(registrationUsers4)
+                .build();
+        registration4 = registrationRepository.save(registration4);
+        RegistrationStatus registrationStatus4 = RegistrationStatus.builder()
+                .timeFrom(LocalDateTime.now())
+                .status(RegistrationCurrentStatus.APPLIED)
+                .registration(registration4)
+                .build();
+        registrationStatus4 = registrationStatusRepository.save(registrationStatus4);
+
+    }
 
 }

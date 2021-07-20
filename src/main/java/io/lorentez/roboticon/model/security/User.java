@@ -62,12 +62,7 @@ public class User implements UserDetails, CredentialsContainer {
     private Set<UserTeam> userTeams = new HashSet<>();
 
     @Builder.Default
-    @ManyToMany
-    @JoinTable(
-            name = "UserRegistration",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "registration_id") }
-    )
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE)
     private Set<Registration> registrations = new HashSet<>();
 
     @Builder.Default

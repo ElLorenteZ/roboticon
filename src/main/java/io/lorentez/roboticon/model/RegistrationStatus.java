@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "RegistrationStatus")
+@Table(name = "registrationstatus")
 @TimeEndAfterTimeStart
 public class RegistrationStatus {
 

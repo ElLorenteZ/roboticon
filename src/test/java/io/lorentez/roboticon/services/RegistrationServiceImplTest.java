@@ -7,6 +7,7 @@ import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.converters.RegistrationToRegistrationCommandConverter;
 import io.lorentez.roboticon.model.*;
 import io.lorentez.roboticon.repositories.RegistrationRepository;
+import io.lorentez.roboticon.repositories.RegistrationStatusRepository;
 import io.lorentez.roboticon.repositories.RobotRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -52,6 +52,9 @@ class RegistrationServiceImplTest {
 
     @Mock
     RegistrationToRegistrationCommandConverter registrationConverter;
+
+    @Mock
+    RegistrationStatusRepository registrationStatusRepository;
 
     @InjectMocks
     RegistrationServiceImpl registrationsService;
@@ -157,9 +160,7 @@ class RegistrationServiceImplTest {
 
         //then
         verify(registrationRepository).findFetchAllInfoById(anyLong());
-        verify(registrationRepository).save(registrationArgumentCaptor.capture());
-        Registration savedRegistration = registrationArgumentCaptor.getValue();
-        assertThat(savedRegistration.getStatuses()).hasSize(2);
+        verify(registrationStatusRepository).saveAll(any());
         verifyNoMoreInteractions(registrationRepository);
     }
 
@@ -168,7 +169,14 @@ class RegistrationServiceImplTest {
         //given
         Registration registration = Registration.builder()
                 .id(REGISTRATION_ID)
-                .robot(Robot.builder().id(ROBOT_ID).build())
+                .robot(Robot.builder()
+                        .id(ROBOT_ID)
+                        .robotTeams(Set.of(RobotTeam.builder()
+                                .team(Team.builder()
+                                        .id(1L)
+                                        .build())
+                                .build()))
+                        .build())
                 .competition(Competition.builder().id(COMPETITION_ID).build())
                 .statuses(Set.of(
                         RegistrationStatus.builder()

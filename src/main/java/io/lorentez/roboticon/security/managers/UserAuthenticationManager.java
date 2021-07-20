@@ -1,16 +1,20 @@
 package io.lorentez.roboticon.security.managers;
 
 import io.lorentez.roboticon.model.security.User;
+import io.lorentez.roboticon.repositories.TeamRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Component
-public class UserAuthenticationManager {
+public class UserAuthenticationManager extends BasicAuthenticationManager{
+
+    public UserAuthenticationManager(TeamRepository teamRepository, UserRepository userRepository) {
+        super(teamRepository);
+        this.userRepository = userRepository;
+    }
 
     private final UserRepository userRepository;
 

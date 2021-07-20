@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -20,6 +21,7 @@ public interface TournamentRepository extends CrudRepository<Tournament, Long> {
     @Query(nativeQuery = true, value = "SELECT t.id FROM Tournament t LEFT JOIN Competition c ON c.tournament_id = t.id WHERE UPPER(t.name) LIKE UPPER(\'%\'||:keyword||\'%\') OR UPPER(c.name) LIKE UPPER(\'%\'||:keyword||\'%\')")
     Set<Long> getSearchedTournamentsIds(String keyword);
 
-
+    @Query(value = "SELECT DISTINCT t FROM Tournament t LEFT JOIN FETCH t.competitions c WHERE t.id = :tournamentId")
+    Optional<Tournament> findByIdFetchCompetitions(Long tournamentId);
 }
 

@@ -103,6 +103,7 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isUnprocessableEntity());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeStatusGlobalAdmin() throws Exception {
         String token = getGlobalAdminToken();
@@ -127,6 +128,7 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isForbidden());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeStatusAdminInTeamToMember() throws Exception {
         String token = getToken(TEAM1_ADMIN_EMAIL, "testtest");
@@ -139,6 +141,7 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isNoContent());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeStatusOwnerInTeamToAdmin() throws Exception {
         String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
@@ -176,7 +179,7 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isForbidden());
     }
 
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testChangeStatusMemberAcceptInvitation() throws Exception {
         String token = getToken(TEAM1_INVITED_EMAIL, "testtest");

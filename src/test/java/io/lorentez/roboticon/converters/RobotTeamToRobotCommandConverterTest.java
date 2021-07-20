@@ -4,13 +4,19 @@ import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.model.Robot;
 import io.lorentez.roboticon.model.RobotTeam;
 import io.lorentez.roboticon.model.RobotTeamStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class RobotTeamToRobotCommandConverterTest {
 
     public static final Long ROBOT_ID = 2L;
@@ -18,12 +24,12 @@ class RobotTeamToRobotCommandConverterTest {
     public static final LocalDateTime ROBOT_TIME_ADDED = LocalDateTime.now().minusDays(1);
     public static final RobotTeamStatus ROBOT_STATUS = RobotTeamStatus.OWNED;
 
+    @Mock
+    TeamToBasicTeamCommandConverter teamConverter;
+
+    @InjectMocks
     RobotTeamToRobotCommandConverter converter;
 
-    @BeforeEach
-    void setUp() {
-        converter = new RobotTeamToRobotCommandConverter();
-    }
 
     @Test
     void testNullObject() {
@@ -34,6 +40,7 @@ class RobotTeamToRobotCommandConverterTest {
 
         //then
         assertNull(command);
+        verifyNoInteractions(teamConverter);
     }
 
     @Test
@@ -45,6 +52,7 @@ class RobotTeamToRobotCommandConverterTest {
 
         //then
         assertNull(command);
+        verifyNoInteractions(teamConverter);
     }
 
     @Test
@@ -58,6 +66,8 @@ class RobotTeamToRobotCommandConverterTest {
 
         //then
         assertNotNull(command);
+        verify(teamConverter).convert(any());
+        verifyNoMoreInteractions(teamConverter);
     }
 
     @Test
@@ -84,5 +94,7 @@ class RobotTeamToRobotCommandConverterTest {
         assertEquals(ROBOT_NAME, robotCommand.getName());
         assertEquals(ROBOT_TIME_ADDED, robotCommand.getTimeAdded());
         assertEquals(ROBOT_STATUS, robotCommand.getStatus());
+        verify(teamConverter).convert(any());
+        verifyNoMoreInteractions(teamConverter);
     }
 }

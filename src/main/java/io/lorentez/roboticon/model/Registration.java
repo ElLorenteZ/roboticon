@@ -27,10 +27,15 @@ public class Registration {
     private Competition competition;
 
     @Builder.Default
-    @ManyToMany(mappedBy = "registrations")
+    @ManyToMany(cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "userregistration",
+            joinColumns = { @JoinColumn(name = "registration_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
     private Set<User> users = new HashSet<>();
 
     @Builder.Default
-    @OneToMany
+    @OneToMany(mappedBy = "registration", cascade = CascadeType.ALL)
     private Set<RegistrationStatus> statuses = new HashSet<>();
 }

@@ -6,19 +6,21 @@ import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.repositories.RobotRepository;
 import io.lorentez.roboticon.repositories.TeamRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Slf4j
 @Component
-public class RobotsAuthenticationManager {
+public class RobotsAuthenticationManager extends BasicAuthenticationManager{
 
-    private final TeamRepository teamRepository;
+    public RobotsAuthenticationManager(TeamRepository teamRepository, RobotRepository robotRepository) {
+        super(teamRepository);
+        this.robotRepository = robotRepository;
+    }
+
     private final RobotRepository robotRepository;
 
     public boolean canUserEditRobot(Authentication authentication, Long robotId){
@@ -60,14 +62,5 @@ public class RobotsAuthenticationManager {
         return isUserOwnerOfRobotTeam(email, robotTeamOptional);
     }
 
-    private boolean isUserOwnerOfRobotTeam(String email, Optional<RobotTeam> robotTeamOptional) {
-        if(robotTeamOptional.isPresent()){
-            RobotTeam robotTeam = robotTeamOptional.get();
-            Optional<UserTeam> userTeamOptional = teamRepository
-                    .findActualMembersByTeamId(robotTeam.getTeam().getId(), email);
-            return userTeamOptional.map(userTeam -> userTeam.getStatus().equals(UserTeamStatus.OWNER))
-                    .orElse(Boolean.FALSE);
-        }
-        return false;
-    }
+
 }

@@ -9,9 +9,11 @@ import io.lorentez.roboticon.model.RegistrationStatus;
 import io.lorentez.roboticon.model.Robot;
 import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.RegistrationRepository;
+import io.lorentez.roboticon.repositories.RegistrationStatusRepository;
 import io.lorentez.roboticon.repositories.RobotRepository;
 import io.lorentez.roboticon.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,18 +23,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final RegistrationToRegistrationCommandConverter registrationConverter;
 
+    private final RegistrationStatusRepository registrationStatusRepository;
     private final RegistrationRepository registrationRepository;
     private final RobotRepository robotRepository;
     private final UserRepository userRepository;
 
     @Override
     public List<RegistrationCommand> getTeamsRegistrationsForTournament(Long tournamentId, Long teamId) {
+        log.info("Presenting registrations of team with ID: " + teamId.toString() + " to tournament with ID: " + tournamentId.toString());
         List<Registration> registrations = registrationRepository.getTeamsRegistrationsInTournament(tournamentId, teamId);
         return registrations.stream()
                 .map(registrationConverter::convert)
@@ -48,6 +53,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public RegistrationCommand updateRegistration(Long registrationId, RegistrationCommand newRegistrationData) {
+        log.info("Updating registration form with ID: " + registrationId.toString());
         Optional<Registration> registrationOptional = registrationRepository.findFetchAllInfoById(registrationId);
         return registrationOptional.map(registration -> {
             if (!newRegistrationData.getRobot().getId().equals(registration.getRobot().getId())) {
@@ -82,9 +88,9 @@ public class RegistrationServiceImpl implements RegistrationService {
             RegistrationStatus newStatus = RegistrationStatus.builder()
                     .timeFrom(timestamp)
                     .status(status)
+                    .registration(registration)
                     .build();
-            registration.getStatuses().add(newStatus);
-            registrationRepository.save(registration);
+            registrationStatusRepository.saveAll(Set.of(currentStatus, newStatus));
         }
     }
 

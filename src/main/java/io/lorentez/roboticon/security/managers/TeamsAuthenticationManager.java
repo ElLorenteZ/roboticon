@@ -4,7 +4,6 @@ import io.lorentez.roboticon.commands.StatusCredentials;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.repositories.TeamRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -12,12 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Slf4j
 @Component
-public class TeamsAuthenticationManager {
+public class TeamsAuthenticationManager extends BasicAuthenticationManager {
 
-    private final TeamRepository teamRepository;
+    public TeamsAuthenticationManager(TeamRepository teamRepository) {
+        super(teamRepository);
+    }
 
     public boolean canUserUpdateTeamData(Authentication authentication, Long teamId){
         String email = (String) authentication.getPrincipal();
@@ -25,7 +25,7 @@ public class TeamsAuthenticationManager {
             email = "";
         }
         log.info("User: " + email + " attempted to change details of team with id: " + teamId.toString());
-        return isUserAdminOrOwner(teamId, email);
+        return isUserAdminOrOwner(email, teamId);
     }
 
     public boolean userCanInvite(Authentication authentication, Long teamId){
@@ -34,14 +34,7 @@ public class TeamsAuthenticationManager {
             email = "";
         }
         log.info("User: " + email + " attempted to invite user to team with id: " + teamId.toString());
-        return isUserAdminOrOwner(teamId, email);
-    }
-
-    private boolean isUserAdminOrOwner(Long teamId, String email) {
-        Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
-        return userTeamOptional.map(userTeam -> userTeam.getStatus().equals(UserTeamStatus.ADMIN)
-                || userTeam.getStatus().equals(UserTeamStatus.OWNER))
-                .orElse(Boolean.FALSE);
+        return isUserAdminOrOwner(email, teamId);
     }
 
     public boolean userCanChangeStatus(Authentication authentication,
@@ -82,14 +75,4 @@ public class TeamsAuthenticationManager {
         return false;
     }
 
-    public boolean isUserInTeam(Authentication authentication, Long teamId){
-        String email = (String) authentication.getPrincipal();
-        if (email == null){
-            email = "";
-        }
-        log.info("User: " + email + " attempted to get information of team: " + teamId.toString());
-        Optional<UserTeam> userTeamOptional = teamRepository.findActualMembersByTeamId(teamId, email);
-        return userTeamOptional.filter(userTeam -> !userTeam.getStatus().equals(UserTeamStatus.INVITED)
-                && !userTeam.getStatus().equals(UserTeamStatus.REQUEST_JOIN)).isPresent();
-    }
 }
