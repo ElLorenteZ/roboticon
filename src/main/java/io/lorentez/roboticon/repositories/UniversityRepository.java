@@ -14,5 +14,6 @@ public interface UniversityRepository extends CrudRepository<University, Long> {
     List<University> findAllByNameContainingIgnoreCase(String name);
     List<University> findByCityIgnoreCase(String city);
     List<University> findByCountryIgnoreCase(String country);
+    List<University> findAll();
 
 }

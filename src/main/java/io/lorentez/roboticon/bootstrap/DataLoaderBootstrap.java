@@ -135,6 +135,10 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.registration.team.view")
                 .description("Permission to preview any team registration.")
                 .build();
+        Authority adminUniversityManageAuthority = Authority.builder()
+                .permission("admin.university.manage")
+                .description("Permission to manage universities' data.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -211,6 +215,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminCreateRegistrationAuthority = authorityRepository.save(adminCreateRegistrationAuthority);
         adminEditRegistrationAuthority = authorityRepository.save(adminEditRegistrationAuthority);
         adminRegistrationStatusUpdateAuthority = authorityRepository.save(adminRegistrationStatusUpdateAuthority);
+        adminUniversityManageAuthority = authorityRepository.save(adminUniversityManageAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -249,6 +254,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminCreateRegistrationAuthority);
         adminRole.grantAuthority(adminEditRegistrationAuthority);
         adminRole.grantAuthority(adminRegistrationStatusUpdateAuthority);
+        adminRole.grantAuthority(adminUniversityManageAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()

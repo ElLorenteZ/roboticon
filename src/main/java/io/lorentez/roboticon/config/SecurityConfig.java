@@ -18,8 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -66,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/api/v1/auth/resetPassword",
                         "/api/v1/auth/setPassword",
-                        "/api/v1/auth/login",
+//                        "/api/v1/auth/login",
                         "/api/v1/auth/register").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/api/v1/competitions/*").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/api/v1/tournaments", "/api/v1/tournaments/**").permitAll()

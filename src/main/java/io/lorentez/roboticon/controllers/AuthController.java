@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -54,7 +53,8 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<Object> loginUser(@RequestBody LoginCredentials credentials){
+    public ResponseEntity<?> loginUser(@RequestBody LoginCredentials credentials,
+                                       @AuthenticationPrincipal String email){
         return ResponseEntity.ok().build();
     }
 
