@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
@@ -24,14 +25,14 @@ public class UniversityController {
     }
 
     @GetMapping("{universityId}")
-    public UniversityCommand getById(@PathVariable Long universityId) {
+    public UniversityCommand getById(@PathVariable @NotNull Long universityId) {
         return universityService.findById(universityId);
     }
 
     @PreAuthorize("hasAuthority('admin.university.manage')")
     @PutMapping("{universityId}")
-    public ResponseEntity<?> updateById(@PathVariable Long universityId,
-                                        @RequestBody UniversityCommand universityCommand){
+    public ResponseEntity<?> updateById(@PathVariable @NotNull Long universityId,
+                                        @RequestBody @Valid UniversityCommand universityCommand){
         try{
             universityService.update(universityId, universityCommand);
             return ResponseEntity.noContent().build();

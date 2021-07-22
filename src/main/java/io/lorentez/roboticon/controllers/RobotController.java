@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,7 +26,7 @@ public class RobotController {
             "hasAuthority('user.robot.edit') AND " +
                         "@robotsAuthenticationManager.canUserEditRobot(authentication, #robotId)")
     @PutMapping("{robotId}")
-    public ResponseEntity<?> updateRobot(@RequestBody RobotCommand command, @PathVariable Long robotId){
+    public ResponseEntity<?> updateRobot(@RequestBody @Valid RobotCommand command, @PathVariable @NotNull Long robotId){
         try {
             RobotCommand robotCommand = robotService.update(command, robotId);
             return ResponseEntity.ok(robotCommand);
@@ -46,8 +48,8 @@ public class RobotController {
     @PreAuthorize("hasAuthority('admin.robot.transfer') OR " +
             "hasAuthority('user.robot.transfer') AND @robotsAuthenticationManager.canUserTransferRobot(authentication, #robotId)")
     @PostMapping("{robotId}/transfer")
-    public ResponseEntity<?> transfer(@PathVariable Long robotId,
-                                      @RequestBody RobotTransferCommand robotTransferCommand){
+    public ResponseEntity<?> transfer(@PathVariable @NotNull Long robotId,
+                                      @RequestBody @Valid RobotTransferCommand robotTransferCommand){
         if (robotTransferCommand == null || robotTransferCommand.getTeamId() == null){
             return ResponseEntity.badRequest().build();
         }
@@ -63,7 +65,7 @@ public class RobotController {
     @PreAuthorize("hasAuthority('admin.robot.transfer.accept') OR " +
             "hasAuthority('user.robot.transfer.accept') AND @robotsAuthenticationManager.canUserAcceptTransfer(authentication, #robotId)")
     @PostMapping("{robotId}/accept")
-    public ResponseEntity<?> acceptTransfer(@PathVariable Long robotId) {
+    public ResponseEntity<?> acceptTransfer(@PathVariable @NotNull Long robotId) {
         try{
             robotService.transferAcceptRobot(robotId);
             return ResponseEntity.noContent().build();

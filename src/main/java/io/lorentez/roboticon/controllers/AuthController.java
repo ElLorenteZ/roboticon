@@ -13,6 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Slf4j
@@ -24,7 +27,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestParam String email) {
+    public ResponseEntity<?> resetPassword(@RequestParam @NotNull String email) {
         User user = userService.findByEmail(email);
         if (user == null){
             log.info("Failed attempt of password's reset for user: " + email);
@@ -38,8 +41,8 @@ public class AuthController {
     }
 
     @PostMapping("setPassword")
-    public ResponseEntity<?> changePassword(@RequestParam String token,
-                                            @RequestParam String newPassword){
+    public ResponseEntity<?> changePassword(@RequestParam @NotBlank String token,
+                                            @RequestParam @NotBlank String newPassword){
         PasswordResetToken passwordResetToken = userService.getPasswordResetToken(token);
         if (passwordResetToken == null){
             return ResponseEntity.notFound().build();
@@ -53,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginCredentials credentials,
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginCredentials credentials,
                                        @AuthenticationPrincipal String email){
         return ResponseEntity.ok().build();
     }
@@ -61,7 +64,7 @@ public class AuthController {
 
     @PreAuthorize("hasAuthority('user.user.password.change')")
     @PostMapping("changePassword")
-    public ResponseEntity<?> changeUsersPassword(@RequestBody ChangePasswordCredentials passwordCredentials,
+    public ResponseEntity<?> changeUsersPassword(@RequestBody @Valid ChangePasswordCredentials passwordCredentials,
                                                  @AuthenticationPrincipal String email){
         User currentUser = userService.findByEmail(email);
         try {
@@ -74,7 +77,7 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<?> registerUser(@RequestBody UserRegisterCommand command){
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegisterCommand command){
         try {
             userService.registerUser(command);
             return ResponseEntity.noContent().build();

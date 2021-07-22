@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('admin.user.edit') OR " +
             "hasAuthority('user.user.edit') AND @userAuthenticationManager.isUserSelf(authentication, #userId)")
     @PostMapping("{userId}/update")
-    public ResponseEntity<?> updateDetails(@PathVariable Long userId,
-                                        @RequestBody BasicUserCommand userDetails){
+    public ResponseEntity<?> updateDetails(@PathVariable @NotNull Long userId,
+                                        @RequestBody @Valid BasicUserCommand userDetails){
         try {
             BasicUserCommand returnedCommand = userService.changeUserDetails(userId, userDetails);
             return ResponseEntity.ok(returnedCommand);
@@ -29,6 +31,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 
 }

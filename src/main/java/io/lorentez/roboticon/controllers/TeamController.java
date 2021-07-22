@@ -13,6 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -33,7 +36,7 @@ public class TeamController {
             "hasAuthority('user.team.invite') " +
                     "AND @teamsAuthenticationManager.userCanInvite(authentication, #teamId)")
     @PostMapping("{teamId}/invite")
-    public ResponseEntity<?> inviteToTeam(@PathVariable Long teamId, @RequestParam String email){
+    public ResponseEntity<?> inviteToTeam(@PathVariable @NotNull Long teamId, @RequestParam @NotBlank String email){
         if (teamService.isUserInTeamActive(teamId, email)){
             return ResponseEntity.unprocessableEntity().build();
         }
@@ -46,7 +49,7 @@ public class TeamController {
             "hasAuthority('user.team.user.status') " +
                     "AND @teamsAuthenticationManager.userCanChangeStatus(authentication, #teamId, #credentials)")
     @PostMapping("{teamId}/status")
-    public ResponseEntity<?> changeStatusInTeam(@PathVariable Long teamId, @RequestBody StatusCredentials credentials){
+    public ResponseEntity<?> changeStatusInTeam(@PathVariable @NotNull Long teamId, @RequestBody @Valid StatusCredentials credentials){
         teamService.changeUserStatus(teamId, credentials.getEmail(), UserTeamStatus.valueOf(credentials.getStatus()
                 .toUpperCase(Locale.ROOT)));
         return ResponseEntity.noContent().build();
@@ -66,8 +69,8 @@ public class TeamController {
     @PreAuthorize("hasAuthority('admin.team.edit') OR " +
             "hasAuthority('user.team.edit') AND @teamsAuthenticationManager.canUserUpdateTeamData(authentication, #teamId)")
     @PutMapping("{teamId}")
-    public ResponseEntity<?> updateTeam(@PathVariable Long teamId,
-                                        @RequestBody BasicTeamCommand newTeamData){
+    public ResponseEntity<?> updateTeam(@PathVariable @NotNull Long teamId,
+                                        @RequestBody @Valid BasicTeamCommand newTeamData){
         try {
             BasicTeamCommand teamCommand = teamService.update(teamId, newTeamData);
             return ResponseEntity.ok(teamCommand);

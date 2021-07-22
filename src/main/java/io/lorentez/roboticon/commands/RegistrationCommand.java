@@ -3,6 +3,7 @@ package io.lorentez.roboticon.commands;
 import io.lorentez.roboticon.model.RegistrationCurrentStatus;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 

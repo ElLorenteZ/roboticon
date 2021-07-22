@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class TournamentController {
     }
 
     @GetMapping(value = "{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
+    public ResponseEntity<?> getById(@PathVariable @NotNull Long id){
         TournamentCommand command = tournamentService.findById(id);
         if (command == null){
             return ResponseEntity.notFound().build();

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.lorentez.roboticon.model.RobotTeamStatus;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,6 +17,8 @@ import java.time.LocalDateTime;
 public class RobotCommand {
 
     private Long id;
+
+    @NotBlank
     private String name;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
