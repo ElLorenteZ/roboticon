@@ -20,7 +20,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('admin.user.edit') OR " +
             "hasAuthority('user.user.edit') AND @userAuthenticationManager.isUserSelf(authentication, #userId)")
-    @PostMapping("{userId}/update")
+    @PutMapping("{userId}")
     public ResponseEntity<?> updateDetails(@PathVariable @NotNull Long userId,
                                         @RequestBody @Valid BasicUserCommand userDetails){
         try {
@@ -32,6 +32,10 @@ public class UserController {
         }
     }
 
-
+    @PreAuthorize("hasAuthority('admin.users.view')")
+    @GetMapping
+    public ResponseEntity<?> listAll(){
+        return ResponseEntity.ok(userService.listUsers());
+    }
 
 }

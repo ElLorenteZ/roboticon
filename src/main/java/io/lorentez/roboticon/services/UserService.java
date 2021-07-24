@@ -6,7 +6,7 @@ import io.lorentez.roboticon.commands.UserRegisterCommand;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
 import io.lorentez.roboticon.model.security.User;
 
-import java.util.Map;
+import java.util.List;
 
 public interface UserService {
 
@@ -25,4 +25,7 @@ public interface UserService {
     void changeUserPassword(User user, ChangePasswordCredentials passwordCredentials) throws IllegalAccessException;
 
     void registerUser(UserRegisterCommand command);
+
+    List<BasicUserCommand> listUsers();
+
 }

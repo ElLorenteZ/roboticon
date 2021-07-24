@@ -139,6 +139,18 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.university.manage")
                 .description("Permission to manage universities' data.")
                 .build();
+        Authority adminUsersListAuthority = Authority.builder()
+                .permission("admin.users.view")
+                .description("Permission to list users' data.")
+                .build();
+        Authority adminTournamentCreateAuthority = Authority.builder()
+                .permission("admin.tournament.create")
+                .description("Permission to create new tournament.")
+                .build();
+        Authority adminTournamentEditAuthority = Authority.builder()
+                .permission("admin.tournament.edit")
+                .description("Permission to edit any tournament's data.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -216,6 +228,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminEditRegistrationAuthority = authorityRepository.save(adminEditRegistrationAuthority);
         adminRegistrationStatusUpdateAuthority = authorityRepository.save(adminRegistrationStatusUpdateAuthority);
         adminUniversityManageAuthority = authorityRepository.save(adminUniversityManageAuthority);
+        adminUsersListAuthority = authorityRepository.save(adminUsersListAuthority);
+        adminTournamentCreateAuthority = authorityRepository.save(adminTournamentCreateAuthority);
+        adminTournamentEditAuthority = authorityRepository.save(adminTournamentEditAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -255,6 +270,9 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminEditRegistrationAuthority);
         adminRole.grantAuthority(adminRegistrationStatusUpdateAuthority);
         adminRole.grantAuthority(adminUniversityManageAuthority);
+        adminRole.grantAuthority(adminUsersListAuthority);
+        adminRole.grantAuthority(adminTournamentCreateAuthority);
+        adminRole.grantAuthority(adminTournamentEditAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()

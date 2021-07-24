@@ -4,11 +4,11 @@ import io.lorentez.roboticon.commands.TournamentCommand;
 import io.lorentez.roboticon.services.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.websocket.server.PathParam;
+import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -38,5 +38,10 @@ public class TournamentController {
 
     }
 
-
+    @PreAuthorize("hasAuthority('admin.tournament.create')")
+    @PostMapping
+    public ResponseEntity<?> createTournament(@RequestBody TournamentCommand tournament){
+        TournamentCommand savedCommand = tournamentService.save(tournament);
+        return ResponseEntity.created(URI.create("/api/v1/tournaments/" + savedCommand.getId().toString())).build();
+    }
 }

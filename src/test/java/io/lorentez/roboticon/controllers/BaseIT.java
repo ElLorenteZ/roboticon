@@ -30,6 +30,7 @@ public abstract class BaseIT {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac)

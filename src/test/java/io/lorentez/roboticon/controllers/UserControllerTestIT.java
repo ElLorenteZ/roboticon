@@ -7,9 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 class UserControllerTestIT extends BaseIT{
@@ -35,7 +34,7 @@ class UserControllerTestIT extends BaseIT{
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 
 
-        mockMvc.perform(post("/api/v1/users/1/update")
+        mockMvc.perform(put("/api/v1/users/1")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userCommand))
@@ -53,7 +52,7 @@ class UserControllerTestIT extends BaseIT{
         String token = getToken(EMAIL_USER_ID1, "testtest");
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 
-        mockMvc.perform(post("/api/v1/users/1/update")
+        mockMvc.perform(put("/api/v1/users/1")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userCommand))
@@ -70,11 +69,35 @@ class UserControllerTestIT extends BaseIT{
         String token = getToken(EMAIL_USER_ID3, "testtest");
         BasicUserCommand userCommand = new BasicUserCommand(USER_ID, USER_NAME, USER_SURNAME, USER_EMAIL);
 
-        mockMvc.perform(post("/api/v1/users/1/update")
+        mockMvc.perform(put("/api/v1/users/1")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userCommand))
                 .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void listUsersUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/users"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void listUsersAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(get("/api/v1/users")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void listUsersForbidden() throws Exception {
+        String token = getToken(EMAIL_USER_ID1, "testtest");
+        mockMvc.perform(get("/api/v1/users")
+                .header(AUTHORIZATION_HEADER, token))
                 .andExpect(status().isForbidden());
     }
 

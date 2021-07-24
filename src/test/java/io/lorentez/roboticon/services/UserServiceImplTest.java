@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -256,4 +256,24 @@ class UserServiceImplTest {
         verifyNoMoreInteractions(userRepository);
         verifyNoInteractions(converter);
     }
+
+    @Test
+    void testListAllUsers() {
+        //given
+        List<User> users = List.of(
+                User.builder().id(1L).build(),
+                User.builder().id(2L).build()
+        );
+        given(userRepository.findAll()).willReturn(users);
+
+        //when
+        service.listUsers();
+
+        //then
+        verify(userRepository).findAll();
+        verifyNoMoreInteractions(userRepository);
+        verify(converter, times(2)).convert(any());
+        verifyNoMoreInteractions(converter);
+    }
+
 }

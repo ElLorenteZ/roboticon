@@ -15,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 // Used to provide information about Users
 // and do custom operations with credentials.
@@ -119,4 +120,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException();
         }
     }
+
+    @Override
+    public List<BasicUserCommand> listUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(converter::convert)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -131,6 +131,4 @@ class TournamentControllerTest {
         tournamentCommandList.add(tournament2);
         return tournamentCommandList;
     }
-
-
 }

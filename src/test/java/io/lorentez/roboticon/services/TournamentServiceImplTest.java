@@ -1,9 +1,15 @@
 package io.lorentez.roboticon.services;
 
+import io.lorentez.roboticon.commands.CompetitionCommand;
+import io.lorentez.roboticon.commands.CompetitionTypeCommand;
 import io.lorentez.roboticon.commands.TournamentCommand;
+import io.lorentez.roboticon.converters.TournamentCommandToTournamentConverter;
 import io.lorentez.roboticon.converters.TournamentToTournamentCommandConverter;
 import io.lorentez.roboticon.model.Competition;
+import io.lorentez.roboticon.model.CompetitionType;
 import io.lorentez.roboticon.model.Tournament;
+import io.lorentez.roboticon.repositories.CompetitionRepository;
+import io.lorentez.roboticon.repositories.CompetitionTypeRepository;
 import io.lorentez.roboticon.repositories.TournamentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +21,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +36,16 @@ class TournamentServiceImplTest {
     public static final LocalDate TOURNAMENT_DATESTART = LocalDate.now().plusDays(10);
 
     @Mock
-    TournamentToTournamentCommandConverter converter;
+    TournamentToTournamentCommandConverter tournamentToTournamentCommandConverter;
+
+    @Mock
+    TournamentCommandToTournamentConverter tournamentCommandToTournamentConverter;
+
+    @Mock
+    CompetitionRepository competitionRepository;
+
+    @Mock
+    CompetitionTypeRepository competitionTypeRepository;
 
     @Mock
     TournamentRepository repository;
@@ -45,7 +61,7 @@ class TournamentServiceImplTest {
                 .id(1L)
                 .build();
         tournaments.add(tournament1);
-        given(converter.convert(any())).willReturn(TournamentCommand.builder().id(1L).build());
+        given(tournamentToTournamentCommandConverter.convert(any())).willReturn(TournamentCommand.builder().id(1L).build());
         given(repository.findAllWithCompetitions()).willReturn(tournaments);
 
         //when
@@ -55,9 +71,9 @@ class TournamentServiceImplTest {
         assertNotNull(tournamentCommands);
         assertThat(tournamentCommands).hasSize(1);
         verify(repository, times(1)).findAllWithCompetitions();
-        verify(converter, times(1)).convert(any());
+        verify(tournamentToTournamentCommandConverter, times(1)).convert(any());
         verifyNoMoreInteractions(repository);
-        verifyNoMoreInteractions(converter);
+        verifyNoMoreInteractions(tournamentToTournamentCommandConverter);
     }
 
     @Test
@@ -72,7 +88,7 @@ class TournamentServiceImplTest {
         assertNull(tournamentCommand);
         verify(repository).findById(anyLong());
         verifyNoMoreInteractions(repository);
-        verifyNoInteractions(converter);
+        verifyNoInteractions(tournamentToTournamentCommandConverter);
     }
 
     @Test
@@ -84,7 +100,7 @@ class TournamentServiceImplTest {
                 .dateStart(TOURNAMENT_DATESTART)
                 .build();
         given(repository.findById(anyLong())).willReturn(Optional.of(tournament));
-        given(converter.convert(tournament)).willReturn(TournamentCommand.builder()
+        given(tournamentToTournamentCommandConverter.convert(tournament)).willReturn(TournamentCommand.builder()
                 .id(ID)
                 .name(TOURNAMENT_NAME)
                 .dateStart(TOURNAMENT_DATESTART)
@@ -98,6 +114,35 @@ class TournamentServiceImplTest {
         assertEquals(ID, tournamentCommand.getId());
         assertEquals(TOURNAMENT_NAME, tournamentCommand.getName());
         verify(repository).findById(anyLong());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testTournamentSave() {
+        TournamentCommand tournamentCommand = TournamentCommand.builder()
+                .id(10L)
+                .competitions(Set.of(CompetitionCommand.builder()
+                        .id(100L)
+                        .competitionType(CompetitionTypeCommand.builder().id(10L).build())
+                        .build()))
+                .build();
+        given(tournamentCommandToTournamentConverter.convert(any()))
+                .willReturn(Tournament.builder().id(10L).build());
+        given(competitionTypeRepository.findById(any()))
+                .willReturn(Optional.of(CompetitionType.builder().id(10L).build()));
+        given(repository.save(any())).willReturn(Tournament.builder()
+                .id(10L)
+                .competitions(Set.of(Competition.builder()
+                        .id(100L)
+                        .competitionType(CompetitionType.builder().id(10L).build())
+                        .build()))
+                .build());
+
+        service.save(tournamentCommand);
+
+        verify(repository).save(any());
+        verify(tournamentCommandToTournamentConverter).convert(any());
+        verify(tournamentToTournamentCommandConverter).convert(any());
         verifyNoMoreInteractions(repository);
     }
 }
