@@ -44,4 +44,16 @@ public class TournamentController {
         TournamentCommand savedCommand = tournamentService.save(tournament);
         return ResponseEntity.created(URI.create("/api/v1/tournaments/" + savedCommand.getId().toString())).build();
     }
+
+    @PreAuthorize("hasAuthority('admin.tournament.edit')")
+    @PutMapping("{tournamentId}")
+    public ResponseEntity<?> updateTournament(@PathVariable Long tournamentId, @RequestBody TournamentCommand tournament){
+        try {
+            TournamentCommand tournamentCommand = tournamentService.update(tournamentId, tournament);
+            return ResponseEntity.noContent().build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

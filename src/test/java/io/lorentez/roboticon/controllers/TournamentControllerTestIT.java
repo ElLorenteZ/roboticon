@@ -12,8 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,33 +76,7 @@ public class TournamentControllerTestIT extends BaseIT{
 
     @Test
     void testTournamentSaveForbidden() throws Exception {
-        CompetitionTypeCommand lineFollowerType = CompetitionTypeCommand.builder()
-                .id(1L)
-                .type("Line Follower Standard")
-                .scoreType(ScoreType.MIN_TIME)
-                .build();
-        CompetitionTypeCommand sumoType = CompetitionTypeCommand.builder()
-                .id(2L)
-                .type("Sumo Standard")
-                .scoreType(ScoreType.MAX_POINTS)
-                .build();
-        TournamentCommand tournamentCommand = TournamentCommand.builder()
-                .name(TOURNAMENT1_NAME)
-                .dateStart(TOURNAMENT1_DATESTART)
-                .dateEnd(TOURNAMENT1_DATEEND)
-                .build();
-        tournamentCommand.getCompetitions().add(
-                CompetitionCommand.builder()
-                        .name("Competition 1")
-                        .description("Test competition")
-                        .competitionType(lineFollowerType)
-                        .build());
-        tournamentCommand.getCompetitions().add(
-                CompetitionCommand.builder()
-                        .name("Competition 2")
-                        .description("Test competition")
-                        .competitionType(sumoType)
-                        .build());
+        TournamentCommand tournamentCommand = getSampleTournament();
         String token = getToken(TEAM1_MEMBER_EMAIL,"testtest");
 
         mockMvc.perform(post("/api/v1/tournaments")
@@ -117,6 +90,48 @@ public class TournamentControllerTestIT extends BaseIT{
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testTournamentSaveAccepted() throws Exception {
+        TournamentCommand tournamentCommand = getSampleTournament();
+        String token = getGlobalAdminToken();
+
+        mockMvc.perform(post("/api/v1/tournaments")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tournamentCommand)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void testTournamentEditUnauthorized() throws Exception {
+        mockMvc.perform(put("/api/v1/tournament/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testTournamentEditForbidden() throws Exception {
+        TournamentCommand tournament = getSampleTournament();
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        mockMvc.perform(put("/api/v1/tournaments/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tournament)))
+                .andExpect(status().isForbidden());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testTournamentEditSuccess() throws Exception {
+        TournamentCommand tournament = getSampleTournament();
+        tournament.setId(1L);
+        String token = getGlobalAdminToken();
+        String content = objectMapper.writeValueAsString(tournament);
+        mockMvc.perform(put("/api/v1/tournaments/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isNoContent());
+    }
+
+    private TournamentCommand getSampleTournament(){
         CompetitionTypeCommand lineFollowerType = CompetitionTypeCommand.builder()
                 .id(1L)
                 .type("Line Follower Standard")
@@ -144,12 +159,6 @@ public class TournamentControllerTestIT extends BaseIT{
                         .description("Test competition")
                         .competitionType(sumoType)
                         .build());
-        String token = getGlobalAdminToken();
-
-        mockMvc.perform(post("/api/v1/tournaments")
-                .header(AUTHORIZATION_HEADER, token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tournamentCommand)))
-                .andExpect(status().isCreated());
+        return tournamentCommand;
     }
 }

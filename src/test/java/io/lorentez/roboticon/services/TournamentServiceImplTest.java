@@ -3,6 +3,7 @@ package io.lorentez.roboticon.services;
 import io.lorentez.roboticon.commands.CompetitionCommand;
 import io.lorentez.roboticon.commands.CompetitionTypeCommand;
 import io.lorentez.roboticon.commands.TournamentCommand;
+import io.lorentez.roboticon.converters.CompetitionCommandToCompetitionConverter;
 import io.lorentez.roboticon.converters.TournamentCommandToTournamentConverter;
 import io.lorentez.roboticon.converters.TournamentToTournamentCommandConverter;
 import io.lorentez.roboticon.model.Competition;
@@ -13,6 +14,8 @@ import io.lorentez.roboticon.repositories.CompetitionTypeRepository;
 import io.lorentez.roboticon.repositories.TournamentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +37,7 @@ class TournamentServiceImplTest {
     public static final long ID = 1L;
     public static final String TOURNAMENT_NAME = "Sample tournament";
     public static final LocalDate TOURNAMENT_DATESTART = LocalDate.now().plusDays(10);
+    public static final LocalDate TOURNAMENT_DATEEND = LocalDate.now().plusDays(11);
 
     @Mock
     TournamentToTournamentCommandConverter tournamentToTournamentCommandConverter;
@@ -48,10 +52,16 @@ class TournamentServiceImplTest {
     CompetitionTypeRepository competitionTypeRepository;
 
     @Mock
+    CompetitionCommandToCompetitionConverter competitionCommandToCompetitionConverter;
+
+    @Mock
     TournamentRepository repository;
 
     @InjectMocks
     TournamentServiceImpl service;
+
+    @Captor
+    ArgumentCaptor<Tournament> tournamentArgumentCaptor;
 
     @Test
     void testFindAll() {
@@ -145,4 +155,64 @@ class TournamentServiceImplTest {
         verify(tournamentToTournamentCommandConverter).convert(any());
         verifyNoMoreInteractions(repository);
     }
+
+    @Test
+    void testTournamentUpdate() {
+        Tournament tournament = Tournament.builder()
+                .id(ID)
+                .name(TOURNAMENT_NAME)
+                .dateStart(TOURNAMENT_DATESTART)
+                .dateEnd(TOURNAMENT_DATEEND)
+                .competitions(Set.of(
+                        Competition.builder()
+                                .id(1L)
+                                .competitionType(CompetitionType.builder().id(1L).build())
+                                .build(),
+                        Competition.builder()
+                                .id(2L)
+                                .competitionType(CompetitionType.builder().id(1L).build())
+                                .build(),
+                        Competition.builder()
+                                .id(3L)
+                                .competitionType(CompetitionType.builder().id(2L).build())
+                                .build()
+                        ))
+                .build();
+        TournamentCommand tournamentCommand = TournamentCommand.builder().id(ID)
+                .name(TOURNAMENT_NAME)
+                .dateStart(TOURNAMENT_DATESTART)
+                .dateEnd(TOURNAMENT_DATEEND)
+                .competitions(Set.of(
+                        CompetitionCommand.builder()
+                                .id(1L)
+                                .competitionType(CompetitionTypeCommand.builder().id(1L).build())
+                                .build(),
+                        CompetitionCommand.builder()
+                                .competitionType(CompetitionTypeCommand.builder().id(1L).build())
+                                .build(),
+                        CompetitionCommand.builder()
+                                .id(3L)
+                                .competitionType(CompetitionTypeCommand.builder().id(1L).build())
+                                .build()
+                ))
+                .build();
+        given(repository.findByIdFetchCompetitions(anyLong())).willReturn(Optional.of(tournament));
+        given(competitionTypeRepository.findById(anyLong()))
+                .willReturn(Optional.of(CompetitionType.builder().id(1L).build()));
+        given(competitionCommandToCompetitionConverter.convert(any()))
+                .willReturn(Competition.builder()
+                        .competitionType(CompetitionType.builder().id(1L).build())
+                        .build());
+        service.update(ID, tournamentCommand);
+
+        verify(tournamentToTournamentCommandConverter).convert(tournamentArgumentCaptor.capture());
+        verify(repository).findByIdFetchCompetitions(anyLong());
+        verify(competitionRepository).delete(any());
+        verify(competitionTypeRepository, times(2)).findById(any());
+        verify(repository).save(any());
+        verify(competitionRepository, times(3)).save(any());
+    }
+
+
+
 }

@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.commands;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -19,9 +20,11 @@ public class TournamentCommand {
     @NotNull
     private String name;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate dateStart;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull
     private LocalDate dateEnd;
 

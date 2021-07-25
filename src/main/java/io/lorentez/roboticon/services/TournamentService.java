@@ -13,4 +13,6 @@ public interface TournamentService {
     List<TournamentCommand> findSearchedTournaments(String keyword);
 
     TournamentCommand save(TournamentCommand tournament);
+
+    TournamentCommand update(Long tournamentId, TournamentCommand tournamentCommand);
 }

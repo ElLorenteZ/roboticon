@@ -55,12 +55,8 @@ class TournamentControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$[0].name", is(TOURNAMENT1_NAME)))
-                .andExpect(jsonPath("$[0].dateStart[0]", is(TOURNAMENT1_DATESTART.getYear())))
-                .andExpect(jsonPath("$[0].dateStart[1]", is(TOURNAMENT1_DATESTART.getMonth().getValue())))
-                .andExpect(jsonPath("$[0].dateStart[2]", is(TOURNAMENT1_DATESTART.getDayOfMonth())))
-                .andExpect(jsonPath("$[0].dateEnd[0]", is(TOURNAMENT1_DATEEND.getYear())))
-                .andExpect(jsonPath("$[0].dateEnd[1]", is(TOURNAMENT1_DATEEND.getMonth().getValue())))
-                .andExpect(jsonPath("$[0].dateEnd[2]", is(TOURNAMENT1_DATEEND.getDayOfMonth())))
+                .andExpect(jsonPath("$[0].dateStart", is(String.format("%4d-%02d-%02d", TOURNAMENT1_DATESTART.getYear(), TOURNAMENT1_DATESTART.getMonthValue(), TOURNAMENT1_DATESTART.getDayOfMonth()))))
+                .andExpect(jsonPath("$[0].dateEnd", is(String.format("%4d-%02d-%02d", TOURNAMENT1_DATEEND.getYear(), TOURNAMENT1_DATEEND.getMonthValue(), TOURNAMENT1_DATEEND.getDayOfMonth()))))
                 .andExpect(jsonPath("$[0].competitions.length()", is(5)));
     }
 

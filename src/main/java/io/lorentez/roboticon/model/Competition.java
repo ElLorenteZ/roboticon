@@ -30,7 +30,7 @@ public class Competition {
     @JoinColumn(name = "competition_type_id")
     private CompetitionType competitionType;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 

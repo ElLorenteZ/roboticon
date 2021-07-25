@@ -39,6 +39,6 @@ public class Tournament {
     private LocalDate dateEnd;
 
     @Builder.Default
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tournament", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private Set<Competition> competitions = new HashSet<>();
 }
