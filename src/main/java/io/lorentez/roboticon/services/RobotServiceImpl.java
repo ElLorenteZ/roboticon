@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.services;
 
 import io.lorentez.roboticon.commands.RobotCommand;
+import io.lorentez.roboticon.converters.RobotCommandToRobotConverter;
 import io.lorentez.roboticon.converters.RobotToRobotCommandConverter;
 import io.lorentez.roboticon.model.Robot;
 import io.lorentez.roboticon.model.RobotTeam;
@@ -12,6 +13,7 @@ import io.lorentez.roboticon.repositories.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class RobotServiceImpl implements RobotService{
 
     private final RobotToRobotCommandConverter robotToCommandConverter;
+    private final RobotCommandToRobotConverter robotCommandToRobotConverter;
     private final RobotRepository robotRepository;
     private final RobotTeamRepository robotTeamRepository;
     private final TeamRepository teamRepository;
@@ -117,5 +120,28 @@ public class RobotServiceImpl implements RobotService{
             log.info("Attempt of transfer accept robot with ID: " + robotId.toString() + " which was never sent");
             throw new IllegalStateException("robot was not sent");
         }
+    }
+
+    @Override
+    public RobotCommand findById(Long robotId) {
+        Robot robot = robotRepository.findById(robotId).orElseThrow();
+        return robotToCommandConverter.convert(robot);
+    }
+
+    @Transactional
+    @Override
+    public RobotCommand addRobot(RobotCommand newRobot) {
+        Robot robot = robotCommandToRobotConverter.convert(newRobot);
+        robot = robotRepository.save(robot);
+        Team team = teamRepository.findByIdWithRobotTeams(newRobot.getTeamCommand().getId()).orElseThrow();
+        RobotTeam robotTeam = RobotTeam.builder()
+                .team(team)
+                .robot(robot)
+                .status(RobotTeamStatus.OWNED)
+                .timeAdded(LocalDateTime.now())
+                .build();
+        team.getRobotTeams().add(robotTeam);
+        teamRepository.save(team);
+        return robotToCommandConverter.convert(robot);
     }
 }

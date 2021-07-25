@@ -1,6 +1,8 @@
 package io.lorentez.roboticon.services;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
 import io.lorentez.roboticon.commands.RobotCommand;
+import io.lorentez.roboticon.converters.RobotCommandToRobotConverter;
 import io.lorentez.roboticon.converters.RobotToRobotCommandConverter;
 import io.lorentez.roboticon.model.Robot;
 import io.lorentez.roboticon.model.RobotTeam;
@@ -32,6 +34,9 @@ class RobotServiceImplTest {
 
     @Mock
     RobotToRobotCommandConverter robotToCommandConverter;
+
+    @Mock
+    RobotCommandToRobotConverter robotCommandToRobotConverter;
 
     @Mock
     TeamRepository teamRepository;
@@ -230,5 +235,54 @@ class RobotServiceImplTest {
         verifyNoMoreInteractions(robotRepository);
         verifyNoInteractions(robotTeamRepository);
         verifyNoInteractions(teamRepository);
+    }
+
+    @Test
+    void testFindRobotById() {
+        //given
+        given(robotRepository.findById(anyLong())).willReturn(Optional.of(Robot.builder().id(ROBOT_ID).build()));
+
+        //when
+        RobotCommand robotCommand = service.findById(ROBOT_ID);
+
+        //then
+        verify(robotRepository).findById(anyLong());
+        verify(robotToCommandConverter).convert(any());
+    }
+
+    @Test
+    void testFindRobotByIdNotFound() {
+        given(robotRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            service.findById(ROBOT_ID);
+        });
+    }
+
+    @Test
+    void testAddRobot() {
+        //given
+        RobotCommand robotCommand = RobotCommand.builder()
+                .name(ROBOT_NAME)
+                .timeAdded(LocalDateTime.now())
+                .teamCommand(BasicTeamCommand.builder()
+                        .id(1L)
+                        .build())
+                .build();
+        given(teamRepository.findByIdWithRobotTeams(anyLong())).willReturn(Optional.of(
+                Team.builder().id(1L).build()
+        ));
+        given(robotCommandToRobotConverter.convert(any()))
+                .willReturn(Robot.builder().id(ROBOT_ID).name(ROBOT_NAME).build());
+
+        //when
+        RobotCommand savedCommand = service.addRobot(robotCommand);
+
+        //then
+        verify(robotToCommandConverter).convert(any());
+        verify(robotCommandToRobotConverter).convert(any());
+        verify(robotRepository).save(any());
+        verify(teamRepository).findByIdWithRobotTeams(anyLong());
+        verify(teamRepository).save(any());
     }
 }

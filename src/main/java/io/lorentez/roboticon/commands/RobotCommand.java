@@ -6,7 +6,6 @@ import io.lorentez.roboticon.model.RobotTeamStatus;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,5 +25,6 @@ public class RobotCommand {
 
     @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
     private LocalDateTime timeAdded;
+
     private BasicTeamCommand teamCommand;
 }

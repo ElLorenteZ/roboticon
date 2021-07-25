@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
@@ -40,14 +41,14 @@ public class TournamentController {
 
     @PreAuthorize("hasAuthority('admin.tournament.create')")
     @PostMapping
-    public ResponseEntity<?> createTournament(@RequestBody TournamentCommand tournament){
+    public ResponseEntity<?> createTournament(@RequestBody @Valid TournamentCommand tournament){
         TournamentCommand savedCommand = tournamentService.save(tournament);
         return ResponseEntity.created(URI.create("/api/v1/tournaments/" + savedCommand.getId().toString())).build();
     }
 
     @PreAuthorize("hasAuthority('admin.tournament.edit')")
     @PutMapping("{tournamentId}")
-    public ResponseEntity<?> updateTournament(@PathVariable Long tournamentId, @RequestBody TournamentCommand tournament){
+    public ResponseEntity<?> updateTournament(@PathVariable Long tournamentId, @RequestBody @Valid TournamentCommand tournament){
         try {
             TournamentCommand tournamentCommand = tournamentService.update(tournamentId, tournament);
             return ResponseEntity.noContent().build();

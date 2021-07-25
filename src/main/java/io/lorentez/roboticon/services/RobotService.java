@@ -13,4 +13,8 @@ public interface RobotService {
     void transferToTeam(Long robotId, Long teamId);
 
     void transferAcceptRobot(Long robotId);
+
+    RobotCommand findById(Long robotId);
+
+    RobotCommand addRobot(RobotCommand robot);
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -35,6 +36,20 @@ public class RobotController {
             return ResponseEntity.badRequest().build();
         }
         catch (NoSuchElementException e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PreAuthorize("hasAuthority('admin.robot.view') OR " +
+            "hasAuthority('user.robot.view') AND " +
+            "@robotsAuthenticationManager.canUserViewRobot(authentication, #robotId)")
+    @GetMapping("{robotId}")
+    public ResponseEntity<?> getById(@PathVariable Long robotId){
+        try {
+            RobotCommand robotCommand = robotService.findById(robotId);
+            return ResponseEntity.ok(robotCommand);
+        }
+        catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -74,4 +89,18 @@ public class RobotController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PreAuthorize("hasAuthority('admin.robot.add') OR " +
+            "hasAuthority('user.robot.add') AND @robotsAuthenticationManager.canUserAddRobot(authentication, #robot)")
+    @PostMapping
+    public ResponseEntity<?> addRobot(@RequestBody @Valid RobotCommand robot){
+        try {
+            RobotCommand savedRobot = robotService.addRobot(robot);
+            return ResponseEntity.created(URI.create("/api/v1/robots/" + savedRobot.getId().toString())).build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

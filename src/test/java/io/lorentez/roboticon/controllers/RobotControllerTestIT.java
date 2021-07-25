@@ -1,5 +1,7 @@
 package io.lorentez.roboticon.controllers;
 
+import io.lorentez.roboticon.commands.BasicTeamCommand;
+import io.lorentez.roboticon.commands.RobotCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -281,9 +283,85 @@ public class RobotControllerTestIT extends BaseIT {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void testRobotAddUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/v1/robots"))
+                .andExpect(status().isUnauthorized());
+    }
 
+    @Test
+    void testRobotAddTeamNotInTeam() throws Exception {
+        String token = getToken(TEAM1_NOT_IN_TEAM_EMAIL, "testtest");
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isForbidden());
+    }
 
+    @Test
+    void testRobotAddTeamInvited() throws Exception {
+        String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isForbidden());
+    }
 
+    @Test
+    void testRobotAddTeamMember() throws Exception {
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isForbidden());
+    }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testRobotAddTeamAdmin() throws Exception {
+        String token = getToken(TEAM1_ADMIN_EMAIL, "testtest");
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isCreated());
+    }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testRobotAddTeamOwner() throws Exception {
+        String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isCreated());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testRobotAddGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(post("/api/v1/robots")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getSampleRobotCommand())))
+                .andExpect(status().isCreated());
+    }
+
+    private RobotCommand getSampleRobotCommand(){
+        return RobotCommand.builder()
+                .name(ROBOT_NAME)
+                .teamCommand(
+                        BasicTeamCommand.builder()
+                                .id(1L)
+                                .name("Test team name")
+                                .build()
+                )
+                .build();
+    }
 }
+

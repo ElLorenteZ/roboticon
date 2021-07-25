@@ -151,6 +151,14 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .permission("admin.tournament.edit")
                 .description("Permission to edit any tournament's data.")
                 .build();
+        Authority adminRobotViewAuthority = Authority.builder()
+                .permission("admin.robot.view")
+                .description("Permission to view any robot.")
+                .build();
+        Authority adminRobotAddAuthority = Authority.builder()
+                .permission("admin.robot.add")
+                .description("Permission to add robot to any team.")
+                .build();
 
         Authority userUpdateTeamAuthority = Authority.builder()
                 .permission("user.team.update")
@@ -198,15 +206,23 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .build();
         Authority userRegistrationCreateAuthority = Authority.builder()
                 .permission("user.registration.create")
-                .description("Permission to create registration for team where user has status of Admin or Owner.")
+                .description("Permission to create registration for team where user has status of ADMIN or OWNER.")
                 .build();
         Authority userRegistrationEditAuthority = Authority.builder()
                 .permission("user.registration.edit")
-                .description("Permission to edit registration for team where user has status of Admin or Owner.")
+                .description("Permission to edit registration for team where user has status of ADMIN or OWNER.")
                 .build();
         Authority userViewTeamRegistrationAuthority = Authority.builder()
                 .permission("user.registration.team.view")
-                .description("Permission to preview registration of team in which user has status of owner, admin or member.")
+                .description("Permission to preview registration of team in which user has status of OWNER, ADMIN or member.")
+                .build();
+        Authority userRobotViewAuthority = Authority.builder()
+                .permission("user.robot.view")
+                .description("Permission to view robots in team where user has status of OWNER or ADMIN.")
+                .build();
+        Authority userRobotAddAuthority = Authority.builder()
+                .permission("user.robot.add")
+                .description("Permission to add user to team where user has status of OWNER or ADMIN.")
                 .build();
 
         createTournamentAuthority = authorityRepository.save(createTournamentAuthority);
@@ -231,6 +247,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminUsersListAuthority = authorityRepository.save(adminUsersListAuthority);
         adminTournamentCreateAuthority = authorityRepository.save(adminTournamentCreateAuthority);
         adminTournamentEditAuthority = authorityRepository.save(adminTournamentEditAuthority);
+        adminRobotAddAuthority = authorityRepository.save(adminRobotAddAuthority);
+        adminRobotViewAuthority = authorityRepository.save(adminRobotViewAuthority);
 
         userReadTeamAuthority = authorityRepository.save(userReadTeamAuthority);
         userInviteTeamAuthority = authorityRepository.save(userInviteTeamAuthority);
@@ -246,6 +264,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userViewTeamRegistrationAuthority = authorityRepository.save(userViewTeamRegistrationAuthority);
         userRegistrationCreateAuthority = authorityRepository.save(userRegistrationCreateAuthority);
         userRegistrationEditAuthority = authorityRepository.save(userRegistrationEditAuthority);
+        userRobotAddAuthority = authorityRepository.save(userRobotAddAuthority);
+        userRobotViewAuthority = authorityRepository.save(userRobotViewAuthority);
 
         Role adminRole = Role.builder()
                 .name("ADMIN")
@@ -273,6 +293,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         adminRole.grantAuthority(adminUsersListAuthority);
         adminRole.grantAuthority(adminTournamentCreateAuthority);
         adminRole.grantAuthority(adminTournamentEditAuthority);
+        adminRole.grantAuthority(adminRobotAddAuthority);
+        adminRole.grantAuthority(adminRobotViewAuthority);
         adminRole = roleRepository.save(adminRole);
 
         Role userRole = Role.builder()
@@ -294,6 +316,8 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
         userRole.grantAuthority(userViewTeamRegistrationAuthority);
         userRole.grantAuthority(userRegistrationCreateAuthority);
         userRole.grantAuthority(userRegistrationEditAuthority);
+        userRole.grantAuthority(userRobotAddAuthority);
+        userRole.grantAuthority(userRobotViewAuthority);
         userRole = roleRepository.save(userRole);
 
         User user1 = User.builder()
