@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -77,6 +78,19 @@ public class TeamController {
         }
         catch (NoSuchElementException ex){
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PreAuthorize("hasAuthority('team.create')")
+    @PostMapping
+    public ResponseEntity<?> addTeam(@RequestBody @Valid BasicTeamCommand team,
+                                     @AuthenticationPrincipal String email) {
+        try{
+            BasicTeamCommand savedTeam = teamService.createTeam(team, email);
+            return ResponseEntity.created(URI.create("/api/v1/teams/" + savedTeam.getId().toString())).build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
         }
     }
 

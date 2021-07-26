@@ -9,9 +9,12 @@ import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
 import io.lorentez.roboticon.converters.UniversityCommandToUniversityConverter;
 import io.lorentez.roboticon.model.Team;
+import io.lorentez.roboticon.model.University;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
+import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.TeamRepository;
+import io.lorentez.roboticon.repositories.UserRepository;
 import io.lorentez.roboticon.repositories.UserTeamRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +42,7 @@ class TeamServiceImplTest {
     public static final Long TEAM_ID = 8L;
     public static final String TEAM_NAME = "Test team name";
     public static final String TEAM_UPDATED_NAME = "New team name";
+    public static final String USER_EMAIL = "email@test.com";
 
     @Mock
     TeamToBasicTeamCommandConverter basicTeamConverter;
@@ -54,6 +58,9 @@ class TeamServiceImplTest {
 
     @Mock
     TeamRepository teamRepository;
+
+    @Mock
+    UserRepository userRepository;
 
     @Mock
     UniversityCommandToUniversityConverter universityConverter;
@@ -269,5 +276,37 @@ class TeamServiceImplTest {
         verifyNoMoreInteractions(basicTeamConverter);
         verify(universityConverter).convert(any());
         verifyNoMoreInteractions(universityConverter);
+    }
+
+    @Test
+    void testCreate() {
+        LocalDateTime timestamp = LocalDateTime.now();
+        User user = User.builder()
+                .id(100L)
+                .name("Test name")
+                .surname("Test surname")
+                .email(USER_EMAIL)
+                .build();
+        BasicTeamCommand teamCommand = BasicTeamCommand.builder()
+                .name(TEAM_NAME)
+                .timeCreated(timestamp)
+                .universityCommand(UniversityCommand.builder().id(10L).build())
+                .build();
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
+        given(universityConverter.convert(any())).willReturn(University.builder().id(10L).build());
+
+        BasicTeamCommand basicTeamCommand = teamService.createTeam(teamCommand, USER_EMAIL);
+
+        verify(userRepository).findByEmail(anyString());
+        verify(teamRepository).save(teamArgumentCaptor.capture());
+        verify(basicTeamConverter).convert(any());
+        verify(universityConverter).convert(any());
+        Team team = teamArgumentCaptor.getValue();
+        assertNotNull(team);
+        assertEquals(TEAM_NAME, team.getName());
+        verify(userTeamRepository).save(any());
+        verifyNoMoreInteractions(userRepository);
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoMoreInteractions(userTeamRepository);
     }
 }

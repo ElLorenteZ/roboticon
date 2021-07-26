@@ -8,6 +8,7 @@ import io.lorentez.roboticon.converters.TeamToCurrentTeamUserCommandConverter;
 import io.lorentez.roboticon.converters.TeamToTeamCommandConverter;
 import io.lorentez.roboticon.converters.UniversityCommandToUniversityConverter;
 import io.lorentez.roboticon.model.Team;
+import io.lorentez.roboticon.model.University;
 import io.lorentez.roboticon.model.UserTeam;
 import io.lorentez.roboticon.model.UserTeamStatus;
 import io.lorentez.roboticon.model.security.PasswordResetToken;
@@ -16,6 +17,7 @@ import io.lorentez.roboticon.model.security.User;
 import io.lorentez.roboticon.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +35,7 @@ public class TeamServiceImpl implements TeamService{
     private final UserTeamRepository userTeamRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final UniversityRepository universityRepository;
     private final TeamToCurrentTeamUserCommandConverter converter;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UniversityCommandToUniversityConverter universityConverter;
@@ -131,5 +134,24 @@ public class TeamServiceImpl implements TeamService{
         }).orElseThrow();
     }
 
-
+    @Transactional
+    @Override
+    public BasicTeamCommand createTeam(BasicTeamCommand team, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        University university = universityConverter.convert(team.getUniversityCommand());
+        Team newTeam = Team.builder()
+                .name(team.getName())
+                .timeCreated(LocalDateTime.now())
+                .university(university)
+                .build();
+        newTeam = teamRepository.save(newTeam);
+        UserTeam userTeamOwner = UserTeam.builder()
+                .user(user)
+                .team(newTeam)
+                .status(UserTeamStatus.OWNER)
+                .timeAdded(LocalDateTime.now())
+                .build();
+        userTeamRepository.save(userTeamOwner);
+        return basicTeamConverter.convert(newTeam);
+    }
 }

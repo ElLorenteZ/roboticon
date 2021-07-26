@@ -24,4 +24,7 @@ public interface TeamService {
     boolean existByTeamId(Long teamId);
 
     BasicTeamCommand update(Long teamId, BasicTeamCommand newTeamData);
+
+    BasicTeamCommand createTeam(BasicTeamCommand team, String email);
+
 }

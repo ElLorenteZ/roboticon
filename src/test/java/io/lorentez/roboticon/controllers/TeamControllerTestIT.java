@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.BasicTeamCommand;
+import io.lorentez.roboticon.commands.UniversityCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -282,7 +283,7 @@ public class TeamControllerTestIT extends BaseIT{
     }
 
     @Test
-    void teamUpdateUnauthorized() throws Exception {
+    void testUpdateTeamUnauthorized() throws Exception {
         mockMvc.perform(put("/api/v1/teams/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(getUpdatedBasicTeamCommand())))
@@ -291,7 +292,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    void teamUpdateGlobalAdmin() throws Exception {
+    void testUpdateTeamGlobalAdmin() throws Exception {
         String token = getGlobalAdminToken();
         mockMvc.perform(put("/api/v1/teams/1")
                 .header(AUTHORIZATION_HEADER, token)
@@ -305,7 +306,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    void teamUpdateTeamOwner() throws Exception {
+    void testUpdateTeamOwner() throws Exception {
         String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
         mockMvc.perform(put("/api/v1/teams/1")
                 .header(AUTHORIZATION_HEADER, token)
@@ -319,7 +320,7 @@ public class TeamControllerTestIT extends BaseIT{
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
-    void teamUpdateTeamAdmin() throws Exception {
+    void testUpdateTeamAdmin() throws Exception {
         String token = getToken(TEAM1_ADMIN_EMAIL, "testtest");
         mockMvc.perform(put("/api/v1/teams/1")
                 .header(AUTHORIZATION_HEADER, token)
@@ -342,7 +343,7 @@ public class TeamControllerTestIT extends BaseIT{
     }
 
     @Test
-    void teamUpdateTeamInvited() throws Exception {
+    void testUpdateTeamInvited() throws Exception {
         String token = getToken(TEAM1_INVITED_EMAIL, "testtest");
         mockMvc.perform(put("/api/v1/teams/1")
                 .header(AUTHORIZATION_HEADER, token)
@@ -351,10 +352,46 @@ public class TeamControllerTestIT extends BaseIT{
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void testCreateTeamUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/v1/teams"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testCreateTeamUser() throws Exception {
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        String content = objectMapper.writeValueAsString(getCreatedTeam());
+        mockMvc.perform(post("/api/v1/teams")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isCreated());
+    }
+
     private BasicTeamCommand getUpdatedBasicTeamCommand(){
         return BasicTeamCommand.builder()
                 .id(1L)
                 .name(TEAM_UPDATED_NAME)
                 .build();
     }
+
+    private BasicTeamCommand getCreatedTeam(){
+        BasicTeamCommand team = BasicTeamCommand.builder()
+                .name(TEAM_UPDATED_NAME)
+                .universityCommand(UniversityCommand.builder()
+                        .id(1L)
+                        .name("Akademia Górniczo-Hutnicza im. Stanisława Staszica")
+                        .addressLine1("al. Adama Mickiewicza 30")
+                        .addressLine2("")
+                        .zipCode("30-059")
+                        .city("Kraków")
+                        .province("małopolskie")
+                        .country("Polska")
+                        .build())
+                .build();
+        return team;
+    }
+
 }
