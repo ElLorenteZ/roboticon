@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -36,8 +37,27 @@ public class RegistrationController {
     @PutMapping("{registrationId}")
     public ResponseEntity<?> updateRegistration(@PathVariable @NotNull Long registrationId,
                                                 @RequestBody @Valid RegistrationCommand newRegistrationData){
-        RegistrationCommand command = registrationService.updateRegistration(registrationId, newRegistrationData);
-        return ResponseEntity.noContent().build();
+        try {
+            RegistrationCommand command = registrationService.updateRegistration(registrationId, newRegistrationData);
+            return ResponseEntity.noContent().build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PreAuthorize("hasAuthority('admin.registration.create') OR " +
+            "hasAuthority('user.registration.create') " +
+            "AND @registrationAuthenticationManager.canUserCreateRegistration(authentication, #newRegistrationData)")
+    @PostMapping
+    public ResponseEntity<?> createRegistration(@RequestBody @Valid RegistrationCommand newRegistrationData){
+        try {
+            RegistrationCommand command = registrationService.createRegistration(newRegistrationData);
+            return ResponseEntity.created(URI.create("/api/v1/registrations/" + command.getId())).build();
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PreAuthorize("hasAuthority('admin.registration.status.update')")

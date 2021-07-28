@@ -2,11 +2,13 @@ package io.lorentez.roboticon.controllers;
 
 import io.lorentez.roboticon.commands.*;
 import io.lorentez.roboticon.model.RegistrationCurrentStatus;
+import io.lorentez.roboticon.model.RobotTeamStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -216,4 +218,108 @@ class RegistrationControllerTestIT extends BaseIT{
                 .header(AUTHORIZATION_HEADER, token))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void createRegistrationUnauthorized() throws Exception {
+        mockMvc.perform(post("/api/v1/registrations"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void createRegistrationForbidden() throws Exception {
+        String token = getToken("pawel.kuwert@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/registrations")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createRegistrationNotInTeam() throws Exception {
+        String token = getToken("lucjan.anatolinski@test.pl", "testtest");
+        String content = objectMapper.writeValueAsString(getCreatedRegistrationCommand());
+        mockMvc.perform(post("/api/v1/registrations")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void createRegistrationAdmin() throws Exception {
+        String token = getToken("bartlomiej.wertowski@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/registrations")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void createRegistrationOwner() throws Exception {
+        String token = getToken("bartosz.czarny@test.pl", "testtest");
+        mockMvc.perform(post("/api/v1/registrations")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void createRegistrationGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(post("/api/v1/registrations")
+                .header(AUTHORIZATION_HEADER, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    private RegistrationCommand getCreatedRegistrationCommand(){
+        return RegistrationCommand.builder()
+                .robot(RobotCommand.builder()
+                        .id(16L)
+                        .name("Dzik")
+                        .status(RobotTeamStatus.OWNED)
+                        .timeAdded(LocalDateTime.now())
+                        .teamCommand(BasicTeamCommand.builder()
+                                .id(6L)
+                                .name("Kanto")
+                                .timeCreated(LocalDateTime.now())
+                                .universityCommand(UniversityCommand.builder()
+                                        .id(3L)
+                                        .name("Politechnika Wrocławska")
+                                        .addressLine1("Wybrzeże Stanisława Wyspiańskiego 27")
+                                        .addressLine2("")
+                                        .zipCode("50-370")
+                                        .city("Wrocław")
+                                        .province("dolnośląskie")
+                                        .country("Polska")
+                                        .build())
+                                .build())
+                        .build())
+                .competition(CompetitionCommand.builder()
+                        .id(4L)
+                        .name("Sumo Standard")
+                        .description("Sumo - dwa roboty próbują zepchnąć się nawzajem z ringu (dohyo). " +
+                                "Podczas walki nie można sterować robotem (poza włączeniem i wyłączeniem). " +
+                                "Wielkość robota nie może przekroczyć 20 x 20cm (wysokość bez ograniczeń), " +
+                                "waga do 3kg. Ring ma średnicę 149cm.")
+                        .build())
+                .userCommands(List.of(
+                        new BasicUserCommand(16L, "Bartosz", "Czarny", "bartosz.czarny@test.pl"),
+                        new BasicUserCommand(17L, "Bartłomiej", "Wertowski", "bartlomiej.wertowski@test.pl")
+                ))
+                .build();
+    }
+
 }

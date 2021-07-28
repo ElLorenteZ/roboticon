@@ -975,7 +975,7 @@ public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshed
                 .build();
 
         UserTeam userTeam2 = UserTeam.builder()
-                .status(UserTeamStatus.MEMBER)
+                .status(UserTeamStatus.ADMIN)
                 .user(user2)
                 .team(team)
                 .timeAdded(LocalDateTime.now().minusDays(10))

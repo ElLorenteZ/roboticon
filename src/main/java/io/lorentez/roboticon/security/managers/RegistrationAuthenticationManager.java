@@ -25,6 +25,15 @@ public class RegistrationAuthenticationManager extends BasicAuthenticationManage
     }
 
     public boolean canUserChangeRegistration(Authentication authentication, RegistrationCommand registrationCommand){
+        return isUserAdminOrOwnerOfRegistrationTeam(authentication, registrationCommand);
+    }
+
+
+    public boolean canUserCreateRegistration(Authentication authentication, RegistrationCommand registrationCommand){
+        return isUserAdminOrOwnerOfRegistrationTeam(authentication, registrationCommand);
+    }
+
+    private boolean isUserAdminOrOwnerOfRegistrationTeam(Authentication authentication, RegistrationCommand registrationCommand) {
         String email = (String) authentication.getPrincipal();
         if (email == null){
             email = "";
@@ -39,8 +48,5 @@ public class RegistrationAuthenticationManager extends BasicAuthenticationManage
         log.info("User: " + email + " attempted to get registration information of team with ID: " + teamId.toString());
         return this.isUserAdminOrOwner(email, teamId);
     }
-
-
-
 
 }

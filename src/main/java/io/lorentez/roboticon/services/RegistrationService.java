@@ -15,5 +15,6 @@ public interface RegistrationService {
 
     void setNewRegistrationStatus(Long registrationId, RegistrationCurrentStatus status);
 
+    RegistrationCommand createRegistration(RegistrationCommand newRegistrationData);
 }
 

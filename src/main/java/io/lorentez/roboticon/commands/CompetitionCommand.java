@@ -1,6 +1,6 @@
 package io.lorentez.roboticon.commands;
 
-import io.lorentez.roboticon.model.CompetitionType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Getter
@@ -14,6 +14,8 @@ public class CompetitionCommand {
     private String name;
     private String description;
     private CompetitionTypeCommand competitionType;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer registrationsCounter;
 
 }

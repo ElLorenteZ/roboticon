@@ -23,7 +23,7 @@ public class RobotCommand {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private RobotTeamStatus status;
 
-    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timeAdded;
 
     private BasicTeamCommand teamCommand;

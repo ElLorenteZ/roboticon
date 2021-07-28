@@ -43,4 +43,6 @@ public interface RegistrationRepository extends CrudRepository<Registration, Lon
             "WHERE r.id = :registrationId")
     Optional<Registration> findFetchAllInfoById(Long registrationId);
 
+    @Query(value = "SELECT COUNT(r) > 0 FROM Registration r WHERE r.robot.id = :robotId AND r.competition.id = :competitionId")
+    boolean isRobotRegistered(Long robotId, Long competitionId);
 }

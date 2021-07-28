@@ -1,9 +1,9 @@
 package io.lorentez.roboticon.commands;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.lorentez.roboticon.model.RegistrationCurrentStatus;
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +18,8 @@ public class RegistrationCommand {
     private RobotCommand robot;
     private CompetitionCommand competition;
     private List<BasicUserCommand> userCommands = new ArrayList<>();
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private RegistrationCurrentStatus status;
 
 }

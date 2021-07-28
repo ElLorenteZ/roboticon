@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
@@ -18,4 +19,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
     Boolean existsByEmail(String email);
 
     List<User> findAll();
+
+    Set<User> findAllById(Iterable<Long> iterable);
 }

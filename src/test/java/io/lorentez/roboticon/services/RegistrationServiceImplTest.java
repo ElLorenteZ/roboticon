@@ -6,10 +6,8 @@ import io.lorentez.roboticon.commands.RegistrationCommand;
 import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.converters.RegistrationToRegistrationCommandConverter;
 import io.lorentez.roboticon.model.*;
-import io.lorentez.roboticon.repositories.RegistrationRepository;
-import io.lorentez.roboticon.repositories.RegistrationStatusRepository;
-import io.lorentez.roboticon.repositories.RobotRepository;
-import io.lorentez.roboticon.repositories.UserRepository;
+import io.lorentez.roboticon.model.security.User;
+import io.lorentez.roboticon.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -37,6 +38,8 @@ class RegistrationServiceImplTest {
     public static final Long ROBOT_ID = 120L;
 
     public static final Long COMPETITION_ID = 210L;
+
+    public static final Long USER_ID = 50L;
 
     @Captor
     ArgumentCaptor<Registration> registrationArgumentCaptor;
@@ -55,6 +58,12 @@ class RegistrationServiceImplTest {
 
     @Mock
     RegistrationStatusRepository registrationStatusRepository;
+
+    @Mock
+    RobotTeamRepository robotTeamRepository;
+
+    @Mock
+    CompetitionRepository competitionRepository;
 
     @InjectMocks
     RegistrationServiceImpl registrationsService;
@@ -135,6 +144,7 @@ class RegistrationServiceImplTest {
         verify(registrationRepository).save(any());
         verify(registrationRepository).findFetchAllInfoById(any());
         verify(userRepository).findAllById(any());
+        verify(registrationRepository).isRobotRegistered(anyLong(), anyLong());
         verifyNoMoreInteractions(registrationRepository);
         verifyNoMoreInteractions(userRepository);
     }
@@ -193,5 +203,45 @@ class RegistrationServiceImplTest {
         //then
         verify(registrationRepository).findFetchAllInfoById(anyLong());
         verifyNoMoreInteractions(registrationRepository);
+    }
+
+    @Test
+    void testCreateRegistration() {
+        //given
+        BasicUserCommand userCommand = new BasicUserCommand(
+                USER_ID,
+                "John",
+                "Doe",
+                "mail@test.pl");
+        RegistrationCommand newRegistration = RegistrationCommand.builder()
+                .robot(RobotCommand.builder().id(ROBOT_ID).build())
+                .competition(CompetitionCommand.builder().id(COMPETITION_ID).build())
+                .userCommands(List.of(userCommand))
+                .build();
+        given(competitionRepository.findById(anyLong()))
+                .willReturn(Optional.of(Competition.builder().id(COMPETITION_ID).build()));
+        given(robotRepository.findById(anyLong()))
+                .willReturn(Optional.of(Robot.builder().id(ROBOT_ID).build()));
+        given(userRepository.findAllById(any()))
+                .willReturn(Set.of(User.builder().id(USER_ID).build()));
+
+        //when
+        RegistrationCommand command = registrationsService.createRegistration(newRegistration);
+
+        //then
+        verify(registrationRepository).save(registrationArgumentCaptor.capture());
+        verify(competitionRepository).findById(anyLong());
+        verify(robotRepository).findById(anyLong());
+        verify(userRepository).findAllById(any());
+        verify(registrationRepository).isRobotRegistered(anyLong(), anyLong());
+        verify(registrationConverter).convert(any());
+        verifyNoMoreInteractions(registrationRepository);
+        Registration registration = registrationArgumentCaptor.getValue();
+        assertNotNull(registration);
+        assertNotNull(registration.getCompetition());
+        assertEquals(COMPETITION_ID, registration.getCompetition().getId());
+        assertNotNull(registration.getRobot());
+        assertEquals(ROBOT_ID, registration.getRobot().getId());
+        assertThat(registration.getUsers()).hasSize(1);
     }
 }

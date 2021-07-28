@@ -3,21 +3,15 @@ package io.lorentez.roboticon.services;
 import io.lorentez.roboticon.commands.BasicUserCommand;
 import io.lorentez.roboticon.commands.RegistrationCommand;
 import io.lorentez.roboticon.converters.RegistrationToRegistrationCommandConverter;
-import io.lorentez.roboticon.model.Registration;
-import io.lorentez.roboticon.model.RegistrationCurrentStatus;
-import io.lorentez.roboticon.model.RegistrationStatus;
-import io.lorentez.roboticon.model.Robot;
+import io.lorentez.roboticon.model.*;
 import io.lorentez.roboticon.model.security.User;
-import io.lorentez.roboticon.repositories.RegistrationRepository;
-import io.lorentez.roboticon.repositories.RegistrationStatusRepository;
-import io.lorentez.roboticon.repositories.RobotRepository;
-import io.lorentez.roboticon.repositories.UserRepository;
+import io.lorentez.roboticon.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,6 +28,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final RegistrationRepository registrationRepository;
     private final RobotRepository robotRepository;
     private final UserRepository userRepository;
+    private final RobotTeamRepository robotTeamRepository;
+    private final CompetitionRepository competitionRepository;
 
     @Override
     public List<RegistrationCommand> getTeamsRegistrationsForTournament(Long tournamentId, Long teamId) {
@@ -51,26 +47,62 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public RegistrationCommand updateRegistration(Long registrationId, RegistrationCommand newRegistrationData) {
         log.info("Updating registration form with ID: " + registrationId.toString());
         Optional<Registration> registrationOptional = registrationRepository.findFetchAllInfoById(registrationId);
         return registrationOptional.map(registration -> {
             if (!newRegistrationData.getRobot().getId().equals(registration.getRobot().getId())) {
+                if (registrationRepository.isRobotRegistered(newRegistrationData.getRobot().getId(),
+                        newRegistrationData.getCompetition().getId())) {
+                    log.warn("Failure of attempt to register robot with ID: " + newRegistrationData.getRobot().getId().toString()
+                            + " to competition with ID: " + newRegistrationData.getRobot().getId().toString() + ". " +
+                            "Robot is already registered to competition!");
+                    throw new IllegalArgumentException();
+                }
                 Robot robot = robotRepository.findById(newRegistrationData.getRobot().getId()).orElseThrow();
                 registration.setRobot(robot);
             }
-            Iterable<User> usersIterable = userRepository.findAllById(
+            Set<User> users = userRepository.findAllById(
                     newRegistrationData.getUserCommands()
                             .stream()
                             .map(BasicUserCommand::getId)
                             .collect(Collectors.toList()));
-            Set<User> users = new HashSet<>();
-            usersIterable.forEach(users::add);
             registration.setUsers(users);
             registration = registrationRepository.save(registration);
             return registrationConverter.convert(registration);
         }).orElseThrow();
+    }
+
+    @Transactional
+    @Override
+    public RegistrationCommand createRegistration(RegistrationCommand newRegistrationData) {
+        Registration registration = new Registration();
+        if (registrationRepository.isRobotRegistered(newRegistrationData.getRobot().getId(), newRegistrationData.getCompetition().getId())){
+            throw new IllegalArgumentException();
+        }
+        Robot robot = robotRepository.findById(newRegistrationData.getRobot().getId()).orElseThrow();
+        registration.setRobot(robot);
+        Set<User> users = userRepository.findAllById(
+                newRegistrationData.getUserCommands()
+                        .stream()
+                        .map(BasicUserCommand::getId)
+                        .collect(Collectors.toList()));
+        registration.setUsers(users);
+        Competition competition = competitionRepository.findById(
+                newRegistrationData.getCompetition()
+                        .getId()
+        ).orElseThrow();
+        registration.setCompetition(competition);
+        RegistrationStatus status = RegistrationStatus.builder()
+                .timeFrom(LocalDateTime.now())
+                .registration(registration)
+                .status(RegistrationCurrentStatus.APPLIED)
+                .build();
+        registration.setStatuses(Set.of(status));
+        registration = registrationRepository.save(registration);
+        return registrationConverter.convert(registration);
     }
 
     @Override
