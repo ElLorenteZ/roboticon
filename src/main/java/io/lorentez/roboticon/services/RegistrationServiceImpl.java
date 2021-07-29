@@ -126,5 +126,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
     }
 
-
+    @Override
+    public List<RegistrationCommand> getUserRegistrations(Long userId) {
+        List<Registration> registrations = registrationRepository.getRegistrationsByUserId(userId);
+        return registrations.stream()
+                .map(registrationConverter::convert)
+                .collect(Collectors.toList());
+    }
 }

@@ -53,7 +53,7 @@ public class RegistrationController {
     public ResponseEntity<?> createRegistration(@RequestBody @Valid RegistrationCommand newRegistrationData){
         try {
             RegistrationCommand command = registrationService.createRegistration(newRegistrationData);
-            return ResponseEntity.created(URI.create("/api/v1/registrations/" + command.getId())).build();
+            return ResponseEntity.created(URI.create("/api/v1/registrations/" + command.getId().toString())).build();
         }
         catch (Exception e){
             return ResponseEntity.badRequest().build();
@@ -68,6 +68,13 @@ public class RegistrationController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PreAuthorize("hasAuthority('admin.registration.users') OR " +
+            "hasAuthority('user.registration.users') " +
+            "AND @registrationAuthenticationManager.canUserSeeRegistration(authentication, #userId)")
+    @GetMapping("users/{userId}")
+    public ResponseEntity<?> getUsersRegistrations(@PathVariable Long userId){
+        List<RegistrationCommand> registrations = registrationService.getUserRegistrations(userId);
+        return ResponseEntity.ok(registrations);
+    }
 
 }

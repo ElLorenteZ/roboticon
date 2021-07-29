@@ -279,8 +279,7 @@ class RegistrationControllerTestIT extends BaseIT{
         mockMvc.perform(post("/api/v1/registrations")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
-                .accept(MediaType.APPLICATION_JSON))
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand())))
                 .andExpect(status().isCreated());
     }
 
@@ -322,4 +321,38 @@ class RegistrationControllerTestIT extends BaseIT{
                 .build();
     }
 
+    @Test
+    void testGetUserRegistrationsUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/v1/registrations/users/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testGetUserRegistrationsSelf() throws Exception {
+        String token = getToken(TEAM1_OWNER_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/registrations/users/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void testGetUserRegistrationOther() throws Exception {
+        String token = getToken(TEAM1_MEMBER_EMAIL, "testtest");
+        mockMvc.perform(get("/api/v1/registrations/users/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetUserRegistrationAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(get("/api/v1/registrations/users/1")
+                .header(AUTHORIZATION_HEADER, token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 }

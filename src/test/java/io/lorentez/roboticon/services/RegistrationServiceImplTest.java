@@ -244,4 +244,20 @@ class RegistrationServiceImplTest {
         assertEquals(ROBOT_ID, registration.getRobot().getId());
         assertThat(registration.getUsers()).hasSize(1);
     }
+
+    @Test
+    void testGetUserRegistrations() {
+        //given
+        given(registrationRepository.getRegistrationsByUserId(anyLong()))
+                .willReturn(List.of(Registration.builder().id(1L).build()));
+
+        //when
+        List<RegistrationCommand> registrationCommands = registrationsService.getUserRegistrations(1L);
+
+        //then
+        verify(registrationRepository).getRegistrationsByUserId(anyLong());
+        verify(registrationConverter).convert(any());
+        verifyNoMoreInteractions(registrationRepository);
+        verifyNoMoreInteractions(registrationConverter);
+    }
 }

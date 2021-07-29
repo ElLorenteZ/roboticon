@@ -45,4 +45,17 @@ public interface RegistrationRepository extends CrudRepository<Registration, Lon
 
     @Query(value = "SELECT COUNT(r) > 0 FROM Registration r WHERE r.robot.id = :robotId AND r.competition.id = :competitionId")
     boolean isRobotRegistered(Long robotId, Long competitionId);
+
+    @Query(value = "SELECT DISTINCT r " +
+            "FROM Registration r " +
+            "LEFT JOIN FETCH r.competition c " +
+            "LEFT JOIN FETCH c.tournament t " +
+            "LEFT JOIN FETCH r.robot rob " +
+            "LEFT JOIN FETCH rob.robotTeams rt " +
+            "LEFT JOIN FETCH rt.team team " +
+            "LEFT JOIN FETCH r.users u " +
+            "LEFT JOIN FETCH r.statuses st " +
+            "WHERE u.id = :userId")
+    List<Registration> getRegistrationsByUserId(Long userId);
+
 }
