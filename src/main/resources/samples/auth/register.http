@@ -1,0 +1,12 @@
+# Sample of user registeration
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "sampleuser@test.pl",
+  "password": "sample",
+  "name": "John",
+  "surname": "Doe"
+}
+
+###

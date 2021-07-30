@@ -1,0 +1,40 @@
+# Global Admin
+POST http://localhost:8080/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.pl",
+  "password": "testtest"
+}
+
+###
+# Team 1 Owner
+POST http://localhost:8080/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "janusz.iksinski@test.pl",
+  "password": "testtest"
+}
+
+###
+# Team 1 Admin
+POST http://localhost:8080/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "antoni.spawacz@test.pl",
+  "password": "testtest"
+}
+
+###
+# Team 1 Member
+POST http://localhost:8080/api/v1/login
+Content-Type: application/json
+
+{
+  "email": "tomasz.chomik@test.pl",
+  "password": "testtest"
+}
+
+###
