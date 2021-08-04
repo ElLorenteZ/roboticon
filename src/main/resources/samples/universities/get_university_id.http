@@ -1,0 +1,3 @@
+# Sample - get university by id
+GET http://localhost:8080/api/v1/universities/1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI4MDUxMjEzfQ.FD7dXkBZkKQKE0vFjZDh2dwLOBblTq_HL9N3x4lTLsyAYADYe84Xnsn5BGs4nSfD32Wct56CZcttCUqeq4TvoA

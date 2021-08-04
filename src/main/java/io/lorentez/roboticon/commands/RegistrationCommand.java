@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class RegistrationCommand {
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
     private RobotCommand robot;
     private CompetitionCommand competition;

@@ -1,0 +1,51 @@
+POST http://localhost:8080/api/v1/registrations
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqYW51c3ouaWtzaW5za2lAdGVzdC5wbCIsImV4cCI6MTYyODA1MzY0M30.df0sTEZirlZR7uY6DNci2J0Kv6QFrvWJz3lVCaFo6EbZXoYdH4vpSeU5QnvGIug-Z5o23MxiRquaNBKzOnHI3g
+Content-Type: application/json
+
+{
+  "competition": {
+    "id": 12,
+    "name": "LEGO Sumo Standard",
+    "competitionType": {
+      "id": 2,
+      "type": "SUMO",
+      "scoreType": "MAX_POINTS"
+    },
+    "description": "The main goal is to push your enemy outside the dojo. All robot parts must be elements of LEGO Mindstorms set."
+  },
+  "robot": {
+    "id": 1,
+    "name": "L1n3r",
+    "status": "OWNED",
+    "teamCommand": {
+      "id": 1,
+      "name": "Nephthys",
+      "timeCreated": "2021-08-04 06:26:39.146",
+      "university": {
+        "id": 1,
+        "name": "Akademia Górniczo-Hutnicza im. Stanisława Staszica",
+        "addressLine1": "al. Adama Mickiewicza 30",
+        "addressLine2": "",
+        "zipCode": "30-059",
+        "province": "małopolskie",
+        "city": "Kraków",
+        "country": "Polska"
+      }
+    },
+    "timeAdded": "2021-08-04 06:26:39.224"
+  },
+  "userCommands": [
+    {
+      "id": 44,
+      "name": "Adam",
+      "surname": "Spychacz",
+      "email": "adam.spychacz@test.pl"
+    },
+    {
+      "id": 45,
+      "name": "Antoni",
+      "surname": "Spawacz",
+      "email": "antoni.spawacz@test.pl"
+    }
+  ]
+}

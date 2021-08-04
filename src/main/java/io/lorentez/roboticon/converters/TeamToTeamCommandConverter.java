@@ -32,7 +32,7 @@ public class TeamToTeamCommandConverter implements Converter<Team, TeamCommand> 
         command.setId(team.getId());
         command.setName(team.getName());
         command.setTimeCreated(team.getTimeCreated());
-        command.setUniversityCommand(universityConverter.convert(team.getUniversity()));
+        command.setUniversity(universityConverter.convert(team.getUniversity()));
         command.setRobots(team.getRobotTeams()
                 .stream()
                 .filter(robotTeam -> robotTeam.getTimeRemoved() == null ||

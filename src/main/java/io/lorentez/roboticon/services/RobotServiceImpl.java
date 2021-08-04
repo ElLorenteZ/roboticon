@@ -3,6 +3,7 @@ package io.lorentez.roboticon.services;
 import io.lorentez.roboticon.commands.RobotCommand;
 import io.lorentez.roboticon.converters.RobotCommandToRobotConverter;
 import io.lorentez.roboticon.converters.RobotToRobotCommandConverter;
+import io.lorentez.roboticon.converters.TeamToBasicTeamCommandConverter;
 import io.lorentez.roboticon.model.Robot;
 import io.lorentez.roboticon.model.RobotTeam;
 import io.lorentez.roboticon.model.RobotTeamStatus;
@@ -29,6 +30,7 @@ public class RobotServiceImpl implements RobotService{
 
     private final RobotToRobotCommandConverter robotToCommandConverter;
     private final RobotCommandToRobotConverter robotCommandToRobotConverter;
+    private final TeamToBasicTeamCommandConverter teamToBasicTeamCommandConverter;
     private final RobotRepository robotRepository;
     private final RobotTeamRepository robotTeamRepository;
     private final TeamRepository teamRepository;
@@ -51,9 +53,22 @@ public class RobotServiceImpl implements RobotService{
 
     @Override
     public List<RobotCommand> list() {
-        return robotRepository.findAll()
+        return robotRepository.findAllWithTeam()
                 .stream()
-                .map(robotToCommandConverter::convert)
+                .map(robot -> {
+                    RobotCommand robotCommand = robotToCommandConverter.convert(robot);
+                    Team team = robot.getRobotTeams()
+                            .stream()
+                            .filter(robotTeam -> robotTeam.getTimeRemoved() == null ||
+                                    robotTeam.getTimeRemoved().isAfter(LocalDateTime.now()))
+                            .findFirst()
+                            .map(RobotTeam::getTeam)
+                            .orElse(null);
+                    if (robotCommand != null){
+                        robotCommand.setTeamCommand(teamToBasicTeamCommandConverter.convert(team));
+                    }
+                    return robotCommand;
+                })
                 .collect(Collectors.toList());
     }
 

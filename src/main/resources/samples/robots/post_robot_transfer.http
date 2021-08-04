@@ -1,0 +1,7 @@
+POST http://localhost:8080/api/v1/robots/1/transfer
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqYW51c3ouaWtzaW5za2lAdGVzdC5wbCIsImV4cCI6MTYyODAwNTEzMX0.nNnbAlUsD9kQ7uKRug4t0_7LTZbqGdZbsFfiOS-uf5I6JPpDFAMVrdcqnShuxDQnL9YFZi_fPIZgZTS7CmfioA
+Content-Type: application/json
+
+{
+  "teamId": 2
+}

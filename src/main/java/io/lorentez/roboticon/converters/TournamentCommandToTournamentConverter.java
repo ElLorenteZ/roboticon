@@ -2,6 +2,7 @@ package io.lorentez.roboticon.converters;
 
 import io.lorentez.roboticon.commands.CompetitionCommand;
 import io.lorentez.roboticon.commands.TournamentCommand;
+import io.lorentez.roboticon.model.Competition;
 import io.lorentez.roboticon.model.Tournament;
 import lombok.Synchronized;
 import org.springframework.core.convert.converter.Converter;
@@ -31,8 +32,11 @@ public class TournamentCommandToTournamentConverter implements Converter<Tournam
         tournament.setDateEnd(tournamentCommand.getDateEnd());
         tournamentCommand.getCompetitions()
                 .stream()
-                .forEach(competition ->
-                        tournament.getCompetitions().add(converter.convert(competition))
+                .forEach(competitionCommand -> {
+                            Competition competition = converter.convert(competitionCommand);
+                            competition.setTournament(tournament);
+                            tournament.getCompetitions().add(competition);
+                        }
                 );
         return tournament;
     }

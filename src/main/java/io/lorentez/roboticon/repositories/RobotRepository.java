@@ -26,4 +26,10 @@ public interface RobotRepository extends CrudRepository<Robot, Long> {
             "LEFT JOIN FETCH rt.robot r " +
             "WHERE r.id = :robotId AND rt.timeRemoved IS NULL")
     List<RobotTeam> getRobotActualStatuses(Long robotId);
+
+    @Query(value = "SELECT DISTINCT r FROM Robot r " +
+            "LEFT JOIN FETCH r.robotTeams rt " +
+            "LEFT JOIN FETCH rt.team t")
+    List<Robot> findAllWithTeam();
 }
+

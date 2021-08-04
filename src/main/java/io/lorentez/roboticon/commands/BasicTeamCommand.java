@@ -1,6 +1,7 @@
 package io.lorentez.roboticon.commands;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class BasicTeamCommand {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timeCreated;
 
-    private UniversityCommand universityCommand;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private UniversityCommand university;
 
 }

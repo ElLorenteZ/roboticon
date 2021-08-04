@@ -1,0 +1,3 @@
+POST http://localhost:8080/api/v1/robots/1/accept
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJrYXJvbC56dXJhd3NraUB0ZXN0LnBsIiwiZXhwIjoxNjI4MDA1MjQ1fQ.q1LoNvU1iuC_rE36J94dd2DVclVpjjjMPHHjtmuU_5bPbBe_7xlN7js9nhGnoaIILLYoD_ejUChfCa5cOUu4Hg
+

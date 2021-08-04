@@ -263,7 +263,7 @@ class TeamServiceImplTest {
 
         BasicTeamCommand command = teamService.update(10L, TeamCommand.builder()
                 .name(TEAM_UPDATED_NAME)
-                .universityCommand(UniversityCommand.builder().build())
+                .university(UniversityCommand.builder().build())
                 .build());
 
         verify(teamRepository).findById(any());
@@ -290,7 +290,7 @@ class TeamServiceImplTest {
         BasicTeamCommand teamCommand = BasicTeamCommand.builder()
                 .name(TEAM_NAME)
                 .timeCreated(timestamp)
-                .universityCommand(UniversityCommand.builder().id(10L).build())
+                .university(UniversityCommand.builder().id(10L).build())
                 .build();
         given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
         given(universityConverter.convert(any())).willReturn(University.builder().id(10L).build());

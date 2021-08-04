@@ -380,7 +380,7 @@ public class TeamControllerTestIT extends BaseIT{
     private BasicTeamCommand getCreatedTeam(){
         BasicTeamCommand team = BasicTeamCommand.builder()
                 .name(TEAM_UPDATED_NAME)
-                .universityCommand(UniversityCommand.builder()
+                .university(UniversityCommand.builder()
                         .id(1L)
                         .name("Akademia Górniczo-Hutnicza im. Stanisława Staszica")
                         .addressLine1("al. Adama Mickiewicza 30")

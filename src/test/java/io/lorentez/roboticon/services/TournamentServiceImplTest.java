@@ -138,8 +138,6 @@ class TournamentServiceImplTest {
                 .build();
         given(tournamentCommandToTournamentConverter.convert(any()))
                 .willReturn(Tournament.builder().id(10L).build());
-        given(competitionTypeRepository.findById(any()))
-                .willReturn(Optional.of(CompetitionType.builder().id(10L).build()));
         given(repository.save(any())).willReturn(Tournament.builder()
                 .id(10L)
                 .competitions(Set.of(Competition.builder()

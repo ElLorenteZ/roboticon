@@ -1,0 +1,3 @@
+# Sample - get list of universities
+GET http://localhost:8080/api/v1/universities
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21hc3ouY2hvbWlrQHRlc3QucGwiLCJleHAiOjE2Mjc4ODExOTN9.-FkIskW7JM7UVWHgrQ1i0j6SjhT4ezSPP7UprnLNwNC9YZLZXXHfw6IRdHydlcTRP-DzX8qKQG1vAwu9oQ3Fxw

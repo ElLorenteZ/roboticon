@@ -1,0 +1,10 @@
+PUT http://localhost:8080/api/v1/robots/1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI4MDAzODMzfQ.l64v2U2ES9OKeprXUjY95o6gg0JcnBxbqMgsdvxdKnY-i-NSu3Iy0jJdTdmP_YV-GQCvxa_4M3Qt4XIxXyl67Q
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": 1,
+  "name": "L1ner",
+  "timeAdded": "2021-08-03 14:37:51.482"
+}

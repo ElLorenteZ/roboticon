@@ -148,7 +148,7 @@ class TeamToTeamCommandConverterTest {
         assertEquals(ID, teamCommand.getId());
         assertEquals(NAME, teamCommand.getName());
         assertEquals(TIME_CREATED, teamCommand.getTimeCreated());
-        assertNotNull(teamCommand.getUniversityCommand());
+        assertNotNull(teamCommand.getUniversity());
         verify(universityConverter, times(1)).convert(any());
         verifyNoMoreInteractions(universityConverter);
         verify(robotConverter, times(1)).convert(any());

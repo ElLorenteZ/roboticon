@@ -1,0 +1,15 @@
+# Sample update university data
+PUT http://localhost:8080/api/v1/universities/1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI3ODgxNTgwfQ.3eH1hw21yVb0wNo25L0mGNk16ZdW2P-Yp8EDmY5DRc4RYX-8OYpeJ5ts4g4leF_qJ9C5ejRvBrbepl6IbUpDjg
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "University of Science and Technology",
+  "addressLine1": "al. Adama Mickiewicza 30",
+  "addressLine2": "",
+  "zipCode": "30-059",
+  "province": "małopolskie",
+  "city": "Kraków",
+  "country": "Polska"
+}

@@ -1,0 +1,29 @@
+POST http://localhost:8080/api/v1/tournaments
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI4MDU1NTgwfQ.1mQm3VAX9Nnzq52CTlZ9vFox0yi42l9BmMYq_g-nHwhTkXJKuhvyLeQuipXsahuu6gVafdnZspcg04ksI6gr9Q
+Content-Type: application/json
+
+{
+  "name": "Sumo Cup",
+  "dateStart": "2022-01-10",
+  "dateEnd": "2022-01-11",
+  "competitions": [
+    {
+      "name": "Sumo Standard",
+      "competitionType": {
+        "id": 2,
+        "type": "SUMO",
+        "scoreType": "MAX_POINTS"
+      },
+      "description": "The main goal is to push your enemy outside the dojo."
+    },
+    {
+      "name": "LEGO Sumo Standard",
+      "competitionType": {
+        "id": 2,
+        "type": "SUMO",
+        "scoreType": "MAX_POINTS"
+      },
+      "description": "The main goal is to push your enemy outside the dojo. All robot parts must be elements of LEGO Mindstorms set."
+    }
+  ]
+}

@@ -144,7 +144,7 @@ class RegistrationServiceImplTest {
         verify(registrationRepository).save(any());
         verify(registrationRepository).findFetchAllInfoById(any());
         verify(userRepository).findAllById(any());
-        verify(registrationRepository).isRobotRegistered(anyLong(), anyLong());
+        verify(registrationRepository).getRegistrationByRobotIdAndCompetitionId(anyLong(), anyLong());
         verifyNoMoreInteractions(registrationRepository);
         verifyNoMoreInteractions(userRepository);
     }
@@ -233,7 +233,7 @@ class RegistrationServiceImplTest {
         verify(competitionRepository).findById(anyLong());
         verify(robotRepository).findById(anyLong());
         verify(userRepository).findAllById(any());
-        verify(registrationRepository).isRobotRegistered(anyLong(), anyLong());
+        verify(registrationRepository).getRegistrationByRobotIdAndCompetitionId(anyLong(), anyLong());
         verify(registrationConverter).convert(any());
         verifyNoMoreInteractions(registrationRepository);
         Registration registration = registrationArgumentCaptor.getValue();

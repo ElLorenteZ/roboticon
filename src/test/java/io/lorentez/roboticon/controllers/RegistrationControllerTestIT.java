@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,7 +100,6 @@ class RegistrationControllerTestIT extends BaseIT{
                 .andExpect(status().isUnauthorized());
     }
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void testSetNewStatusGlobalAdmin() throws Exception {
         String token = getGlobalAdminToken();
@@ -135,6 +135,7 @@ class RegistrationControllerTestIT extends BaseIT{
                 .andExpect(status().isUnauthorized());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateRegistrationGlobalAdmin() throws Exception {
@@ -153,6 +154,7 @@ class RegistrationControllerTestIT extends BaseIT{
                 .andExpect(status().isNoContent());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateRegistrationTeamOwner() throws Exception {
@@ -179,6 +181,7 @@ class RegistrationControllerTestIT extends BaseIT{
                 .andExpect(status().isNoContent());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void updateRegistrationTeamAdmin() throws Exception {
@@ -248,18 +251,20 @@ class RegistrationControllerTestIT extends BaseIT{
                 .andExpect(status().isForbidden());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createRegistrationAdmin() throws Exception {
         String token = getToken("bartlomiej.wertowski@test.pl", "testtest");
+        String content = objectMapper.writeValueAsString(getCreatedRegistrationCommand());
         mockMvc.perform(post("/api/v1/registrations")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
-                .accept(MediaType.APPLICATION_JSON))
+                .content(content))
                 .andExpect(status().isCreated());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createRegistrationOwner() throws Exception {
@@ -267,19 +272,20 @@ class RegistrationControllerTestIT extends BaseIT{
         mockMvc.perform(post("/api/v1/registrations")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand()))
-                .accept(MediaType.APPLICATION_JSON))
+                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand())))
                 .andExpect(status().isCreated());
     }
 
+    @Rollback
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void createRegistrationGlobalAdmin() throws Exception {
         String token = getGlobalAdminToken();
+        String content = objectMapper.writeValueAsString(getCreatedRegistrationCommand());
         mockMvc.perform(post("/api/v1/registrations")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(getCreatedRegistrationCommand())))
+                .content(content))
                 .andExpect(status().isCreated());
     }
 
@@ -294,7 +300,7 @@ class RegistrationControllerTestIT extends BaseIT{
                                 .id(6L)
                                 .name("Kanto")
                                 .timeCreated(LocalDateTime.now())
-                                .universityCommand(UniversityCommand.builder()
+                                .university(UniversityCommand.builder()
                                         .id(3L)
                                         .name("Politechnika Wrocławska")
                                         .addressLine1("Wybrzeże Stanisława Wyspiańskiego 27")

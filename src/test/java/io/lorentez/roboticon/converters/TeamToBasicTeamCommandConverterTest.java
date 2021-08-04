@@ -80,7 +80,7 @@ class TeamToBasicTeamCommandConverterTest {
         assertEquals(ID, basicTeamCommand.getId());
         assertEquals(NAME, basicTeamCommand.getName());
         assertEquals(TIME_CREATED, basicTeamCommand.getTimeCreated());
-        assertNotNull(basicTeamCommand.getUniversityCommand());
+        assertNotNull(basicTeamCommand.getUniversity());
         verify(universityConverter, times(1)).convert(any(University.class));
         verifyNoMoreInteractions(universityConverter);
     }

@@ -121,7 +121,7 @@ class RobotServiceImplTest {
     @Test
     void testListAll() {
         //given
-        given(robotRepository.findAll()).willReturn(
+        given(robotRepository.findAllWithTeam()).willReturn(
                 List.of(Robot.builder().id(1L).build(),
                         Robot.builder().id(2L).build())
         );
@@ -131,7 +131,7 @@ class RobotServiceImplTest {
 
         //then
         assertNotNull(commandList);
-        verify(robotRepository).findAll();
+        verify(robotRepository).findAllWithTeam();
         verify(robotToCommandConverter, times(2)).convert(any());
         verifyNoMoreInteractions(robotRepository);
         verifyNoMoreInteractions(robotToCommandConverter);

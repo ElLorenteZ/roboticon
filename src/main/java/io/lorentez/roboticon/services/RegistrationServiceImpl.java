@@ -54,8 +54,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         Optional<Registration> registrationOptional = registrationRepository.findFetchAllInfoById(registrationId);
         return registrationOptional.map(registration -> {
             if (!newRegistrationData.getRobot().getId().equals(registration.getRobot().getId())) {
-                if (registrationRepository.isRobotRegistered(newRegistrationData.getRobot().getId(),
-                        newRegistrationData.getCompetition().getId())) {
+                if (registrationRepository.getRegistrationByRobotIdAndCompetitionId(newRegistrationData.getRobot().getId(),
+                        newRegistrationData.getCompetition().getId()).isPresent()) {
                     log.warn("Failure of attempt to register robot with ID: " + newRegistrationData.getRobot().getId().toString()
                             + " to competition with ID: " + newRegistrationData.getRobot().getId().toString() + ". " +
                             "Robot is already registered to competition!");
@@ -79,7 +79,13 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public RegistrationCommand createRegistration(RegistrationCommand newRegistrationData) {
         Registration registration = new Registration();
-        if (registrationRepository.isRobotRegistered(newRegistrationData.getRobot().getId(), newRegistrationData.getCompetition().getId())){
+        Optional<Registration> currentRegistration = registrationRepository
+                .getRegistrationByRobotIdAndCompetitionId(newRegistrationData.getRobot().getId(),
+                        newRegistrationData.getCompetition().getId());
+        if (currentRegistration.isPresent()){
+            log.warn("Robot with id: " + newRegistrationData.getRobot().getId().toString()
+                    + " is already registered for competition with id: "
+                    + newRegistrationData.getCompetition().getId().toString());
             throw new IllegalArgumentException();
         }
         Robot robot = robotRepository.findById(newRegistrationData.getRobot().getId()).orElseThrow();

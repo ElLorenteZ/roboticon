@@ -26,5 +26,6 @@ public class RobotCommand {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timeAdded;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BasicTeamCommand teamCommand;
 }

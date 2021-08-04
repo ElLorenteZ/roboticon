@@ -25,7 +25,7 @@ public class TeamToBasicTeamCommandConverter implements Converter<Team, BasicTea
                 .id(team.getId())
                 .name(team.getName())
                 .timeCreated(team.getTimeCreated())
-                .universityCommand(universityConverter.convert(team.getUniversity()))
+                .university(universityConverter.convert(team.getUniversity()))
                 .build();
     }
 }

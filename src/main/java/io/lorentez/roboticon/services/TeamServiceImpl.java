@@ -128,7 +128,7 @@ public class TeamServiceImpl implements TeamService{
         Optional<Team> updatedTeamOptional = teamRepository.findById(teamId);
         return updatedTeamOptional.map(updatedTeam -> {
             updatedTeam.setName(newTeamData.getName());
-            updatedTeam.setUniversity(universityConverter.convert(newTeamData.getUniversityCommand()));
+            updatedTeam.setUniversity(universityConverter.convert(newTeamData.getUniversity()));
             Team team = teamRepository.save(updatedTeam);
             return basicTeamConverter.convert(team);
         }).orElseThrow();
@@ -138,7 +138,7 @@ public class TeamServiceImpl implements TeamService{
     @Override
     public BasicTeamCommand createTeam(BasicTeamCommand team, String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
-        University university = universityConverter.convert(team.getUniversityCommand());
+        University university = universityConverter.convert(team.getUniversity());
         Team newTeam = Team.builder()
                 .name(team.getName())
                 .timeCreated(LocalDateTime.now())

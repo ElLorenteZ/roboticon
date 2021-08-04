@@ -77,12 +77,12 @@ public class TournamentServiceImpl implements TournamentService{
         }
         newTournament.setId(null);
         newTournament = tournamentRepository.save(newTournament);
-        newTournament.getCompetitions().forEach(competition -> {
-            CompetitionType competitionType = competitionTypeRepository.findById(competition.getCompetitionType().getId())
-                    .orElseThrow();
-            competition.setCompetitionType(competitionType);
-            competition = competitionRepository.save(competition);
-        });
+//        newTournament.getCompetitions().forEach(competition -> {
+//            CompetitionType competitionType = competitionTypeRepository.findById(competition.getCompetitionType().getId())
+//                    .orElseThrow();
+//            competition.setCompetitionType(competitionType);
+//            competition = competitionRepository.save(competition);
+//        });
         return tournamentToTournamentCommandConverter.convert(newTournament);
     }
 
