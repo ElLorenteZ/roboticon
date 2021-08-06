@@ -22,8 +22,8 @@ own _data.sql_ to have full control of database model.
 ## Tests
 I attempted to follow TDD process. Services and converters are covered by 
 unit tests. Controllers and security is covered by integration tests. I used
-![CodeCov](https://codecov.io/gh/ElLorenteZ/roboticon) to show what percent of code is covered 
-by unit tests. I also used ![CircleCi](https://circleci.com/gh/ElLorenteZ/roboticon) as my tool for 
+[CodeCov](https://codecov.io/gh/ElLorenteZ/roboticon) to show what percent of code is covered 
+by unit tests. I also used [CircleCi](https://circleci.com/gh/ElLorenteZ/roboticon) as my tool for 
 continuous integration. Some http requests for manual testing were also provided in folder
 _"src/main/resources/samples"_.
 
