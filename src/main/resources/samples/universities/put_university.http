@@ -1,4 +1,5 @@
 # Sample update university data
+# Can be used only by global admin
 PUT http://localhost:8080/api/v1/universities/1
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI3ODgxNTgwfQ.3eH1hw21yVb0wNo25L0mGNk16ZdW2P-Yp8EDmY5DRc4RYX-8OYpeJ5ts4g4leF_qJ9C5ejRvBrbepl6IbUpDjg
 Content-Type: application/json

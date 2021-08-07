@@ -1,0 +1,10 @@
+# This checkpoint will be used in the future
+# It allows to add diffrent status to registration
+# This endpoint is for admin only
+POST http://localhost:8080/api/v1/registrations/1/status
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b21hc3ouY2hvbWlrQHRlc3QucGwiLCJleHAiOjE2MjgwNTM1Njd9.Zjw8PHFlfo11c8TOaMG0zdCR9ykzciWR9tT-Jrf-3AzrvCiqHfMZV4UozV8gem2ZYaYZmOfO3CKuWtX12U1SUw
+Content-Type: application/json
+
+{
+  "status": "APPLIED"
+}

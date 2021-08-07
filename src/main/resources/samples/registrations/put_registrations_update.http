@@ -1,3 +1,5 @@
+# Sample of update registration
+# This endpoint can be reached
 PUT http://localhost:8080/api/v1/registrations/5
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqYW51c3ouaWtzaW5za2lAdGVzdC5wbCIsImV4cCI6MTYyODA1MzY0M30.df0sTEZirlZR7uY6DNci2J0Kv6QFrvWJz3lVCaFo6EbZXoYdH4vpSeU5QnvGIug-Z5o23MxiRquaNBKzOnHI3g
 Content-Type: application/json

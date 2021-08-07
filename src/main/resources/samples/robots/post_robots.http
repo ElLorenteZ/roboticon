@@ -1,4 +1,5 @@
 # Sample add robot
+# Can be used by global admin or owner or admin of team to which robot is added
 POST http://localhost:8080/api/v1/robots
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI3OTEzMjcyfQ.OHZn8ao4MZusB001mqpjt4u3FI7DlnnVU1RMo8PwKueR_1mqLI8NyfWSEkmflvbsQ4BCEXZf-gOmr52v2z4kAw
 Content-Type: application/json

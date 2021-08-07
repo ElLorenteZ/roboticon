@@ -1,3 +1,5 @@
+# Can be used by any user
+# After creating team, user who sent this request will have staus of owner.
 POST http://localhost:8080/api/v1/teams
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI4MDUxMjEzfQ.FD7dXkBZkKQKE0vFjZDh2dwLOBblTq_HL9N3x4lTLsyAYADYe84Xnsn5BGs4nSfD32Wct56CZcttCUqeq4TvoA
 Content-Type: application/json

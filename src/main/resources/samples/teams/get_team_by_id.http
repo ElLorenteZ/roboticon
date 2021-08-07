@@ -1,2 +1,4 @@
+# Endpoint to get details of team
+# Can be used by global admin or user who has status of owner, admin or member in team
 GET http://localhost:8080/api/v1/teams/1
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LnBsIiwiZXhwIjoxNjI4MDEzNTIxfQ.7ESzKsyopEhqVz7e3ptkIuW8GGhCpikyYTFVRzddkpxj_2TYOGhlpH4FGqWJpblrby11u3pipW925L-uPHH3bw
