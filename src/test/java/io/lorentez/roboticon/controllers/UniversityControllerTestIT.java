@@ -1,5 +1,6 @@
 package io.lorentez.roboticon.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.lorentez.roboticon.commands.UniversityCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -160,5 +161,19 @@ class UniversityControllerTestIT extends BaseIT{
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(university)))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testValidationExceptionHandling() throws Exception {
+        String token = getGlobalAdminToken();
+        UniversityCommand university = UniversityCommand.builder()
+                .name(UNIVERSITY_NAME)
+                .build();
+        mockMvc.perform(put("/api/v1/universities/1")
+                        .header(AUTHORIZATION_HEADER, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(university)))
+                .andExpect(status().isBadRequest());
+
     }
 }

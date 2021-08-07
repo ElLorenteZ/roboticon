@@ -28,9 +28,12 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    @GetMapping("user")
-    public List<CurrentTeamUserCommand> getUserTeams(@AuthenticationPrincipal String email){
-        return teamService.fetchCurrentUserTeams(email);
+    @PreAuthorize("hasAuthority('admin.teams.user.view') OR " +
+            "hasAuthority('user.teams.user.view')" +
+            "AND @userAuthenticationManager.isUserSelf(authentication, #userId)")
+    @GetMapping("user/{userId}")
+    public List<CurrentTeamUserCommand> getUserTeams(@PathVariable Long userId){
+        return teamService.fetchCurrentUserTeams(userId);
     }
 
     @PreAuthorize("hasAuthority('admin.team.invite') OR " +

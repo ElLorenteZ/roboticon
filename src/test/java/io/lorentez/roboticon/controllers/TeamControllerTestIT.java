@@ -28,14 +28,29 @@ public class TeamControllerTestIT extends BaseIT{
 
     @Test
     void findTeamsOfAnonymousUser() throws Exception {
-        mockMvc.perform(get("/api/v1/teams/user").with(anonymous()))
+        mockMvc.perform(get("/api/v1/teams/user/1").with(anonymous()))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void findTeamsOfUserFromAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        mockMvc.perform(get("/api/v1/teams/user/1").header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    void findTeamsOfOtherUsers () throws Exception {
+        String token = getSampleToken();
+        mockMvc.perform(get("/api/v1/teams/user/25").header(AUTHORIZATION_HEADER, token))
+                .andExpect(status().isForbidden());
     }
 
     @Test
     void findTeamsOfUser() throws Exception {
         String token = getSampleToken();
-        mockMvc.perform(get("/api/v1/teams/user").header(AUTHORIZATION_HEADER, token))
+        mockMvc.perform(get("/api/v1/teams/user/1").header(AUTHORIZATION_HEADER, token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }

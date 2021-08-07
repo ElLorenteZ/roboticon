@@ -62,9 +62,12 @@ public class AuthController {
     }
 
 
-    @PreAuthorize("hasAuthority('user.user.password.change')")
-    @PostMapping("changePassword")
-    public ResponseEntity<?> changeUsersPassword(@RequestBody @Valid ChangePasswordCredentials passwordCredentials,
+    @PreAuthorize("hasAuthority('admin.user.password.change') OR " +
+            "hasAuthority('user.user.password.change') " +
+            "AND @userAuthenticationManager.isUserSelf(authentication, #userId)")
+    @PostMapping("{userId}/changePassword")
+    public ResponseEntity<?> changeUsersPassword(@PathVariable Long userId,
+                                                 @RequestBody @Valid ChangePasswordCredentials passwordCredentials,
                                                  @AuthenticationPrincipal String email){
         User currentUser = userService.findByEmail(email);
         try {

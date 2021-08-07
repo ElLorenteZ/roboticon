@@ -82,16 +82,16 @@ class TeamServiceImplTest {
                         .teamId(TEAM_ID)
                         .name(TEAM_NAME)
                         .build());
-        given(teamRepository.findUserTeams(anyString())).willReturn(teams);
+        given(teamRepository.findUserTeams(anyLong())).willReturn(teams);
 
         //when
-        List<CurrentTeamUserCommand> currentTeamCommands = teamService.fetchCurrentUserTeams("johndoe@at.com");
+        List<CurrentTeamUserCommand> currentTeamCommands = teamService.fetchCurrentUserTeams(1L);
 
         //then
         assertNotNull(currentTeamCommands);
         assertThat(currentTeamCommands).hasSize(1);
         verify(converter, times(1)).convert(any(Team.class));
-        verify(teamRepository, times(1)).findUserTeams(anyString());
+        verify(teamRepository, times(1)).findUserTeams(anyLong());
         verifyNoMoreInteractions(converter, teamRepository);
     }
 

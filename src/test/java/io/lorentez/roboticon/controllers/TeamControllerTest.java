@@ -21,6 +21,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,7 +54,7 @@ class TeamControllerTest {
 
     @Test
     void controllerTest() throws Exception {
-        given(teamService.fetchCurrentUserTeams(anyString())).willReturn(mockTeams());
+        given(teamService.fetchCurrentUserTeams(anyLong())).willReturn(mockTeams());
 
         mockMvc.perform(get("/api/v1/teams/user"))
                 .andExpect(status().isOk())

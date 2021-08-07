@@ -56,12 +56,41 @@ class AuthControllerTestIT extends BaseIT{
         credentials.put("currentPassword", "testtest");
         credentials.put("newPassword", "sedessedes");
 
-        mockMvc.perform(post("/api/v1/auth/changePassword")
+        mockMvc.perform(post("/api/v1/auth/1/changePassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(credentials)))
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void testChangePasswordForbidden() throws Exception {
+        String token = getToken(EMAIL_USER_ID1, "testtest");
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("currentPassword", "testtest");
+        credentials.put("newPassword", "sedessedes");
+
+        mockMvc.perform(post("/api/v1/auth/2/changePassword")
+                        .header(AUTHORIZATION_HEADER, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(credentials)))
+                .andExpect(status().isForbidden());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void testChangePasswordGlobalAdmin() throws Exception {
+        String token = getGlobalAdminToken();
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("currentPassword", "testtest");
+        credentials.put("newPassword", "sedessedes");
+
+        mockMvc.perform(post("/api/v1/auth/1/changePassword")
+                        .header(AUTHORIZATION_HEADER, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(credentials)))
+                .andExpect(status().isNoContent());
+
+    }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
@@ -71,7 +100,7 @@ class AuthControllerTestIT extends BaseIT{
         credentials.put("currentPassword", "testtest");
         credentials.put("newPassword", "sedessedes");
 
-        mockMvc.perform(post("/api/v1/auth/changePassword")
+        mockMvc.perform(post("/api/v1/auth/1/changePassword")
                 .header(AUTHORIZATION_HEADER, token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(credentials)))

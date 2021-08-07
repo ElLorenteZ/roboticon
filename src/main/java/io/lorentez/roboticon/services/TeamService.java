@@ -9,7 +9,7 @@ import io.lorentez.roboticon.model.UserTeamStatus;
 import java.util.List;
 
 public interface TeamService {
-    List<CurrentTeamUserCommand> fetchCurrentUserTeams(String userEmail);
+    List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId);
 
     boolean isUserInTeamActive(Long teamId, String email);
 

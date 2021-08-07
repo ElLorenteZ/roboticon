@@ -41,8 +41,8 @@ public class TeamServiceImpl implements TeamService{
     private final UniversityCommandToUniversityConverter universityConverter;
 
     @Override
-    public List<CurrentTeamUserCommand> fetchCurrentUserTeams(String email) {
-        return teamRepository.findUserTeams(email)
+    public List<CurrentTeamUserCommand> fetchCurrentUserTeams(Long userId) {
+        return teamRepository.findUserTeams(userId)
                 .stream()
                 .map(converter::convert)
                 .collect(Collectors.toList());

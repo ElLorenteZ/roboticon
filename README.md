@@ -61,23 +61,26 @@ validation provided by components from "_src/main/java/io/lorentez/roboticon/sec
 | 23   | admin.robot.add                  | Permission to add robot to any team.                                                           |
 | 24   | admin.robot.view                 | Permission to view any robot.                                                                  |
 | 25   | admin.registration.users         | Permission to check any user's registrations.                                                  |
-| 26   | user.team.read                   | Permission to read team data where user has status of owner or admin.                          |
-| 27   | user.team.invite                 | Permission to invite any user to team where user has status owner or admin.                    |
-| 28   | user.team.update                 | Permission to update team data where user has status of owner or admin.                        |
-| 29   | user.team.user.status            | Permission to change status of user in team.                                                   |
-| 30   | user.team.view                   | Permission to view details of team in which user has status of 'member', 'admin' or 'owner'.   |
-| 31   | user.robot.edit                  | Permission to change details of robot in team if user has Admin or Owner status.               |
-| 32   | user.robot.transfer              | Permission to transfer robot is user has status OWNER in team.                                 |
-| 33   | user.robot.transfer.accept       | Permission to accept transfer robot to user's team when he has OWNER status.                   |
-| 34   | user.user.edit                   | Permission to edit user self details.                                                          |
-| 35   | user.user.password.change        | Permission to change self password.                                                            |
-| 36   | user.team.edit                   | Permission to edit team's data.                                                                |
-| 37   | user.registration.team.view      | Permission to preview registration of team in which user has status of OWNER, ADMIN or member. |
-| 38   | user.registration.create         | Permission to create registration for team where user has status of ADMIN or OWNER.            |
-| 39   | user.registration.edit           | Permission to edit registration for team where user has status of ADMIN or OWNER.              |
-| 40   | user.robot.add                   | Permission to add user to team where user has status of OWNER or ADMIN.                        |
-| 41   | user.robot.view                  | Permission to view robots in team where user has status of OWNER or ADMIN.                     |
-| 42   | user.registration.users          | Permission to check user's own registrations.                                                  |
+| 26   | admin.user.password.change       | Permission to change any user's password.                                                      |
+| 27   | admin.teams.user.view            | Permission to view any user's teams.                                                           |
+| 28   | user.team.read                   | Permission to read team data where user has status of owner or admin.                          |
+| 29   | user.team.invite                 | Permission to invite any user to team where user has status owner or admin.                    |
+| 30   | user.team.update                 | Permission to update team data where user has status of owner or admin.                        |
+| 31   | user.team.user.status            | Permission to change status of user in team.                                                   |
+| 32   | user.team.view                   | Permission to view details of team in which user has status of 'member', 'admin' or 'owner'.   |
+| 33   | user.robot.edit                  | Permission to change details of robot in team if user has Admin or Owner status.               |
+| 34   | user.robot.transfer              | Permission to transfer robot is user has status OWNER in team.                                 |
+| 35   | user.robot.transfer.accept       | Permission to accept transfer robot to user's team when he has OWNER status.                   |
+| 36   | user.user.edit                   | Permission to edit user self details.                                                          |
+| 37   | user.user.password.change        | Permission to change self password.                                                            |
+| 38   | user.team.edit                   | Permission to edit team's data.                                                                |
+| 39   | user.registration.team.view      | Permission to preview registration of team in which user has status of OWNER, ADMIN or member. |
+| 40   | user.registration.create         | Permission to create registration for team where user has status of ADMIN or OWNER.            |
+| 41   | user.registration.edit           | Permission to edit registration for team where user has status of ADMIN or OWNER.              |
+| 42   | user.robot.add                   | Permission to add user to team where user has status of OWNER or ADMIN.                        |
+| 43   | user.robot.view                  | Permission to view robots in team where user has status of OWNER or ADMIN.                     |
+| 44   | user.registration.users          | Permission to check user's own registrations.                                                  |
+| 45   | user.teams.user.view             | Permission to check user's teams.                                                              |
 
 JWT is used as an authentication method. I wrote 2 custom filters. One is to provide authentication token 
 from JSON login credentials, second to validate if user is authorized. I wrote custon password encoder. 
@@ -95,7 +98,7 @@ Current endpoints are listed below. Check comments in samples for more details.
 |:--------------:|:-----------:|:-----------------------------:|
 |Login           | POST        | _/api/v1/auth/login_          |
 |Register        | POST        | _/api/v1/auth/register_       |
-|Change Password | POST        | _/api/v1/auth/changePassword_ |
+|Change Password | POST        | _/api/v1/auth/{user_id}/changePassword_ |
 |Reset Password  | POST        | _/api/v1/auth/resetPassword_  |
 |Set Password    | POST        | _/api/v1/auth/setPassword_    |
 
@@ -131,7 +134,7 @@ Current endpoints are listed below. Check comments in samples for more details.
 | Update team | PUT | _api/v1/teams/{team_id}_ |
 | Invite to a team | POST | _api/v1/teams/{team_id}/invite_ |
 | Change status of user in team | POST | _api/v1/teams/{team_id}/status_ |
-| Get teams of user | GET | _/api/v1/teams/user_ |
+| Get teams of user | GET | _/api/v1/teams/user/{user_id}_ |
 
 ### Tournament controller
 | Functionality         | HTTP Method | Path                                    |
